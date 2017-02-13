@@ -4,6 +4,9 @@
 #include <QSlider>
 #include <QLabel>
 #include <QLCDNumber>
+#include <QTimer>
+#include "flut/timer.hpp"
+#include "flut/math/delta.hpp"
 
 class QAbstractButton;
 class QAbstractSlider;
@@ -24,21 +27,26 @@ public:
 
 public slots:
 	void setLoop( bool loop );
-
-signals:
 	void play();
 	void stop();
 	void reset();
-	void next();
 	void previous();
+	void next();
+
+signals:
+	void playTriggered();
+	void stopTriggered();
+	void resetTriggered();
+	void nextTriggered();
+	void previousTriggered();
 	void slowMotionChanged( int i );
 	void timeChanged( double time );
 	void sliderChanged( int );
 
 private slots:
-	void playClicked();
 	void updateSlowMotion( int );
 	void updateSlider( int );
+	void timeout();
 
 private:
 	QAbstractButton *playButton;
@@ -49,6 +57,12 @@ private:
 	QComboBox *slowMotionBox;
 	QSlider *slider;
 	QLCDNumber* label;
-	//QLabel *label;
 	double currentTime;
+	double skipTime;
+	double slomoFactor;
+	bool loop;
+
+	QTimer qtimer;
+	flut::timer timer;
+	flut::delta< flut::timer::seconds_t > timer_delta;
 };
