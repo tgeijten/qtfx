@@ -3,6 +3,7 @@
 #include <QWidget>
 #include <QSlider>
 #include <QLabel>
+#include <QLCDNumber>
 
 class QAbstractButton;
 class QAbstractSlider;
@@ -16,7 +17,7 @@ public:
 	QPlayControl( QWidget *parent = 0 );
 	float slowMotion() const;
 
-	void setRange( int min, int max );
+	void setRange( double min, double max );
 	void setPlaying( bool play );
 	void setTime( double time );
 	bool getLoop();
@@ -47,6 +48,7 @@ private:
 	QAbstractButton *loopButton;
 	QComboBox *slowMotionBox;
 	QSlider *slider;
-	QLabel *label;
+	QLCDNumber* label;
+	//QLabel *label;
 	double currentTime;
 };

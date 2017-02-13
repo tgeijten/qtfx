@@ -26,8 +26,12 @@ QPlayControl::QPlayControl( QWidget *parent /*= 0 */ )
 	loopButton->setCheckable( true );
 	loopButton->setIcon( style()->standardIcon( QStyle::SP_BrowserReload ) );
 
-	label = new QLabel( this );
-	label->setText( "0.000" );
+	label = new QLCDNumber( this );
+	label->setDigitCount( 5 );
+	label->setSmallDecimalPoint( true );
+	label->setFrameStyle( QFrame::Box );
+	label->setSegmentStyle( QLCDNumber::Flat );
+	label->display( "0.000" );
 	slider = new QSlider( Qt::Horizontal, this );
 	connect( slider, SIGNAL( valueChanged( int ) ), this, SLOT( updateSlider( int ) ) );
 
@@ -53,9 +57,9 @@ QPlayControl::QPlayControl( QWidget *parent /*= 0 */ )
 	setLayout( layout );
 }
 
-void QPlayControl::setRange( int min, int max )
+void QPlayControl::setRange( double min, double max )
 {
-	slider->setRange( min, max );
+	slider->setRange( static_cast< int >( 1000 * min + 0.5 ), static_cast< int >( 1000 * max + 0.5 ) );
 }
 
 void QPlayControl::setTime( double time )
@@ -65,7 +69,7 @@ void QPlayControl::setTime( double time )
 	slider->blockSignals( true );
 
 	slider->setValue( int( currentTime * 1000 ) );
-	label->setText( QString().sprintf( "%.3f", currentTime ) );
+	label->display( QString().sprintf( "%.3f", currentTime ) );
 
 	slider->blockSignals( false );
 }
