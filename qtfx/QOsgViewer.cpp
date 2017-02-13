@@ -3,9 +3,7 @@
 #include <osgGA/TrackballManipulator>
 #include <osgViewer/ViewerEventHandlers>
 #include "simvis/osg_camera_man.h"
-#include "scone/core/Log.h"
-
-using namespace scone;
+#include "flut/system/log.hpp"
 
 class QOsgEventHandler : public osgGA::GUIEventHandler 
 { 
@@ -14,13 +12,12 @@ public:
 	{
 		if ( ea.getEventType() == osgGA::GUIEventAdapter::RESIZE )
 		{
-			log::info( "Viewer resized to ", ea.getWindowWidth(), "x", ea.getWindowHeight() );
+			flut::log::info( "Viewer resized to ", ea.getWindowWidth(), "x", ea.getWindowHeight() );
 			return true;
 		}
 		else return false;
 	}
 }; 
-
 
 QOsgViewer::QOsgViewer( QWidget* parent /*= 0*/, Qt::WindowFlags f /*= 0*/, osgViewer::ViewerBase::ThreadingModel threadingModel/*=osgViewer::CompositeViewer::SingleThreaded*/ ) :
 QWidget( parent, f ),
@@ -117,7 +114,7 @@ void QOsgViewer::moveCamera( const osg::Vec3d& delta_pos )
 void QOsgViewer::startCapture( const std::string& filename )
 {
 	// create capture handler
-	log::info( "Started capturing video to ", filename );
+	flut::log::info( "Started capturing video to ", filename );
 	capture_handler = new osgViewer::ScreenCaptureHandler( 
 		new osgViewer::ScreenCaptureHandler::WriteToFile( filename, "png", osgViewer::ScreenCaptureHandler::WriteToFile::SEQUENTIAL_NUMBER ), -1 );
 	viewer->addEventHandler( capture_handler );
@@ -128,7 +125,7 @@ void QOsgViewer::stopCapture()
 {
 	if ( capture_handler )
 	{
-		log::info( "Video capture stopped" );
+		flut::log::info( "Video capture stopped" );
 		capture_handler->stopCapture();
 		capture_handler = nullptr;
 	}

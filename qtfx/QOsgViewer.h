@@ -26,6 +26,7 @@ public:
 	bool isCapturing() { return capture_handler != nullptr; }
 	void startTimer() { _timer.start( 10 ); }
 	void stopTimer() { _timer.stop(); }
+	vis::osg_camera_man& getCameraMan() { return *camera_man; }
 
 protected:
 	size_t frame_count;
