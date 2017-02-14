@@ -8,6 +8,8 @@ QPlayControl::QPlayControl( QWidget *parent /*= 0 */ ) :
 currentTime( 0.0 ),
 skipTime( 0.01 ),
 slomoFactor( 1.0 ),
+minTime( 0.0 ),
+maxTime( 1.0 ),
 loop( false )
 {
 	playButton = new QToolButton( this );
@@ -36,7 +38,10 @@ loop( false )
 	label->setFrameStyle( QFrame::Box );
 	label->setSegmentStyle( QLCDNumber::Flat );
 	label->display( "0.00" );
+
 	slider = new QSlider( Qt::Horizontal, this );
+	slider->setSingleStep( 10 );
+	slider->setPageStep( 100 );
 	connect( slider, SIGNAL( valueChanged( int ) ), this, SLOT( updateSlider( int ) ) );
 
 	slowMotionBox = new QComboBox( this );
@@ -65,17 +70,29 @@ loop( false )
 
 void QPlayControl::setRange( double min, double max )
 {
-	slider->setRange( static_cast< int >( 1000 * min + 0.5 ), static_cast< int >( 1000 * max + 0.5 ) );
+	minTime = min;
+	maxTime = max;
+	slider->setRange( static_cast< int >( 1000 * minTime + 0.5 ), static_cast< int >( 1000 * maxTime + 0.5 ) );
 }
 
 void QPlayControl::setTime( double time )
 {
 	currentTime = time;
 
-	slider->blockSignals( true );
-	slider->setValue( int( currentTime * 1000 ) );
-	slider->blockSignals( false );
+	if ( currentTime > maxTime )
+	{
+		if ( getLoop() )
+		{
+			currentTime = minTime;
+		}
+		else
+		{
+			currentTime = maxTime;
+			stop();
+		}
+	}
 
+	slider->setValue( int( currentTime * 1000 ) );
 	label->display( QString().sprintf( "%.2f", currentTime ) );
 	
 	emit timeChanged( currentTime );

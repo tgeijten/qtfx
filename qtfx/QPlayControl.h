@@ -18,10 +18,9 @@ class QPlayControl : public QWidget
 
 public:
 	QPlayControl( QWidget *parent = 0 );
-	float slowMotion() const;
+	double slowMotionFactor() const { return slomoFactor; }
 
 	void setRange( double min, double max );
-	void setPlaying( bool play );
 	void setTime( double time );
 	bool getLoop();
 
@@ -60,6 +59,7 @@ private:
 	double currentTime;
 	double skipTime;
 	double slomoFactor;
+	double minTime, maxTime;
 	bool loop;
 
 	QTimer qtimer;
