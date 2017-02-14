@@ -111,6 +111,9 @@ void QPlayControl::stop()
 
 void QPlayControl::reset()
 {
+	if ( qtimer.isActive() )
+		qtimer.stop();
+
 	setTime( 0 );
 	emit resetTriggered();
 }
