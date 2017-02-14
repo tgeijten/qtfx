@@ -7,8 +7,6 @@
 #include "flut/string_tools.hpp"
 #include "scone/core/system_tools.h"
 
-using namespace scone;
-
 QCodeEditor::QCodeEditor( QWidget* parent ) :
 QWidget( parent ),
 textChangedFlag( false )
@@ -96,4 +94,169 @@ void QCodeEditor::textEditChanged()
 		textChangedFlag = true;
 		emit textChanged();
 	}
+}
+
+//
+// BasicXMLSyntaxHighlighter
+//
+
+BasicXMLSyntaxHighlighter::BasicXMLSyntaxHighlighter( QObject * parent ) : QSyntaxHighlighter( parent )
+{
+	setRegexes();
+	setFormats();
+}
+
+BasicXMLSyntaxHighlighter::BasicXMLSyntaxHighlighter( QTextDocument * parent ) :
+	QSyntaxHighlighter( parent )
+{
+	setRegexes();
+	setFormats();
+}
+
+BasicXMLSyntaxHighlighter::BasicXMLSyntaxHighlighter( QTextEdit * parent ) :
+	QSyntaxHighlighter( parent )
+{
+	setRegexes();
+	setFormats();
+}
+
+void BasicXMLSyntaxHighlighter::highlightBlock( const QString & text )
+{
+	// Special treatment for xml element regex as we use captured text to emulate lookbehind
+	int xmlElementIndex = m_xmlElementRegex.indexIn( text );
+	while ( xmlElementIndex >= 0 )
+	{
+		int matchedPos = m_xmlElementRegex.pos( 1 );
+		int matchedLength = m_xmlElementRegex.cap( 1 ).length();
+		setFormat( matchedPos, matchedLength, m_xmlElementFormat );
+
+		xmlElementIndex = m_xmlElementRegex.indexIn( text, matchedPos + matchedLength );
+	}
+
+	// Highlight xml keywords *after* xml elements to fix any occasional / captured into the enclosing element
+	typedef QList<QRegExp>::const_iterator Iter;
+	Iter xmlKeywordRegexesEnd = m_xmlKeywordRegexes.end();
+	for ( Iter it = m_xmlKeywordRegexes.begin(); it != xmlKeywordRegexesEnd; ++it ) {
+		const QRegExp & regex = *it;
+		highlightByRegex( m_xmlKeywordFormat, regex, text );
+	}
+
+	highlightByRegex( m_xmlAttributeFormat, m_xmlAttributeRegex, text );
+	highlightByRegex( m_xmlValueFormat, m_xmlValueRegex, text );
+	highlightByRegex( m_xmlCommentFormat, m_xmlCommentRegex, text );
+}
+
+void BasicXMLSyntaxHighlighter::highlightByRegex( const QTextCharFormat & format, const QRegExp & regex, const QString & text )
+{
+	int index = regex.indexIn( text );
+
+	while ( index >= 0 )
+	{
+		int matchedLength = regex.matchedLength();
+		setFormat( index, matchedLength, format );
+
+		index = regex.indexIn( text, index + matchedLength );
+	}
+}
+
+void BasicXMLSyntaxHighlighter::setRegexes()
+{
+	m_xmlElementRegex.setPattern( "<[\\s]*[/]?[\\s]*([^\\n]\\w*)(?=[\\s/>])" );
+	m_xmlAttributeRegex.setPattern( "\\w+(?=\\=)" );
+	m_xmlValueRegex.setPattern( "\"[^\\n\"]+\"(?=[\\s/>])" );
+	m_xmlCommentRegex.setPattern( "<!--[^\\n]*-->" );
+
+	m_xmlKeywordRegexes = QList<QRegExp>() << QRegExp( "<\\?" ) << QRegExp( "/>" )
+		<< QRegExp( ">" ) << QRegExp( "<" ) << QRegExp( "</" )
+		<< QRegExp( "\\?>" );
+}
+
+void BasicXMLSyntaxHighlighter::setFormats()
+{
+	m_xmlKeywordFormat.setForeground( Qt::black );
+	m_xmlKeywordFormat.setFontWeight( QFont::Bold );
+	m_xmlElementFormat.setForeground( Qt::blue );
+	//m_xmlElementFormat.setFontWeight( QFont::Bold );
+	m_xmlAttributeFormat.setForeground( Qt::darkCyan );
+	//m_xmlAttributeFormat.setFontWeight( QFont::Bold );
+	//m_xmlAttributeFormat.setFontItalic( true );
+	m_xmlValueFormat.setForeground( Qt::darkRed );
+	m_xmlCommentFormat.setForeground( Qt::darkGreen );
+	m_xmlCommentFormat.setFontItalic( true );
+}
+
+//
+// QCodeTextEdit
+//
+
+QCodeTextEdit::QCodeTextEdit( QWidget* parent ) : QPlainTextEdit( parent )
+{
+	lineNumberArea = new LineNumberArea( this );
+
+	connect( this, SIGNAL( blockCountChanged( int ) ), this, SLOT( updateLineNumberAreaWidth( int ) ) );
+	connect( this, SIGNAL( updateRequest( QRect, int ) ), this, SLOT( updateLineNumberArea( QRect, int ) ) );
+
+	updateLineNumberAreaWidth( 0 );
+}
+
+void QCodeTextEdit::lineNumberAreaPaintEvent( QPaintEvent *event )
+{
+	QPainter painter( lineNumberArea );
+	painter.fillRect( event->rect(), Qt::lightGray );
+
+	QTextBlock block = firstVisibleBlock();
+	int blockNumber = block.blockNumber();
+	int top = (int)blockBoundingGeometry( block ).translated( contentOffset() ).top();
+	int bottom = top + (int)blockBoundingRect( block ).height();
+
+	while ( block.isValid() && top <= event->rect().bottom() ) {
+		if ( block.isVisible() && bottom >= event->rect().top() ) {
+			QString number = QString::number( blockNumber + 1 );
+			painter.setPen( Qt::black );
+			painter.drawText( 0, top, lineNumberArea->width() - 2, fontMetrics().height(),
+				Qt::AlignRight, number );
+		}
+
+		block = block.next();
+		top = bottom;
+		bottom = top + (int)blockBoundingRect( block ).height();
+		++blockNumber;
+	}
+}
+
+int QCodeTextEdit::lineNumberAreaWidth()
+{
+	int digits = 1;
+	int max = qMax( 1, blockCount() );
+	while ( max >= 10 ) {
+		max /= 10;
+		++digits;
+	}
+
+	int space = 4 + fontMetrics().width( QLatin1Char( '9' ) ) * digits;
+
+	return space;
+}
+
+void QCodeTextEdit::updateLineNumberAreaWidth( int newBlockCount )
+{
+	setViewportMargins( lineNumberAreaWidth(), 0, 0, 0 );
+}
+
+void QCodeTextEdit::updateLineNumberArea( const QRect& rect, int dy )
+{
+	if ( dy )
+		lineNumberArea->scroll( 0, dy );
+	else
+		lineNumberArea->update( 0, rect.y(), lineNumberArea->width(), rect.height() );
+
+	if ( rect.contains( viewport()->rect() ) )
+		updateLineNumberAreaWidth( 0 );
+}
+
+void QCodeTextEdit::resizeEvent( QResizeEvent *event )
+{
+	QPlainTextEdit::resizeEvent( event );
+	QRect cr = contentsRect();
+	lineNumberArea->setGeometry( QRect( cr.left(), cr.top(), lineNumberAreaWidth(), cr.height() ) );
 }
