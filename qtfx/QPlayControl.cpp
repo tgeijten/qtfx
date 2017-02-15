@@ -10,7 +10,7 @@ skipTime( 0.01 ),
 slomoFactor( 1.0 ),
 minTime( 0.0 ),
 maxTime( 1.0 ),
-loop( false )
+autoExtendRange( false )
 {
 	playButton = new QToolButton( this );
 	playButton->setIcon( style()->standardIcon( QStyle::SP_MediaPlay ) );
@@ -81,12 +81,19 @@ void QPlayControl::setTime( double time )
 
 	if ( currentTime > maxTime )
 	{
-		if ( getLoop() )
+		if ( getAutoExtendRange() )
 		{
+			// adjust maximum
+			setRange( minTime, currentTime );
+		}
+		else if ( getLoop() )
+		{
+			// restart
 			currentTime = minTime;
 		}
 		else
 		{
+			// stop playing
 			currentTime = maxTime;
 			stop();
 		}
@@ -103,9 +110,9 @@ bool QPlayControl::getLoop()
 	return loopButton->isChecked();
 }
 
-void QPlayControl::setLoop( bool l )
+void QPlayControl::setLoop( bool b )
 {
-	loop = l;
+	loopButton->setChecked( b );
 }
 
 void QPlayControl::play()
@@ -131,8 +138,8 @@ void QPlayControl::reset()
 	if ( qtimer.isActive() )
 		qtimer.stop();
 
-	setTime( 0 );
 	emit resetTriggered();
+	setTime( 0 );
 }
 
 void QPlayControl::previous()

@@ -23,9 +23,11 @@ public:
 	void setRange( double min, double max );
 	void setTime( double time );
 	bool getLoop();
+	bool getAutoExtendRange() { return autoExtendRange;  }
 
 public slots:
-	void setLoop( bool loop );
+	void setLoop( bool b );
+	void setAutoExtendRange( bool b ) { autoExtendRange = b; }
 	void play();
 	void stop();
 	void reset();
@@ -60,7 +62,8 @@ private:
 	double skipTime;
 	double slomoFactor;
 	double minTime, maxTime;
-	bool loop;
+
+	bool autoExtendRange;
 
 	QTimer qtimer;
 	flut::timer timer;
