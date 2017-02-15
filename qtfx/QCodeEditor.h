@@ -1,16 +1,9 @@
 #pragma once
 
-#include "scone/core/core.h"
-#include "scone/core/String.h"
 #include <QWidget>
 #include <QFileInfo>
 #include <QSyntaxHighlighter>
 #include <QPlainTextEdit>
-//#include "BasicXMLSyntaxHighlighter/BasicXMLSyntaxHighlighter.h"
-//#include "QCodeTextEdit.h"
-
-using scone::String;
-class SconeStudio;
 
 class QCodeEditor : public QWidget
 {

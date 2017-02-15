@@ -2,6 +2,7 @@
 
 #include <QMainWindow>
 #include <QStringList>
+#include <QStatusBar>
 
 class QCompositeMainWindow : public QMainWindow
 {
@@ -40,5 +41,6 @@ protected:
 	QMenu* fileMenu;
 	QMenu* viewMenu;
 	QMenu* helpMenu;
+	QStatusBar* statusBar;
 	std::vector< QDockWidget* > dockWidgets;
 };

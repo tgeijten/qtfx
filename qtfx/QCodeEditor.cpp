@@ -1,11 +1,10 @@
 #include "QCodeEditor.h"
-#include "SconeStudio.h"
-#include "qt_tools.h"
 #include "flut/system_tools.hpp"
 #include "flut/system/assert.hpp"
-#include "scone/core/Log.h"
 #include "flut/string_tools.hpp"
-#include "scone/core/system_tools.h"
+#include <QTextStream>
+#include <QMessageBox>
+#include <QFileDialog>
 
 QCodeEditor::QCodeEditor( QWidget* parent ) :
 QWidget( parent ),
