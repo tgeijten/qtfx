@@ -1,6 +1,9 @@
 #include "QCompositeMainWindow.h"
+#include <QMainWindow>
+#include <QDockWidget>
+#include "QBoxLayout"
 
-QCompositeMainWindow::QCompositeMainWindow( QWidget* parent ) : QMainWindow( parent )
+QCompositeMainWindow::QCompositeMainWindow( QWidget* parent, Qt::WindowFlags flags ) : QMainWindow( parent, flags )
 {
 
 }
@@ -58,8 +61,21 @@ void QCompositeMainWindow::createHelpMenu()
 
 }
 
-QDockWidget* QCompositeMainWindow::createDockWidget( QWidget* parent, const QString& title )
+QDockWidget* QCompositeMainWindow::createDockWidget( const QString& title, QWidget* widget, Qt::DockWidgetArea area  )
 {
+	QWidget* layoutWidget = new QWidget();
+	QVBoxLayout* layout = new QVBoxLayout( layoutWidget );
+	layout->setSpacing( 1 );
+	layout->setContentsMargins( 1, 1, 1, 1 );
+	//layout->setObjectName( QStringLiteral( "verticalLayout" ) );
+	layout->addWidget( widget );
+
+	QDockWidget* d = new QDockWidget( title, this );
+	d->setWidget( layoutWidget );
+
+	addDockWidget( area, d );
+
+
 	return nullptr;
 }
 

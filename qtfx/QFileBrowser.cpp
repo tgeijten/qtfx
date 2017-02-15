@@ -1,6 +1,6 @@
 #include "QFileBrowser.h"
 
-QFileBrowser::QFileBrowser( QWidget* parent ) : QTreeView( parent )
+QFileBrowser::QFileBrowser( QWidget* parent, const QString& folder, const QString& filter ) : QTreeView( parent )
 {
 	fileModel = new QFileSystemModel( this );
 	setModel( fileModel );
@@ -9,9 +9,11 @@ QFileBrowser::QFileBrowser( QWidget* parent ) : QTreeView( parent )
 
 	connect( this, &QTreeView::activated, this, &QFileBrowser::activateItem );
 	connect( selectionModel(), &QItemSelectionModel::currentChanged, this, &QFileBrowser::selectItem );
+
+	setRoot( folder, filter );
 }
 
-void QFileBrowser::setFolder( const QString& folder, const QString& filter )
+void QFileBrowser::setRoot( const QString& folder, const QString& filter )
 {
 	QDir().mkdir( folder );
 	fileModel->setNameFilters( QStringList( filter ) );
@@ -20,10 +22,10 @@ void QFileBrowser::setFolder( const QString& folder, const QString& filter )
 
 void QFileBrowser::activateItem( const QModelIndex& idx )
 {
-	emit activated( fileModel->fileInfo( idx ) );
+	emit itemTriggered( fileModel->fileInfo( idx ).absoluteFilePath() );
 }
 
 void QFileBrowser::selectItem( const QModelIndex& a, const QModelIndex& b )
 {
-	emit selectionChanged( fileModel->fileInfo( a ), fileModel->fileInfo( b ) );
+	emit selectionChanged( fileModel->fileInfo( a ).absoluteFilePath(), fileModel->fileInfo( b ).absoluteFilePath() );
 }

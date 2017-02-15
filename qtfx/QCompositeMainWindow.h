@@ -9,11 +9,13 @@ class QCompositeMainWindow : public QMainWindow
 	Q_OBJECT
 
 public:
-	QCompositeMainWindow( QWidget* parent = nullptr );
+	QCompositeMainWindow( QWidget* parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags() );
 	virtual ~QCompositeMainWindow();
 
 	virtual void fileOpen( const QString& filename ) {}
 	virtual void fileSaveAs( const QString& filename ) {}
+
+	QDockWidget* createDockWidget( const QString& title, QWidget* widget, Qt::DockWidgetArea area );
 
 public slots:
 	virtual void fileOpen();
@@ -29,7 +31,6 @@ protected:
 	void createFileMenu( const QString& name = "File" );
 	void createViewMenu();
 	void createHelpMenu();
-	QDockWidget* createDockWidget( QWidget* parent, const QString& title );
 
 	void addRecentFile( const QString& file );
 
