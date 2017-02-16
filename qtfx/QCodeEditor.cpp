@@ -11,6 +11,7 @@ QWidget( parent ),
 textChangedFlag( false )
 {
 	QVBoxLayout* verticalLayout = new QVBoxLayout( this );
+	verticalLayout->setContentsMargins( 0, 0, 0, 0 );
 	setLayout( verticalLayout );
 	textEdit = new QCodeTextEdit( this );
 

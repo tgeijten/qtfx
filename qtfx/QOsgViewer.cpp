@@ -106,6 +106,11 @@ void QOsgViewer::setScene( osg::Node* s )
 		getView( i )->setSceneData( s );
 }
 
+void QOsgViewer::setClearColor( const osg::Vec4& col )
+{
+	viewer->getCamera()->setClearColor( col );
+}
+
 void QOsgViewer::moveCamera( const osg::Vec3d& delta_pos )
 {
 	camera_man->setCenter( camera_man->getCenter() + delta_pos );

@@ -20,6 +20,7 @@ public:
 	virtual void paintEvent( QPaintEvent* event ) override;
 
 	void setScene( osg::Node* s );
+	void setClearColor( const osg::Vec4& col );
 	void moveCamera( const osg::Vec3d& delta_pos );
 	void startCapture( const std::string& filename );
 	void stopCapture();

@@ -31,11 +31,11 @@ public slots:
 	void updateRecentFilesMenu( const QString& filename = "" );
 
 protected:
-	template< typename T >
-	QAction* addMenuAction( QMenu* menu, const QString& text, const QString& shortcut, QObject* funcObj, T func, bool separator = false ) {
+	template< typename T1, typename T2 >
+	QAction* addMenuAction( QMenu* menu, const QString& text, const QString& shortcut, T1* funcObj, T2 func, bool separator = false ) {
 		QAction* a = menu->addAction( text );
 		a->setShortcut( shortcut );
-		connect( a, &QAction::triggered, this, func );
+		connect( a, &QAction::triggered, funcObj, func );
 		if ( separator ) menu->addSeparator();
 		return a;
 	}

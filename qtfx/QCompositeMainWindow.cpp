@@ -17,8 +17,8 @@ viewMenu( nullptr )
 {
 	centralWidget = new QWidget( this );
 	QLayout* centralLayout = new QVBoxLayout( centralWidget );
-	centralLayout->setSpacing( 10 );
-	centralLayout->setContentsMargins( 10, 10, 10, 10 );
+	centralLayout->setSpacing( 0 );
+	centralLayout->setContentsMargins( 0, 0, 0, 0 );
 	setCentralWidget( centralWidget );
 }
 
@@ -118,8 +118,10 @@ void QCompositeMainWindow::createFileMenu( const QString& default_folder, const 
 {
 	fileMenu = acquireMenuBar()->addMenu( ( "&File" ) );
 
-	addMenuAction( fileMenu, "&Open", "Ctrl+O", this, &QCompositeMainWindow::fileOpenTriggered );
+	addMenuAction( fileMenu, "&Open...", "Ctrl+O", this, &QCompositeMainWindow::fileOpenTriggered );
 	recentFilesMenu = addMenuAction( fileMenu, "Open &Recent", "", this, &QCompositeMainWindow::fileOpenTriggered, true );
+	addMenuAction( fileMenu, "&Save", "Ctrl+S", this, &QCompositeMainWindow::fileSaveTriggered );
+	addMenuAction( fileMenu, "Save &As...", "Ctrl+Shift+S", this, &QCompositeMainWindow::fileSaveAsTriggered );
 	addMenuAction( fileMenu, "&Close", "Ctrl+F4", this, &QCompositeMainWindow::fileCloseTriggered, true );
 	addMenuAction( fileMenu, "E&xit", "Alt+X", this, &QCompositeMainWindow::fileCloseTriggered );
 
