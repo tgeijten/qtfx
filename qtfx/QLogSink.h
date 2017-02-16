@@ -4,7 +4,7 @@
 #include "flut/system/log_sink.hpp"
 #include "flut/system/types.hpp"
 
-class QLogSink : public QPlainTextEdit, flut::log::sink
+class QLogSink : public QPlainTextEdit, public flut::log::sink
 {
 public:
 	QLogSink( QWidget* parent = 0, flut::log::level level = flut::log::info_level );
