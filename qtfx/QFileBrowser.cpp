@@ -10,7 +10,8 @@ QFileBrowser::QFileBrowser( QWidget* parent, const QString& folder, const QStrin
 	connect( this, &QTreeView::activated, this, &QFileBrowser::activateItem );
 	connect( selectionModel(), &QItemSelectionModel::currentChanged, this, &QFileBrowser::selectItem );
 
-	setRoot( folder, filter );
+	if ( !folder.isEmpty() )
+		setRoot( folder, filter );
 }
 
 void QFileBrowser::setRoot( const QString& folder, const QString& filter )
