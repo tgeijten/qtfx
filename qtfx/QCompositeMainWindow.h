@@ -12,22 +12,34 @@ public:
 	QCompositeMainWindow( QWidget* parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags() );
 	virtual ~QCompositeMainWindow();
 
-	virtual void fileOpen( const QString& filename ) {}
-	virtual void fileSaveAs( const QString& filename ) {}
+	virtual void openFile( const QString& filename ) {}
+	virtual void saveFileAs( const QString& filename ) {}
 
 	QDockWidget* createDockWidget( const QString& title, QWidget* widget, Qt::DockWidgetArea area );
 
 public slots:
-	virtual void fileOpen();
-	virtual void fileOpenRecent();
-	virtual void fileClose();
-	virtual void fileSave();
-	virtual void fileSaveAs();
-	virtual void fileExit();
+	virtual void fileOpenTriggered();
+	virtual void fileOpenRecentTriggered();
+	virtual void fileCloseTriggered();
+	virtual void fileSaveTriggered();
+	virtual void fileSaveAsTriggered();
+	virtual void fileExitTriggered();
+	virtual void viewMenuTriggered();
 
 	void updateViewMenu();
 
 protected:
+	template< typename T >
+	QAction* addMenuAction( QMenu* menu, const QString& text, const QString& shortcut, QObject* funcObj, T func, bool separator = false ) {
+		QAction* a = menu->addAction( text );
+		a->setShortcut( shortcut );
+		connect( a, &QAction::triggered, this, func );
+		if ( separator ) menu->addSeparator();
+		return a;
+	}
+
+	QMenuBar* acquireMenuBar();
+	QStatusBar* createStatusBar();
 	void createFileMenu( const QString& name = "File" );
 	void createViewMenu();
 	void createHelpMenu();
@@ -37,11 +49,12 @@ protected:
 	void restoreSettings();
 	void saveSettings();
 
-	QStringList recentFiles;
+	QWidget* centralWidget;
 	QMenuBar* menuBar;
 	QMenu* fileMenu;
 	QMenu* viewMenu;
 	QMenu* helpMenu;
 	QStatusBar* statusBar;
 	std::vector< QDockWidget* > dockWidgets;
+	QStringList recentFiles;
 };

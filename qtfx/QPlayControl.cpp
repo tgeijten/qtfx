@@ -52,18 +52,18 @@ autoExtendRange( false )
 	slowMotionBox->setCurrentIndex( 0 );
 	connect( slowMotionBox, SIGNAL( activated( int ) ), SLOT( updateSlowMotion( int ) ) );
 
-	QBoxLayout *layout = new QHBoxLayout;
-	layout->setMargin( 0 );
-	layout->setSpacing( 2 );
-	layout->addWidget( previousButton );
-	layout->addWidget( playButton );
-	layout->addWidget( stopButton );
-	layout->addWidget( nextButton );
-	layout->addWidget( label );
-	layout->addWidget( slider );
-	layout->addWidget( loopButton );
-	layout->addWidget( slowMotionBox );
-	setLayout( layout );
+	QBoxLayout *lo = new QHBoxLayout;
+	lo->setMargin( 0 );
+	lo->setSpacing( 2 );
+	lo->addWidget( previousButton );
+	lo->addWidget( playButton );
+	lo->addWidget( stopButton );
+	lo->addWidget( nextButton );
+	lo->addWidget( label );
+	lo->addWidget( slider );
+	lo->addWidget( loopButton );
+	lo->addWidget( slowMotionBox );
+	setLayout( lo );
 
 	connect( &qtimer, SIGNAL( timeout() ), this, SLOT( timeout() ) );
 }
