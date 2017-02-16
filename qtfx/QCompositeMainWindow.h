@@ -12,8 +12,9 @@ public:
 	QCompositeMainWindow( QWidget* parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags() );
 	virtual ~QCompositeMainWindow();
 
-	virtual void openFile( const QString& filename ) {}
-	virtual void saveFileAs( const QString& filename ) {}
+	virtual void openFile( const QString& filename ) { }
+	virtual void saveFile() { }
+	virtual void saveFileAs( const QString& filename ) { }
 
 	QDockWidget* createDockWidget( const QString& title, QWidget* widget, Qt::DockWidgetArea area );
 
@@ -27,6 +28,7 @@ public slots:
 	virtual void viewMenuTriggered();
 
 	void updateViewMenu();
+	void updateRecentFilesMenu( const QString& filename = "" );
 
 protected:
 	template< typename T >
@@ -38,13 +40,17 @@ protected:
 		return a;
 	}
 
+	void setActiveFile( const QString& filename ) { activeFile = filename; }
+
 	QMenuBar* acquireMenuBar();
 	QStatusBar* createStatusBar();
-	void createFileMenu( const QString& name = "File" );
+	void createFileMenu( const QString& default_folder, const QString& file_types );
+	QString fileFolder;
+	QString fileTypes;
+	QString activeFile;
+
 	void createViewMenu();
 	void createHelpMenu();
-
-	void addRecentFile( const QString& file );
 
 	void restoreSettings();
 	void saveSettings();
@@ -52,6 +58,7 @@ protected:
 	QWidget* centralWidget;
 	QMenuBar* menuBar;
 	QMenu* fileMenu;
+	QAction* recentFilesMenu;
 	QMenu* viewMenu;
 	QMenu* helpMenu;
 	QStatusBar* statusBar;

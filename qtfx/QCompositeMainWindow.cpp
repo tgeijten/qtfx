@@ -4,6 +4,7 @@
 #include "QBoxLayout"
 #include "QMenuBar"
 #include <iostream>
+#include "QFileDialog"
 
 using std::cout;
 using std::endl;
@@ -26,11 +27,17 @@ QCompositeMainWindow::~QCompositeMainWindow()
 
 void QCompositeMainWindow::fileOpenTriggered()
 {
+	QString filename = QFileDialog::getOpenFileName( this, "Open File", fileFolder, fileTypes );
+	if ( !filename.isEmpty() )
+	{
+		openFile( filename );
+		updateRecentFilesMenu( filename );
+	}
 }
 
 void QCompositeMainWindow::fileOpenRecentTriggered()
 {
-
+	openFile( qobject_cast< QAction* >( sender() )->text() );
 }
 
 void QCompositeMainWindow::fileCloseTriggered()
@@ -40,12 +47,18 @@ void QCompositeMainWindow::fileCloseTriggered()
 
 void QCompositeMainWindow::fileSaveTriggered()
 {
-
+	updateRecentFilesMenu( activeFile );
+	saveFile();
 }
 
 void QCompositeMainWindow::fileSaveAsTriggered()
 {
-
+	QString filename = QFileDialog::getSaveFileName( this, "Save File", fileFolder, fileTypes );
+	if ( !filename.isEmpty() )
+	{
+		saveFileAs( filename );
+		updateRecentFilesMenu( filename );
+	}
 }
 
 void QCompositeMainWindow::fileExitTriggered()
@@ -61,6 +74,27 @@ void QCompositeMainWindow::viewMenuTriggered()
 void QCompositeMainWindow::updateViewMenu()
 {
 
+}
+
+void QCompositeMainWindow::updateRecentFilesMenu( const QString& filename )
+{
+	// add to list (if any)
+	if ( !filename.isEmpty() )
+	{
+		recentFiles.push_front( filename );
+		recentFiles.removeDuplicates();
+		while ( recentFiles.size() > 10 )
+			recentFiles.removeLast();
+	}
+
+	// init recent files menu
+	QMenu* recent_menu = new QMenu();
+	for ( int idx = 0; idx < recentFiles.size(); ++idx )
+	{
+		QAction* act = recent_menu->addAction( recentFiles[ idx ] );
+		connect( act, SIGNAL( triggered() ), this, SLOT( fileOpenRecentTriggered() ) );
+	}
+	recentFilesMenu->setMenu( recent_menu );
 }
 
 QMenuBar* QCompositeMainWindow::acquireMenuBar()
@@ -80,13 +114,17 @@ QStatusBar* QCompositeMainWindow::createStatusBar()
 	return statusBar;
 }
 
-void QCompositeMainWindow::createFileMenu( const QString& name )
+void QCompositeMainWindow::createFileMenu( const QString& default_folder, const QString& file_types )
 {
 	fileMenu = acquireMenuBar()->addMenu( ( "&File" ) );
 
 	addMenuAction( fileMenu, "&Open", "Ctrl+O", this, &QCompositeMainWindow::fileOpenTriggered );
+	recentFilesMenu = addMenuAction( fileMenu, "Open &Recent", "", this, &QCompositeMainWindow::fileOpenTriggered, true );
 	addMenuAction( fileMenu, "&Close", "Ctrl+F4", this, &QCompositeMainWindow::fileCloseTriggered, true );
 	addMenuAction( fileMenu, "E&xit", "Alt+X", this, &QCompositeMainWindow::fileCloseTriggered );
+
+	fileFolder = default_folder;
+	fileTypes = file_types;
 }
 
 void QCompositeMainWindow::createViewMenu()
@@ -96,7 +134,6 @@ void QCompositeMainWindow::createViewMenu()
 
 void QCompositeMainWindow::createHelpMenu()
 {
-
 }
 
 QDockWidget* QCompositeMainWindow::createDockWidget( const QString& title, QWidget* widget, Qt::DockWidgetArea area  )
@@ -116,13 +153,7 @@ QDockWidget* QCompositeMainWindow::createDockWidget( const QString& title, QWidg
 	if ( viewMenu )
 		addMenuAction( viewMenu, title, "", this, &QCompositeMainWindow::viewMenuTriggered )->setCheckable( true );
 
-
 	return nullptr;
-}
-
-void QCompositeMainWindow::addRecentFile( const QString& file )
-{
-
 }
 
 void QCompositeMainWindow::restoreSettings()
