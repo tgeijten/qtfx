@@ -3,6 +3,7 @@
 #include <QMainWindow>
 #include <QStringList>
 #include <QStatusBar>
+#include <QSettings>
 
 class QCompositeMainWindow : public QMainWindow
 {
@@ -40,6 +41,8 @@ protected:
 		return a;
 	}
 
+	virtual bool canClose() { return true; }
+
 	void setActiveFile( const QString& filename ) { activeFile = filename; }
 
 	QMenuBar* acquireMenuBar();
@@ -52,8 +55,10 @@ protected:
 	void createViewMenu();
 	void createHelpMenu();
 
-	void restoreSettings();
+	void useSettings( const QString& company, const QString& app );
 	void saveSettings();
+
+	virtual void closeEvent( QCloseEvent *event ) override;
 
 	QWidget* centralWidget;
 	QMenuBar* menuBar;
@@ -64,4 +69,5 @@ protected:
 	QStatusBar* statusBar;
 	std::vector< QDockWidget* > dockWidgets;
 	QStringList recentFiles;
+	QSettings* settings;
 };

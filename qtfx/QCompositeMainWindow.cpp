@@ -1,10 +1,13 @@
 #include "QCompositeMainWindow.h"
+
 #include <QMainWindow>
 #include <QDockWidget>
-#include "QBoxLayout"
-#include "QMenuBar"
+#include <QBoxLayout>
+#include <QMenuBar>
 #include <iostream>
-#include "QFileDialog"
+#include <QFileDialog>
+#include <QSettings>
+#include "qevent.h"
 
 using std::cout;
 using std::endl;
@@ -13,7 +16,8 @@ QCompositeMainWindow::QCompositeMainWindow( QWidget* parent, Qt::WindowFlags fla
 QMainWindow( parent, flags ),
 menuBar( nullptr ),
 fileMenu( nullptr ),
-viewMenu( nullptr )
+viewMenu( nullptr ),
+settings( nullptr )
 {
 	centralWidget = new QWidget( this );
 	QLayout* centralLayout = new QVBoxLayout( centralWidget );
@@ -23,7 +27,10 @@ viewMenu( nullptr )
 }
 
 QCompositeMainWindow::~QCompositeMainWindow()
-{}
+{
+	if ( settings )
+		delete settings;
+}
 
 void QCompositeMainWindow::fileOpenTriggered()
 {
@@ -42,7 +49,6 @@ void QCompositeMainWindow::fileOpenRecentTriggered()
 
 void QCompositeMainWindow::fileCloseTriggered()
 {
-
 }
 
 void QCompositeMainWindow::fileSaveTriggered()
@@ -147,6 +153,7 @@ QDockWidget* QCompositeMainWindow::createDockWidget( const QString& title, QWidg
 	layout->addWidget( widget );
 
 	QDockWidget* d = new QDockWidget( title, this );
+	d->setObjectName( title );
 	d->setWidget( layoutWidget );
 
 	addDockWidget( area, d );
@@ -158,12 +165,36 @@ QDockWidget* QCompositeMainWindow::createDockWidget( const QString& title, QWidg
 	return nullptr;
 }
 
-void QCompositeMainWindow::restoreSettings()
+void QCompositeMainWindow::useSettings( const QString& company, const QString& app )
 {
+	if ( settings )
+		delete settings;
 
+	settings = new QSettings( company, app );
+
+	restoreGeometry( settings->value( "geometry" ).toByteArray() );
+	restoreState( settings->value( "windowState" ).toByteArray() );
+	recentFiles = settings->value( "recentFiles" ).toStringList();
+
+	updateRecentFilesMenu();
+	updateViewMenu();
 }
 
 void QCompositeMainWindow::saveSettings()
 {
+	settings->setValue( "geometry", saveGeometry() );
+	settings->setValue( "windowState", saveState() );
+	settings->setValue( "recentFiles", recentFiles );
+}
 
+void QCompositeMainWindow::closeEvent( QCloseEvent *event )
+{
+	if ( canClose() )
+	{
+		if ( settings )
+			saveSettings();
+
+		event->accept();
+	}
+	else event->ignore();
 }
