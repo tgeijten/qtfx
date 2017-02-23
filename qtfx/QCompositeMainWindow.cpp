@@ -124,12 +124,12 @@ void QCompositeMainWindow::createFileMenu( const QString& default_folder, const 
 {
 	fileMenu = acquireMenuBar()->addMenu( ( "&File" ) );
 
-	addMenuAction( fileMenu, "&Open...", "Ctrl+O", this, &QCompositeMainWindow::fileOpenTriggered );
-	recentFilesMenu = addMenuAction( fileMenu, "Open &Recent", "", this, &QCompositeMainWindow::fileOpenTriggered, true );
-	addMenuAction( fileMenu, "&Save", "Ctrl+S", this, &QCompositeMainWindow::fileSaveTriggered );
-	addMenuAction( fileMenu, "Save &As...", "Ctrl+Shift+S", this, &QCompositeMainWindow::fileSaveAsTriggered );
-	addMenuAction( fileMenu, "&Close", "Ctrl+F4", this, &QCompositeMainWindow::fileCloseTriggered, true );
-	addMenuAction( fileMenu, "E&xit", "Alt+X", this, &QCompositeMainWindow::fileCloseTriggered );
+	addMenuAction( fileMenu, "&Open...", this, &QCompositeMainWindow::fileOpenTriggered, QKeySequence( "Ctrl+O" ) );
+	recentFilesMenu = addMenuAction( fileMenu, "Open &Recent", this, &QCompositeMainWindow::fileOpenTriggered, QKeySequence(), true );
+	addMenuAction( fileMenu, "&Save", this, &QCompositeMainWindow::fileSaveTriggered, QKeySequence( "Ctrl+S" ) );
+	addMenuAction( fileMenu, "Save &As...", this, &QCompositeMainWindow::fileSaveAsTriggered, QKeySequence( "Ctrl+Shift+S" ) );
+	addMenuAction( fileMenu, "&Close", this, &QCompositeMainWindow::fileCloseTriggered, QKeySequence( "Ctrl+F4" ), true );
+	addMenuAction( fileMenu, "E&xit", this, &QCompositeMainWindow::fileCloseTriggered, QKeySequence( "Alt+X" ) );
 
 	fileFolder = default_folder;
 	fileTypes = file_types;
@@ -160,7 +160,7 @@ QDockWidget* QCompositeMainWindow::createDockWidget( const QString& title, QWidg
 
 	// add to view menu
 	if ( viewMenu )
-		addMenuAction( viewMenu, title, "", this, &QCompositeMainWindow::viewMenuTriggered )->setCheckable( true );
+		addMenuAction( viewMenu, title, this, &QCompositeMainWindow::viewMenuTriggered )->setCheckable( true );
 
 	return nullptr;
 }

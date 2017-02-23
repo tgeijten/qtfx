@@ -110,6 +110,11 @@ bool QPlayControl::getLoop()
 	return loopButton->isChecked();
 }
 
+bool QPlayControl::isPlaying()
+{
+	return qtimer.isActive();
+}
+
 void QPlayControl::setLoop( bool b )
 {
 	loopButton->setChecked( b );
@@ -131,6 +136,13 @@ void QPlayControl::stop()
 		emit stopTriggered();
 	}
 	else reset();
+}
+
+void QPlayControl::toggle()
+{
+	if ( isPlaying() )
+		stop();
+	else play();
 }
 
 void QPlayControl::reset()

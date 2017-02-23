@@ -33,7 +33,7 @@ public slots:
 
 protected:
 	template< typename T1, typename T2 >
-	QAction* addMenuAction( QMenu* menu, const QString& text, const QString& shortcut, T1* funcObj, T2 func, bool separator = false ) {
+	QAction* addMenuAction( QMenu* menu, const QString& text, T1* funcObj, T2 func, const QKeySequence& shortcut = QKeySequence(), bool separator = false ) {
 		QAction* a = menu->addAction( text );
 		a->setShortcut( shortcut );
 		connect( a, &QAction::triggered, funcObj, func );

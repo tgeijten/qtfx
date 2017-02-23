@@ -24,12 +24,14 @@ public:
 	void setTime( double time );
 	bool getLoop();
 	bool getAutoExtendRange() { return autoExtendRange;  }
+	bool isPlaying();
 
 public slots:
 	void setLoop( bool b );
 	void setAutoExtendRange( bool b ) { autoExtendRange = b; }
 	void play();
 	void stop();
+	void toggle();
 	void reset();
 	void previous();
 	void next();
