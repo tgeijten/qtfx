@@ -1,4 +1,6 @@
 #include "QFileBrowser.h"
+#include "QTreeView"
+#include "QHeaderView"
 
 QFileBrowser::QFileBrowser( QWidget* parent, const QString& folder, const QString& filter ) : QTreeView( parent )
 {
@@ -44,4 +46,9 @@ void QFileBrowser::activateItem( const QModelIndex& idx )
 void QFileBrowser::selectItem( const QModelIndex& a, const QModelIndex& b )
 {
 	emit selectionChanged( fileModel->fileInfo( a ).absoluteFilePath(), fileModel->fileInfo( b ).absoluteFilePath() );
+}
+
+void QFileBrowser::resizeEvent( QResizeEvent *event )
+{
+	QTreeView::resizeEvent( event );
 }
