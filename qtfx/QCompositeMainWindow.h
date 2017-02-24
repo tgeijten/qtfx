@@ -55,7 +55,10 @@ protected:
 	void createViewMenu();
 	void createHelpMenu();
 
-	void useSettings( const QString& company, const QString& app );
+	virtual void restoreCurstomSettings( QSettings& settings ) {}
+	virtual void saveCustomSettings( QSettings& settings ) {}
+
+	void restoreSettings( const QString& company, const QString& app );
 	void saveSettings();
 
 	virtual void closeEvent( QCloseEvent *event ) override;

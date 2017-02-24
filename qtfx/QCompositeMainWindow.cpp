@@ -165,7 +165,7 @@ QDockWidget* QCompositeMainWindow::createDockWidget( const QString& title, QWidg
 	return nullptr;
 }
 
-void QCompositeMainWindow::useSettings( const QString& company, const QString& app )
+void QCompositeMainWindow::restoreSettings( const QString& company, const QString& app )
 {
 	if ( settings )
 		delete settings;
@@ -175,9 +175,10 @@ void QCompositeMainWindow::useSettings( const QString& company, const QString& a
 	restoreGeometry( settings->value( "geometry" ).toByteArray() );
 	restoreState( settings->value( "windowState" ).toByteArray() );
 	recentFiles = settings->value( "recentFiles" ).toStringList();
-
 	updateRecentFilesMenu();
 	updateViewMenu();
+
+	restoreCurstomSettings( *settings );
 }
 
 void QCompositeMainWindow::saveSettings()
@@ -185,6 +186,7 @@ void QCompositeMainWindow::saveSettings()
 	settings->setValue( "geometry", saveGeometry() );
 	settings->setValue( "windowState", saveState() );
 	settings->setValue( "recentFiles", recentFiles );
+	saveCustomSettings( *settings );
 }
 
 void QCompositeMainWindow::closeEvent( QCloseEvent *event )

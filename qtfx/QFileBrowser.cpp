@@ -19,6 +19,8 @@ QFileBrowser::QFileBrowser( QWidget* parent, QFileSystemModel* model, const QStr
 	fileModel = model;
 	model->setParent( this );
 	setModel( model );
+	for ( int i = 1; i <= 3; ++i )
+		hideColumn( i );
 
 	connect( this, &QTreeView::activated, this, &QFileBrowser::activateItem );
 	connect( selectionModel(), &QItemSelectionModel::currentChanged, this, &QFileBrowser::selectItem );

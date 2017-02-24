@@ -10,7 +10,7 @@ class QFileBrowser : public QTreeView
 
 public:
 	QFileBrowser( QWidget* parent, const QString& folder = "", const QString& filter = "*.*" );
-	QFileBrowser( QWidget* parent, QFileSystemModel* model, const QString& folder, const QString& filter );
+	QFileBrowser( QWidget* parent, QFileSystemModel* model, const QString& folder = "", const QString& filter = "*.*" );
 
 	void setRoot( const QString& folder, const QString& filter = "*.*" );
 	virtual ~QFileBrowser() {}
