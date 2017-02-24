@@ -14,6 +14,19 @@ QFileBrowser::QFileBrowser( QWidget* parent, const QString& folder, const QStrin
 		setRoot( folder, filter );
 }
 
+QFileBrowser::QFileBrowser( QWidget* parent, QFileSystemModel* model, const QString& folder, const QString& filter  )
+{
+	fileModel = model;
+	model->setParent( this );
+	setModel( model );
+
+	connect( this, &QTreeView::activated, this, &QFileBrowser::activateItem );
+	connect( selectionModel(), &QItemSelectionModel::currentChanged, this, &QFileBrowser::selectItem );
+
+	if ( !folder.isEmpty() )
+		setRoot( folder, filter );
+}
+
 void QFileBrowser::setRoot( const QString& folder, const QString& filter )
 {
 	QDir().mkdir( folder );
