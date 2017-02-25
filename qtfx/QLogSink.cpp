@@ -12,6 +12,7 @@ enabled_( true )
 
 void QLogSink::send_log_message( flut::log::level l, const flut::string& msg )
 {
+	// TODO: make thread-safe
 	if ( !enabled() )
 		return;
 
