@@ -6,13 +6,41 @@
 QLogSink::QLogSink( QWidget* parent, flut::log::level level ) :
 QPlainTextEdit( parent ),
 sink( level ),
-enabled_( true )
+enabled_( true ),
+buffer_mutex_( QMutex::NonRecursive )
 {
+	qt_thread_id_ = QThread::currentThreadId();
+	connect( &update_timer_, &QTimer::timeout, this, &QLogSink::update );
+	update_timer_.setInterval( 1000 );
+	update_timer_.start();
 }
 
 void QLogSink::send_log_message( flut::log::level l, const flut::string& msg )
 {
-	// TODO: make thread-safe
+	if ( QThread::currentThreadId() != qt_thread_id_ )
+	{
+		// accessed from a different thread, add to buffer and wait for update
+		buffer_mutex_.lock();
+		buffer_data_.push_back( std::make_pair( l, msg ) );
+		buffer_mutex_.unlock();
+		
+	}
+	else append_message( l, msg );
+}
+
+void QLogSink::update()
+{
+	flut_assert( QThread::currentThreadId() == qt_thread_id_ );
+
+	buffer_mutex_.lock();
+	for ( auto& e : buffer_data_ )
+		append_message( e.first, e.second );
+	buffer_data_.clear();
+	buffer_mutex_.unlock();
+}
+
+void QLogSink::append_message( flut::log::level l, const flut::string& msg )
+{
 	if ( !enabled() )
 		return;
 
