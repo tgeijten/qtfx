@@ -45,11 +45,12 @@ autoExtendRange( false )
 	connect( slider, SIGNAL( valueChanged( int ) ), this, SLOT( updateSlider( int ) ) );
 
 	slowMotionBox = new QComboBox( this );
-	slowMotionBox->addItem( "1 x", QVariant( 1 ) );
-	slowMotionBox->addItem( "1/2 x", QVariant( 2 ) );
-	slowMotionBox->addItem( "1/4 x", QVariant( 4 ) );
-	slowMotionBox->addItem( "1/8 x", QVariant( 8 ) );
-	slowMotionBox->setCurrentIndex( 0 );
+	for ( int slomo = 3; slomo >= -6; --slomo )
+	{
+		QString label = slomo >= 0 ? QString().sprintf( "%d x", (int)pow( 2, slomo ) ) : QString().sprintf( "1/%d x", (int)pow( 2, -slomo ) );
+		slowMotionBox->addItem( label, QVariant( pow( 2, slomo ) ) );
+	}
+	slowMotionBox->setCurrentIndex( 3 );
 	connect( slowMotionBox, SIGNAL( activated( int ) ), SLOT( updateSlowMotion( int ) ) );
 
 	QBoxLayout *lo = new QHBoxLayout;
@@ -166,7 +167,7 @@ void QPlayControl::next()
 
 void QPlayControl::updateSlowMotion( int idx )
 {
-	slomoFactor = 1.0 / slowMotionBox->itemData( idx ).toDouble();
+	slomoFactor = slowMotionBox->itemData( idx ).toDouble();
 	emit slowMotionChanged( slowMotionBox->itemData( idx ).toInt() );
 }
 
