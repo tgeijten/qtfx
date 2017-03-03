@@ -44,7 +44,9 @@ void QCompositeMainWindow::fileOpenTriggered()
 
 void QCompositeMainWindow::fileOpenRecentTriggered()
 {
-	openFile( qobject_cast< QAction* >( sender() )->text() );
+	QString filename = qobject_cast<QAction*>( sender() )->text();
+	openFile( filename );
+	updateRecentFilesMenu( filename );
 }
 
 void QCompositeMainWindow::fileCloseTriggered()
