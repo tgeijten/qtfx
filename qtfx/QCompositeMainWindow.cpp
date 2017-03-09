@@ -16,7 +16,7 @@ QCompositeMainWindow::QCompositeMainWindow( QWidget* parent, Qt::WindowFlags fla
 QMainWindow( parent, flags ),
 menuBar( nullptr ),
 fileMenu( nullptr ),
-viewMenu( nullptr ),
+windowMenu( nullptr ),
 settings( nullptr )
 {
 	centralWidget = new QWidget( this );
@@ -74,9 +74,17 @@ void QCompositeMainWindow::fileExitTriggered()
 
 }
 
-void QCompositeMainWindow::viewMenuTriggered()
+void QCompositeMainWindow::windowMenuTriggered()
 {
-	cout << qobject_cast<QAction*>( sender() )->text().toStdString();
+	QString title = qobject_cast<QAction*>( sender() )->text().replace( "&", "" );
+	for ( auto* w : dockWidgets )
+	{
+		if ( w->windowTitle() == title )
+		{
+			w->show();
+			w->raise();
+		}
+	}
 }
 
 void QCompositeMainWindow::updateViewMenu()
@@ -137,9 +145,9 @@ void QCompositeMainWindow::createFileMenu( const QString& default_folder, const 
 	fileTypes = file_types;
 }
 
-void QCompositeMainWindow::createViewMenu()
+void QCompositeMainWindow::createWindowMenu()
 {
-	viewMenu = acquireMenuBar()->addMenu( ( "&View" ) );
+	windowMenu = acquireMenuBar()->addMenu( ( "&Window" ) );
 }
 
 void QCompositeMainWindow::createHelpMenu()
@@ -154,17 +162,20 @@ QDockWidget* QCompositeMainWindow::createDockWidget( const QString& title, QWidg
 	layout->setContentsMargins( 1, 1, 1, 1 );
 	layout->addWidget( widget );
 
-	QDockWidget* d = new QDockWidget( title, this );
-	d->setObjectName( title );
-	d->setWidget( layoutWidget );
+	QString cleanTitle = QString( title ).replace( "&", "" );
 
+	QDockWidget* d = new QDockWidget( cleanTitle, this );
+	d->setObjectName( cleanTitle );
+	d->setWidget( layoutWidget );
 	addDockWidget( area, d );
 
 	// add to view menu
-	if ( viewMenu )
-		addMenuAction( viewMenu, title, this, &QCompositeMainWindow::viewMenuTriggered )->setCheckable( true );
+	if ( windowMenu )
+		addMenuAction( windowMenu, title, this, &QCompositeMainWindow::windowMenuTriggered );
 
-	return nullptr;
+	dockWidgets.push_back( d );
+
+	return d;
 }
 
 void QCompositeMainWindow::restoreSettings( const QString& company, const QString& app )
