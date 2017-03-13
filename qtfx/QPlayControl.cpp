@@ -45,7 +45,7 @@ autoExtendRange( false )
 	connect( slider, SIGNAL( valueChanged( int ) ), this, SLOT( updateSlider( int ) ) );
 
 	slowMotionBox = new QComboBox( this );
-	for ( int slomo = 3; slomo >= -6; --slomo )
+	for ( int slomo = 2; slomo >= -5; --slomo )
 	{
 		QString label = slomo >= 0 ? QString().sprintf( "%d x", (int)pow( 2, slomo ) ) : QString().sprintf( "1/%d x", (int)pow( 2, -slomo ) );
 		slowMotionBox->addItem( label, QVariant( pow( 2, slomo ) ) );
