@@ -1,11 +1,11 @@
-#include "QStorageView.h"
+#include "QDataAnalysis.h"
 #include "QAction"
 #include "QHeaderView"
 #include <algorithm>
 
 using namespace QtCharts;
 
-QStorageView::QStorageView( QStorageDataModel* m, QWidget* parent ) : QWidget( parent ), model( m ), currentUpdateIdx( 0 )
+QDataAnalysisView::QDataAnalysisView( QDataAnalysisModel* m, QWidget* parent ) : QWidget( parent ), model( m ), currentUpdateIdx( 0 )
 {
 	itemList = new QTreeWidget( this );
 	itemList->setRootIsDecorated( false );
@@ -29,7 +29,7 @@ QStorageView::QStorageView( QStorageDataModel* m, QWidget* parent ) : QWidget( p
 	layout->addWidget( splitter );
 }
 
-void QStorageView::refresh( double time, bool refreshAll )
+void QDataAnalysisView::refresh( double time, bool refreshAll )
 {
 	if ( itemList->topLevelItemCount() != model->getSize() )
 		return reset();
@@ -47,7 +47,7 @@ void QStorageView::refresh( double time, bool refreshAll )
 	}
 }
 
-void QStorageView::reset()
+void QDataAnalysisView::reset()
 {
 	itemList->clear();
 	for ( size_t i = 0; i < model->getSize(); ++i )

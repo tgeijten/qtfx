@@ -7,11 +7,11 @@
 #include "QSplitter"
 #include "QTreeWidget"
 
-class QStorageDataModel
+class QDataAnalysisModel
 {
 public:
-	QStorageDataModel() {}
-	virtual ~QStorageDataModel() {}
+	QDataAnalysisModel() {}
+	virtual ~QDataAnalysisModel() {}
 
 	virtual size_t getSize() = 0;
 	virtual QString getLabel( int idx ) = 0;
@@ -19,13 +19,13 @@ public:
 	virtual QtCharts::QLineSeries* getSeries( int idx ) = 0;
 };
 
-class QStorageView : public QWidget
+class QDataAnalysisView : public QWidget
 {
 	Q_OBJECT
 
 public:
-	QStorageView( QStorageDataModel* m, QWidget* parent = 0 );
-	virtual ~QStorageView() {}
+	QDataAnalysisView( QDataAnalysisModel* m, QWidget* parent = 0 );
+	virtual ~QDataAnalysisView() {}
 	void refresh( double time, bool refreshAll = true );
 
 private:
@@ -37,5 +37,5 @@ private:
 	QTreeWidget* itemList;
 	QtCharts::QChart* chart;
 	QtCharts::QChartView* chartView;
-	QStorageDataModel* model;
+	QDataAnalysisModel* model;
 };
