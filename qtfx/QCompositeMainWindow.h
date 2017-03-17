@@ -18,6 +18,7 @@ public:
 	virtual void saveFileAs( const QString& filename ) { }
 
 	QDockWidget* createDockWidget( const QString& title, QWidget* widget, Qt::DockWidgetArea area );
+	int registerDockWidget( QDockWidget* widget, const QString& menu_text );
 
 public slots:
 	virtual void fileOpenTriggered();
@@ -27,8 +28,8 @@ public slots:
 	virtual void fileSaveAsTriggered();
 	virtual void fileExitTriggered();
 	virtual void windowMenuTriggered();
+	virtual void helpAboutTriggered();
 
-	void updateViewMenu();
 	void updateRecentFilesMenu( const QString& filename = "" );
 
 protected:
@@ -45,7 +46,6 @@ protected:
 
 	void setActiveFile( const QString& filename ) { activeFile = filename; }
 
-	QMenuBar* acquireMenuBar();
 	QStatusBar* createStatusBar();
 	void createFileMenu( const QString& default_folder, const QString& file_types );
 	QString fileFolder;
@@ -64,7 +64,6 @@ protected:
 	virtual void closeEvent( QCloseEvent *event ) override;
 
 	QWidget* centralWidget;
-	QMenuBar* menuBar;
 	QMenu* fileMenu;
 	QAction* recentFilesMenu;
 	QMenu* windowMenu;

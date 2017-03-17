@@ -14,7 +14,6 @@ using std::endl;
 
 QCompositeMainWindow::QCompositeMainWindow( QWidget* parent, Qt::WindowFlags flags ) :
 QMainWindow( parent, flags ),
-menuBar( nullptr ),
 fileMenu( nullptr ),
 windowMenu( nullptr ),
 settings( nullptr )
@@ -71,25 +70,23 @@ void QCompositeMainWindow::fileSaveAsTriggered()
 
 void QCompositeMainWindow::fileExitTriggered()
 {
-
 }
 
 void QCompositeMainWindow::windowMenuTriggered()
 {
-	QString title = qobject_cast<QAction*>( sender() )->text().replace( "&", "" );
-	for ( auto* w : dockWidgets )
+	QAction* menu_item = qobject_cast<QAction*>( sender() );
+	//QString title = qobject_cast<QAction*>( sender() )->text().replace( "&", "" );
+	int index = menu_item->data().toInt();
+
+	if ( index >= 0 && index < dockWidgets.size() )
 	{
-		if ( w->windowTitle() == title )
-		{
-			w->show();
-			w->raise();
-		}
+		dockWidgets[ index ]->show();
+		dockWidgets[ index ]->raise();
 	}
 }
 
-void QCompositeMainWindow::updateViewMenu()
+void QCompositeMainWindow::helpAboutTriggered()
 {
-
 }
 
 void QCompositeMainWindow::updateRecentFilesMenu( const QString& filename )
@@ -113,16 +110,6 @@ void QCompositeMainWindow::updateRecentFilesMenu( const QString& filename )
 	recentFilesMenu->setMenu( recent_menu );
 }
 
-QMenuBar* QCompositeMainWindow::acquireMenuBar()
-{
-	if ( !menuBar )
-	{
-		menuBar = new QMenuBar( this );
-		setMenuBar( menuBar );
-	}
-	return menuBar;
-}
-
 QStatusBar* QCompositeMainWindow::createStatusBar()
 {
 	statusBar = new QStatusBar( this );
@@ -132,7 +119,7 @@ QStatusBar* QCompositeMainWindow::createStatusBar()
 
 void QCompositeMainWindow::createFileMenu( const QString& default_folder, const QString& file_types )
 {
-	fileMenu = acquireMenuBar()->addMenu( ( "&File" ) );
+	fileMenu = menuBar()->addMenu( ( "&File" ) );
 
 	addMenuAction( fileMenu, "&Open...", this, &QCompositeMainWindow::fileOpenTriggered, QKeySequence( "Ctrl+O" ) );
 	recentFilesMenu = addMenuAction( fileMenu, "Open &Recent", this, &QCompositeMainWindow::fileOpenTriggered, QKeySequence(), true );
@@ -147,11 +134,13 @@ void QCompositeMainWindow::createFileMenu( const QString& default_folder, const 
 
 void QCompositeMainWindow::createWindowMenu()
 {
-	windowMenu = acquireMenuBar()->addMenu( ( "&Window" ) );
+	windowMenu = menuBar()->addMenu( ( "&Window" ) );
 }
 
 void QCompositeMainWindow::createHelpMenu()
 {
+	helpMenu = menuBar()->addMenu( ( "&Help" ) );
+	addMenuAction( helpMenu, "About...", this, &QCompositeMainWindow::helpAboutTriggered );
 }
 
 QDockWidget* QCompositeMainWindow::createDockWidget( const QString& title, QWidget* widget, Qt::DockWidgetArea area  )
@@ -167,15 +156,24 @@ QDockWidget* QCompositeMainWindow::createDockWidget( const QString& title, QWidg
 	QDockWidget* d = new QDockWidget( cleanTitle, this );
 	d->setObjectName( cleanTitle );
 	d->setWidget( layoutWidget );
+
 	addDockWidget( area, d );
-
-	// add to view menu
-	if ( windowMenu )
-		addMenuAction( windowMenu, title, this, &QCompositeMainWindow::windowMenuTriggered );
-
-	dockWidgets.push_back( d );
+	registerDockWidget( d, title );
 
 	return d;
+}
+
+int QCompositeMainWindow::registerDockWidget( QDockWidget* widget, const QString& menu_text )
+{
+	dockWidgets.push_back( widget );
+	int index = dockWidgets.size() - 1;
+	if ( windowMenu )
+	{
+		QAction* a = windowMenu->addAction( menu_text );
+		connect( a, &QAction::triggered, this, &QCompositeMainWindow::windowMenuTriggered );
+		a->setData( index );
+	}
+	return index;
 }
 
 void QCompositeMainWindow::restoreSettings( const QString& company, const QString& app )
@@ -189,7 +187,6 @@ void QCompositeMainWindow::restoreSettings( const QString& company, const QStrin
 	restoreState( settings->value( "windowState" ).toByteArray() );
 	recentFiles = settings->value( "recentFiles" ).toStringList();
 	updateRecentFilesMenu();
-	updateViewMenu();
 
 	restoreCurstomSettings( *settings );
 }
