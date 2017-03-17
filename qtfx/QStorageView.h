@@ -4,8 +4,8 @@
 #include "QtCharts/QChart"
 #include "QtCharts/QLineSeries"
 #include "QtCharts/QChartView"
-#include "QTreeWidget"
 #include "QSplitter"
+#include "QTreeWidget"
 
 class QStorageDataModel
 {
@@ -26,11 +26,15 @@ class QStorageView : public QWidget
 public:
 	QStorageView( QStorageDataModel* m, QWidget* parent = 0 );
 	virtual ~QStorageView() {}
-	void refresh();
+	void refresh( double time, bool refreshAll = true );
 
 private:
+	void reset();
+
+	int smallRefreshItemCount = 4;
+	int currentUpdateIdx;
 	QSplitter* splitter;
-	QTreeWidget* tree;
+	QTreeWidget* itemList;
 	QtCharts::QChart* chart;
 	QtCharts::QChartView* chartView;
 	QStorageDataModel* model;

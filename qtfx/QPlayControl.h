@@ -42,13 +42,14 @@ signals:
 	void resetTriggered();
 	void nextTriggered();
 	void previousTriggered();
-	void slowMotionChanged( int i );
-	void timeChanged( double time );
+	void slowMotionChanged( int );
+	void timeChanged( double );
 	void sliderChanged( int );
+	void sliderReleased();
 
 private slots:
-	void updateSlowMotion( int );
 	void updateSlider( int );
+	void updateSlowMotion( int );
 	void timeout();
 
 private:

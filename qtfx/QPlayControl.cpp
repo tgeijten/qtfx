@@ -43,6 +43,7 @@ autoExtendRange( false )
 	slider->setSingleStep( 10 );
 	slider->setPageStep( 100 );
 	connect( slider, SIGNAL( valueChanged( int ) ), this, SLOT( updateSlider( int ) ) );
+	connect( slider, SIGNAL( sliderReleased() ), this, SIGNAL( sliderReleased() ) );
 
 	slowMotionBox = new QComboBox( this );
 	for ( int slomo = 2; slomo >= -5; --slomo )
@@ -50,7 +51,7 @@ autoExtendRange( false )
 		QString label = slomo >= 0 ? QString().sprintf( "%d x", (int)pow( 2, slomo ) ) : QString().sprintf( "1/%d x", (int)pow( 2, -slomo ) );
 		slowMotionBox->addItem( label, QVariant( pow( 2, slomo ) ) );
 	}
-	slowMotionBox->setCurrentIndex( 3 );
+	slowMotionBox->setCurrentIndex( 2 );
 	connect( slowMotionBox, SIGNAL( activated( int ) ), SLOT( updateSlowMotion( int ) ) );
 
 	QBoxLayout *lo = new QHBoxLayout;
@@ -123,6 +124,8 @@ void QPlayControl::setLoop( bool b )
 
 void QPlayControl::play()
 {
+	if ( currentTime >= maxTime )
+		reset();
 	qtimer.start( 10 );
 	timer.reset();
 	timer_delta.reset();
@@ -151,18 +154,20 @@ void QPlayControl::reset()
 	if ( qtimer.isActive() )
 		qtimer.stop();
 
-	emit resetTriggered();
 	setTime( 0 );
+	emit resetTriggered();
 }
 
 void QPlayControl::previous()
 {
 	setTime( currentTime - skipTime );
+	emit previousTriggered();
 }
 
 void QPlayControl::next()
 {
 	setTime( currentTime + skipTime );
+	emit nextTriggered();
 }
 
 void QPlayControl::updateSlowMotion( int idx )
