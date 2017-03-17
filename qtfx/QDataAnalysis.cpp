@@ -3,7 +3,7 @@
 #include "QHeaderView"
 #include "QtWidgets/QGraphicsLayout"
 #include <algorithm>
-#include "scone/core/Log.h"
+#include "flut/system/log.hpp"
 
 using namespace QtCharts;
 
