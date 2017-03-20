@@ -3,6 +3,7 @@
 #include <QToolButton>
 #include <QWidget>
 #include <QComboBox>
+#include "flut/system/log.hpp"
 
 QPlayControl::QPlayControl( QWidget *parent /*= 0 */ ) :
 currentTime( 0.0 ),
@@ -101,7 +102,10 @@ void QPlayControl::setTime( double time )
 		}
 	}
 
+	slider->blockSignals( true );
 	slider->setValue( int( currentTime * 1000 ) );
+	slider->blockSignals( false );
+
 	label->display( QString().sprintf( "%.2f", currentTime ) );
 	
 	emit timeChanged( currentTime );
@@ -124,12 +128,15 @@ void QPlayControl::setLoop( bool b )
 
 void QPlayControl::play()
 {
-	if ( currentTime >= maxTime )
-		reset();
-	qtimer.start( 10 );
-	timer.reset();
-	timer_delta.reset();
-	emit playTriggered();
+	if ( !isPlaying() )
+	{
+		if ( currentTime >= maxTime )
+			reset();
+		qtimer.start( 10 );
+		timer.reset();
+		timer_delta.reset();
+		emit playTriggered();
+	}
 }
 
 void QPlayControl::stop()
@@ -179,7 +186,6 @@ void QPlayControl::updateSlowMotion( int idx )
 void QPlayControl::updateSlider( int value )
 {
 	setTime( value / 1000.0 );
-	emit timeChanged( currentTime );
 	emit sliderChanged( value );
 }
 
