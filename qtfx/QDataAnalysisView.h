@@ -26,6 +26,9 @@ public:
 	QDataAnalysisView( QDataAnalysisModel* m, QWidget* parent = 0 );
 	virtual ~QDataAnalysisView() {}
 	void refresh( double time, bool refreshAll = true );
+	void reset();
+
+	void setMinSeriesInterval( float f ) { minSeriesInterval = f; }
 
 public slots:
 	void itemChanged( QTreeWidgetItem* item, int column );
@@ -34,13 +37,12 @@ public slots:
 
 private:
 	QColor getStandardColor( int idx );
-	void reset();
 	void addSeries( int idx );
 	void removeSeries( int idx );
 	void updateIndicator();
 
-	int smallRefreshItemCount = 4;
-	double minSeriesInterval = 0.01;
+	int smallRefreshItemCount = 1000;
+	float minSeriesInterval = 0.01f;
 	int currentUpdateIdx;
 	double currentTime;
 	QSplitter* splitter;

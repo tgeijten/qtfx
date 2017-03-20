@@ -3,7 +3,6 @@
 #include "QHeaderView"
 #include "QtWidgets/QGraphicsLayout"
 #include <algorithm>
-#include "flut/system/log.hpp"
 #include "qt_tools.h"
 #include "simvis/color.h"
 
@@ -18,9 +17,7 @@ QDataAnalysisView::QDataAnalysisView( QDataAnalysisModel* m, QWidget* parent ) :
 	QStringList headerLabels;
 	headerLabels << "Variable" << "Value";
 	itemList->setHeaderLabels( headerLabels );
-	itemList->header()->setStretchLastSection( false );
-	for ( int i = 0; i < itemList->columnCount(); ++i )
-		itemList->header()->setSectionResizeMode( i, i == 0 ? QHeaderView::Stretch : QHeaderView::ResizeToContents );
+	//itemList->header()->setStretchLastSection( false );
 
 	connect( itemList, &QTreeWidget::itemChanged, this, &QDataAnalysisView::itemChanged );
 
@@ -70,24 +67,28 @@ void QDataAnalysisView::refresh( double time, bool refreshAll )
 	if ( itemList->topLevelItemCount() != model->getVariableCount() )
 		return reset();
 
-	// update tree widget values
-	if ( model->getVariableCount() > 0 )
-	{
-		if ( isVisible() )
-		{
-			int itemCount = refreshAll ? model->getVariableCount() : std::min<int>( smallRefreshItemCount, model->getVariableCount() );
-			for ( size_t i = 0; i < itemCount; ++i )
-			{
-				itemList->topLevelItem( currentUpdateIdx )->setText( 1, QString().sprintf( "%.3f", model->getValue( currentUpdateIdx, time ) ) );
-				++currentUpdateIdx %= model->getVariableCount();
-			}
-		}
-	}
+	if ( model->getVariableCount() == 0 )
+		return;
 
-	// update graph
+	// update state
 	currentTime = time;
-	updateIndicator();
-	customPlot->replot( QCustomPlot::rpQueued );
+
+	// draw stuff if visible
+	if ( isVisible() )
+	{
+		int itemCount = refreshAll ? model->getVariableCount() : std::min<int>( smallRefreshItemCount, model->getVariableCount() );
+		itemList->setUpdatesEnabled( false );
+		for ( size_t i = 0; i < itemCount; ++i )
+		{
+			itemList->topLevelItem( currentUpdateIdx )->setText( 1, QString().sprintf( "%.3f", model->getValue( currentUpdateIdx, time ) ) );
+			++currentUpdateIdx %= model->getVariableCount();
+		}
+		itemList->setUpdatesEnabled( true );
+
+		// update graph
+		updateIndicator();
+		customPlot->replot( QCustomPlot::rpQueued );
+	}
 }
 
 void QDataAnalysisView::itemChanged( QTreeWidgetItem* item, int column )
@@ -136,7 +137,11 @@ void QDataAnalysisView::reset()
 		wdg->setFlags( wdg->flags() | Qt::ItemIsUserCheckable );
 		wdg->setCheckState( 0, Qt::Unchecked );
 	}
+	itemList->resizeColumnToContents( 0 );
+
 	currentUpdateIdx = 0;
+	currentTime = 0.0;
+	updateIndicator();
 }
 
 void QDataAnalysisView::updateIndicator()
@@ -155,7 +160,7 @@ void QDataAnalysisView::addSeries( int idx )
 #ifdef QTFX_USE_QCUSTOMPLOT
 	QCPGraph* graph = customPlot->addGraph();
 	graph->setName( model->getLabel( idx ) );
-	auto data = model->getSeries( idx );
+	auto data = model->getSeries( idx, minSeriesInterval );
 	for ( auto& e : data )
 		graph->addData( e.first, e.second );
 	series.emplace_back( idx, graph );
@@ -169,7 +174,7 @@ void QDataAnalysisView::addSeries( int idx )
 #else
 	QLineSeries* ls = new QLineSeries;
 	ls->setName( model->getLabel( idx ) );
-	auto data = model->getSeries( idx );
+	auto data = model->getSeries( idx, minSeriesInterval );
 	for ( auto& e : data )
 		ls->append( e.first, e.second );
 	chart->addSeries( ls );
