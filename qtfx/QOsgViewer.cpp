@@ -17,7 +17,7 @@ public:
 		}
 		else return false;
 	}
-}; 
+};
 
 QOsgViewer::QOsgViewer( QWidget* parent /*= 0*/, Qt::WindowFlags f /*= 0*/, osgViewer::ViewerBase::ThreadingModel threadingModel/*=osgViewer::CompositeViewer::SingleThreaded*/ ) :
 QWidget( parent, f ),
