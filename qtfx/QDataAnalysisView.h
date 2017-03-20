@@ -34,6 +34,10 @@ public slots:
 	void itemChanged( QTreeWidgetItem* item, int column );
 	void updateAllSeries();
 	void updateSeries( int index );
+	void mouseEvent( QMouseEvent* m );
+
+signals:
+	void timeChanged( double );
 
 private:
 	QColor getStandardColor( int idx );

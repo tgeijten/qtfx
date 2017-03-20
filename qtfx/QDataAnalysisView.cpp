@@ -5,6 +5,7 @@
 #include <algorithm>
 #include "qt_tools.h"
 #include "simvis/color.h"
+#include "flut/system/log_sink.hpp"
 
 QDataAnalysisView::QDataAnalysisView( QDataAnalysisModel* m, QWidget* parent ) : QWidget( parent ), model( m ), currentUpdateIdx( 0 )
 {
@@ -33,7 +34,7 @@ QDataAnalysisView::QDataAnalysisView( QDataAnalysisModel* m, QWidget* parent ) :
 
 #ifdef QTFX_USE_QCUSTOMPLOT
 	customPlot = new QCustomPlot();
-	customPlot->setInteraction( QCP::iRangeDrag, true );
+	//customPlot->setInteraction( QCP::iRangeDrag, true );
 	customPlot->setInteraction( QCP::iRangeZoom, true );
 	customPlot->axisRect()->setRangeDrag( Qt::Horizontal );
 	customPlot->axisRect()->setRangeZoom( Qt::Horizontal );
@@ -41,8 +42,12 @@ QDataAnalysisView::QDataAnalysisView( QDataAnalysisModel* m, QWidget* parent ) :
 	customPlot->legend->setFont( itemList->font() );
 	customPlot->legend->setRowSpacing( -6 );
 	customPlotLine = new QCPItemLine( customPlot );
+	customPlotLine->setHead( QCPLineEnding( QCPLineEnding::esDiamond, 9, 9, true ) );
+	customPlotLine->setTail( QCPLineEnding( QCPLineEnding::esDiamond, 9, 9, true ) );
 	customPlot->addItem( customPlotLine );
 	splitter->addWidget( customPlot );
+	connect( customPlot, &QCustomPlot::mousePress, this, &QDataAnalysisView::mouseEvent );
+	connect( customPlot, &QCustomPlot::mouseMove, this, &QDataAnalysisView::mouseEvent );
 #else
 	chart = new QtCharts::QChart();
 	chart->setBackgroundRoundness( 0 );
@@ -60,6 +65,8 @@ QDataAnalysisView::QDataAnalysisView( QDataAnalysisModel* m, QWidget* parent ) :
 #endif
 
 	splitter->setSizes( QList< int >{ 100, 300 } );
+
+	reset();
 }
 
 void QDataAnalysisView::refresh( double time, bool refreshAll )
@@ -114,6 +121,16 @@ void QDataAnalysisView::updateSeries( int idx )
 		addSeries( idx );
 	else if ( series_it != series.end() && !item->checkState( 0 ) )
 		removeSeries( idx );
+}
+
+void QDataAnalysisView::mouseEvent( QMouseEvent* event )
+{
+	if ( event->buttons() & Qt::LeftButton )
+	{
+		double x = customPlot->xAxis->pixelToCoord( event->pos().x() );
+		flut::math::clamp( x, model->getTimeStart(), model->getTimeFinish() );
+		emit timeChanged( x );
+	}
 }
 
 QColor QDataAnalysisView::getStandardColor( int idx )
