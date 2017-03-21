@@ -6,6 +6,8 @@
 #include "qt_tools.h"
 #include "simvis/color.h"
 #include "flut/system/log_sink.hpp"
+#include "flut/system/types.hpp"
+#include <set>
 
 QDataAnalysisView::QDataAnalysisView( QDataAnalysisModel* m, QWidget* parent ) : QWidget( parent ), model( m ), currentUpdateIdx( 0 )
 {
@@ -104,23 +106,10 @@ void QDataAnalysisView::itemChanged( QTreeWidgetItem* item, int column )
 		updateSeries( itemList->indexOfTopLevelItem( item ) );
 }
 
-void QDataAnalysisView::updateAllSeries()
+void QDataAnalysisView::clearSeries()
 {
-	if ( itemList->topLevelItemCount() != model->getVariableCount() )
-		return reset();
-
-	for ( int idx = 0; idx < model->getVariableCount(); ++idx )
-		updateSeries( idx );
-}
-
-void QDataAnalysisView::updateSeries( int idx )
-{
-	auto item = itemList->topLevelItem( idx );
-	auto series_it = series.find( idx );
-	if ( item->checkState( 0 ) && series_it == series.end() )
-		addSeries( idx );
-	else if ( series_it != series.end() && !item->checkState( 0 ) )
-		removeSeries( idx );
+	while ( !series.empty() )
+		removeSeries( series.back().first );
 }
 
 void QDataAnalysisView::mouseEvent( QMouseEvent* event )
@@ -146,13 +135,24 @@ QColor QDataAnalysisView::getStandardColor( int idx )
 
 void QDataAnalysisView::reset()
 {
+	// remove series, keep names
+	std::set< QString > keep_series;
+	for ( size_t i = 0; i < itemList->topLevelItemCount(); ++i )
+	{
+		auto* item = itemList->topLevelItem( i );
+		if ( item->checkState( 0 ) == Qt::Checked )
+			keep_series.insert( item->text( 0 ) );
+	}
+
 	itemList->clear();
+	clearSeries();
+
 	for ( size_t i = 0; i < model->getVariableCount(); ++i )
 	{
 		auto* wdg = new QTreeWidgetItem( itemList, QStringList( model->getLabel( i ) ) );
 		wdg->setTextAlignment( 1, Qt::AlignRight );
 		wdg->setFlags( wdg->flags() | Qt::ItemIsUserCheckable );
-		wdg->setCheckState( 0, Qt::Unchecked );
+		wdg->setCheckState( 0, keep_series.count( model->getLabel( i ) ) > 0 ? Qt::Checked : Qt::Unchecked );
 	}
 	itemList->resizeColumnToContents( 0 );
 
@@ -172,6 +172,16 @@ void QDataAnalysisView::updateIndicator()
 #endif
 }
 
+void QDataAnalysisView::updateSeries( int idx )
+{
+	auto item = itemList->topLevelItem( idx );
+	auto series_it = series.find( idx );
+	if ( item->checkState( 0 ) == Qt::Checked && series_it == series.end() )
+		addSeries( idx );
+	else if ( series_it != series.end() && item->checkState( 0 ) == Qt::Unchecked )
+		removeSeries( idx );
+}
+
 void QDataAnalysisView::addSeries( int idx )
 {
 #ifdef QTFX_USE_QCUSTOMPLOT
@@ -187,7 +197,6 @@ void QDataAnalysisView::addSeries( int idx )
 	customPlot->rescaleAxes();
 	updateIndicator();
 	customPlot->replot();
-
 #else
 	QLineSeries* ls = new QLineSeries;
 	ls->setName( model->getLabel( idx ) );

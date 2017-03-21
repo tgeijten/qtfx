@@ -32,7 +32,7 @@ public:
 
 public slots:
 	void itemChanged( QTreeWidgetItem* item, int column );
-	void updateAllSeries();
+	void clearSeries();
 	void updateSeries( int index );
 	void mouseEvent( QMouseEvent* m );
 
