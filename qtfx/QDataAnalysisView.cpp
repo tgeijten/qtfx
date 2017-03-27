@@ -190,9 +190,10 @@ void QDataAnalysisView::addSeries( int idx )
 	auto data = model->getSeries( idx, minSeriesInterval );
 	for ( auto& e : data )
 		graph->addData( e.first, e.second );
-	series.emplace_back( idx, graph );
-	for ( int i = 0; i < series.size(); ++i )
-		series.at( i ).second->setPen( QPen( getStandardColor( i ) ) );
+	series[ idx ] = graph;
+	int i = 0;
+	for ( auto& s : series )
+		s.second->setPen( QPen( getStandardColor( i++ ) ) );
 
 	customPlot->rescaleAxes();
 	updateIndicator();
