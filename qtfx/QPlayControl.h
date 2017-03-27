@@ -7,6 +7,7 @@
 #include <QTimer>
 #include "flut/timer.hpp"
 #include "flut/math/delta.hpp"
+#include "flut/system/types.hpp"
 
 class QAbstractButton;
 class QAbstractSlider;
@@ -70,5 +71,5 @@ private:
 
 	QTimer qtimer;
 	flut::timer timer;
-	flut::delta< flut::timer::seconds_t > timer_delta;
+	flut::delta< flut::seconds_t > timer_delta;
 };
