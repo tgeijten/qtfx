@@ -5,7 +5,8 @@
 #include <QComboBox>
 #include "flut/system/log.hpp"
 
-QPlayControl::QPlayControl( QWidget *parent /*= 0 */ ) :
+QPlayControl::QPlayControl( QWidget *parent ) :
+QWidget( parent ),
 currentTime( 0.0 ),
 skipTime( 0.01 ),
 slomoFactor( 1.0 ),
