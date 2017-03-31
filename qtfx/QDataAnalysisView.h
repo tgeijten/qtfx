@@ -1,7 +1,5 @@
 #pragma once
 
-#define QTFX_USE_QCUSTOMPLOT
-
 #include "flut/vecmap.hpp"
 #include "flut/buffer/storage.hpp"
 

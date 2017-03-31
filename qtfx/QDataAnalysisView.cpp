@@ -3,7 +3,6 @@
 #include "QHeaderView"
 #include "QtWidgets/QGraphicsLayout"
 #include <algorithm>
-#include "qt_tools.h"
 #include "simvis/color.h"
 #include "flut/system/log_sink.hpp"
 #include "flut/system/types.hpp"
@@ -60,7 +59,7 @@ QDataAnalysisView::QDataAnalysisView( QDataAnalysisModel* m, QWidget* parent ) :
 	chartView = new QtCharts::QChartView( chart, this );
 	chartView->setContentsMargins( 0, 0, 0, 0 );
 	chartView->setRenderHint( QPainter::Antialiasing );
-	chartView->setRubberBand( QChartView::RectangleRubberBand );
+	chartView->setRubberBand( QtCharts::QChartView::RectangleRubberBand );
 	chartView->setBackgroundBrush( QBrush( Qt::red ) );
 	chartView->resize( 300, 100 );
 	splitter->addWidget( chartView );
@@ -96,7 +95,10 @@ void QDataAnalysisView::refresh( double time, bool refreshAll )
 
 		// update graph
 		updateIndicator();
+
+#ifdef QTFX_USE_QCUSTOMPLOT
 		customPlot->replot( QCustomPlot::rpQueued );
+#endif
 	}
 }
 
@@ -114,12 +116,14 @@ void QDataAnalysisView::clearSeries()
 
 void QDataAnalysisView::mouseEvent( QMouseEvent* event )
 {
+#ifdef QTFX_USE_QCUSTOMPLOT
 	if ( event->buttons() & Qt::LeftButton )
 	{
 		double x = customPlot->xAxis->pixelToCoord( event->pos().x() );
 		flut::math::clamp( x, model->getTimeStart(), model->getTimeFinish() );
 		emit timeChanged( x );
 	}
+#endif
 }
 
 QColor QDataAnalysisView::getStandardColor( int idx )
@@ -168,7 +172,7 @@ void QDataAnalysisView::updateIndicator()
 	customPlotLine->end->setCoords( currentTime, customPlot->yAxis->range().upper );
 	customPlot->replot();
 #else
-	auto pos = chart->mapToPosition( QPointF( time, 0 ) );
+	auto pos = chart->mapToPosition( QPointF( currentTime, 0 ) );
 #endif
 }
 
@@ -199,7 +203,7 @@ void QDataAnalysisView::addSeries( int idx )
 	updateIndicator();
 	customPlot->replot();
 #else
-	QLineSeries* ls = new QLineSeries;
+	QtCharts::QLineSeries* ls = new QtCharts::QLineSeries;
 	ls->setName( model->getLabel( idx ) );
 	auto data = model->getSeries( idx, minSeriesInterval );
 	for ( auto& e : data )
@@ -207,7 +211,7 @@ void QDataAnalysisView::addSeries( int idx )
 	chart->addSeries( ls );
 	chart->createDefaultAxes();
 	chart->zoomReset();
-	series.emplace_back( idx, ls );
+	series[ idx ] = ls;
 #endif
 }
 
