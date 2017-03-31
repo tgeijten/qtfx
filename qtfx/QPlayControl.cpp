@@ -90,16 +90,17 @@ void QPlayControl::setTime( double time )
 			// adjust maximum
 			setRange( minTime, currentTime );
 		}
-		else if ( getLoop() )
+		else if ( isPlaying() && getLoop() )
 		{
 			// restart
 			currentTime = minTime;
 		}
 		else
 		{
-			// stop playing
+			// clamp to maximum and stop playing
 			currentTime = maxTime;
-			stop();
+			if ( isPlaying() )
+				stop();
 		}
 	}
 
