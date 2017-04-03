@@ -4,6 +4,7 @@
 #include <osgViewer/ViewerEventHandlers>
 #include "simvis/osg_camera_man.h"
 #include "flut/system/log.hpp"
+#include "qevent.h"
 
 class QOsgEventHandler : public osgGA::GUIEventHandler 
 { 
@@ -24,6 +25,7 @@ QWidget( parent, f ),
 capture_handler( nullptr ),
 frame_count( 0 )
 {
+	QCoreApplication::instance()->installEventFilter( this );
 	setThreadingModel( threadingModel );
 
 	// disable the default setting of viewer.done() by pressing Escape.
@@ -134,4 +136,9 @@ void QOsgViewer::stopCapture()
 		capture_handler->stopCapture();
 		capture_handler = nullptr;
 	}
+}
+
+bool QOsgViewer::eventFilter( QObject* obj, QEvent* event )
+{
+	return QObject::eventFilter( obj, event );
 }

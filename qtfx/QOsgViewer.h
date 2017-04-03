@@ -30,6 +30,7 @@ public:
 	vis::osg_camera_man& getCameraMan() { return *camera_man; }
 
 protected:
+	bool eventFilter( QObject* obj, QEvent* event );
 	size_t frame_count;
 	QTimer _timer;
 	osg::ref_ptr< vis::osg_camera_man > camera_man;
