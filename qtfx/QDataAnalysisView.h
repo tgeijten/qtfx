@@ -1,7 +1,7 @@
 #pragma once
 
-#include "flut/vecmap.hpp"
-#include "flut/buffer/storage.hpp"
+#include "flut/flat_map.hpp"
+#include "flut/storage.hpp"
 
 #include "QWidget"
 #include "QSplitter"
@@ -54,10 +54,10 @@ private:
 #if defined QTFX_USE_QCUSTOMPLOT
 	QCustomPlot* customPlot;
 	QCPItemLine* customPlotLine;
-	flut::vecmap< int, QCPGraph* > series;
+	flut::flat_map< int, QCPGraph* > series;
 #else
 	QtCharts::QChart* chart;
-	flut::vecmap< int, QtCharts::QLineSeries* > series;
+	flut::flat_map< int, QtCharts::QLineSeries* > series;
 	QtCharts::QChartView* chartView;
 #endif
 };
