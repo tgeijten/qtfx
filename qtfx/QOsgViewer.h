@@ -28,6 +28,7 @@ public:
 	void startTimer() { _timer.start( 10 ); }
 	void stopTimer() { _timer.stop(); }
 	vis::osg_camera_man& getCameraMan() { return *camera_man; }
+	void setFrameTime( double t );
 
 protected:
 	bool eventFilter( QObject* obj, QEvent* event );
@@ -37,4 +38,6 @@ protected:
 	osg::Node* scene;
 	osg::ref_ptr< osgViewer::ScreenCaptureHandler > capture_handler;
 	osg::ref_ptr< osgViewer::View > viewer;
+	double current_frame_time;
+	double last_drawn_frame_time;
 };

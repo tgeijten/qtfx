@@ -98,8 +98,13 @@ osgQt::GraphicsWindowQt* QOsgViewer::createGraphicsWindow( int x, int y, int w, 
 
 void QOsgViewer::paintEvent( QPaintEvent* event )
 {
+	// prevent capturing duplicate frames
+	if ( isCapturing() && current_frame_time == last_drawn_frame_time )
+		return; // this frame was already captured, skip
+
 	++frame_count;
 	frame();
+	last_drawn_frame_time = current_frame_time;
 }
 
 void QOsgViewer::setScene( osg::Node* s )
@@ -130,11 +135,21 @@ void QOsgViewer::startCapture( const std::string& filename )
 
 void QOsgViewer::stopCapture()
 {
+	last_drawn_frame_time = ~size_t ( 0 );
 	if ( capture_handler )
 	{
 		flut::log::info( "Video capture stopped" );
 		capture_handler->stopCapture();
 		capture_handler = nullptr;
+	}
+}
+
+void QOsgViewer::setFrameTime( double t )
+{
+	if ( current_frame_time != t )
+	{
+		current_frame_time = t;
+		repaint();
 	}
 }
 
