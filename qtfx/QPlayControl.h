@@ -36,6 +36,8 @@ public slots:
 	void reset();
 	void previous();
 	void next();
+	void faster();
+	void slower();
 
 signals:
 	void playTriggered();
@@ -59,7 +61,7 @@ private:
 	QAbstractButton *nextButton;
 	QAbstractButton *previousButton;
 	QAbstractButton *loopButton;
-	QComboBox *slowMotionBox;
+	QComboBox *slomoBox;
 	QSlider *slider;
 	QLCDNumber* label;
 	double currentTime;

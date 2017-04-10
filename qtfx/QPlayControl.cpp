@@ -47,14 +47,14 @@ autoExtendRange( false )
 	connect( slider, SIGNAL( valueChanged( int ) ), this, SLOT( updateSlider( int ) ) );
 	connect( slider, SIGNAL( sliderReleased() ), this, SIGNAL( sliderReleased() ) );
 
-	slowMotionBox = new QComboBox( this );
+	slomoBox = new QComboBox( this );
 	for ( int slomo = 2; slomo >= -5; --slomo )
 	{
 		QString label = slomo >= 0 ? QString().sprintf( "%d x", (int)pow( 2, slomo ) ) : QString().sprintf( "1/%d x", (int)pow( 2, -slomo ) );
-		slowMotionBox->addItem( label, QVariant( pow( 2, slomo ) ) );
+		slomoBox->addItem( label, QVariant( pow( 2, slomo ) ) );
 	}
-	slowMotionBox->setCurrentIndex( 2 );
-	connect( slowMotionBox, SIGNAL( activated( int ) ), SLOT( updateSlowMotion( int ) ) );
+	slomoBox->setCurrentIndex( 2 );
+	connect( slomoBox, SIGNAL( currentIndexChanged( int ) ), this, SLOT( updateSlowMotion( int ) ) );
 
 	QBoxLayout *lo = new QHBoxLayout;
 	lo->setMargin( 0 );
@@ -66,7 +66,7 @@ autoExtendRange( false )
 	lo->addWidget( label );
 	lo->addWidget( slider );
 	lo->addWidget( loopButton );
-	lo->addWidget( slowMotionBox );
+	lo->addWidget( slomoBox );
 	setLayout( lo );
 
 	connect( &qtimer, SIGNAL( timeout() ), this, SLOT( timeout() ) );
@@ -179,10 +179,20 @@ void QPlayControl::next()
 	emit nextTriggered();
 }
 
+void QPlayControl::faster()
+{
+	slomoBox->setCurrentIndex( std::max( 0, slomoBox->currentIndex() - 1 ) );
+}
+
+void QPlayControl::slower()
+{
+	slomoBox->setCurrentIndex( std::min( slomoBox->count() - 1, slomoBox->currentIndex() + 1 ) );
+}
+
 void QPlayControl::updateSlowMotion( int idx )
 {
-	slomoFactor = slowMotionBox->itemData( idx ).toDouble();
-	emit slowMotionChanged( slowMotionBox->itemData( idx ).toInt() );
+	slomoFactor = slomoBox->itemData( idx ).toDouble();
+	emit slowMotionChanged( slomoBox->itemData( idx ).toInt() );
 }
 
 void QPlayControl::updateSlider( int value )
