@@ -15,6 +15,8 @@
 #include "QtCharts/QLineSeries"
 #include "QtCharts/QChartView"
 #endif
+#include "QLineEdit"
+#include "QGroup.h"
 
 class QDataAnalysisView : public QWidget
 {
@@ -33,6 +35,7 @@ public slots:
 	void clearSeries();
 	void updateSeries( int index );
 	void mouseEvent( QMouseEvent* m );
+	void filterChanged( const QString& filter );
 
 signals:
 	void timeChanged( double );
@@ -42,12 +45,15 @@ private:
 	void addSeries( int idx );
 	void removeSeries( int idx );
 	void updateIndicator();
+	void updateFilter();
 
 	int smallRefreshItemCount = 1000;
 	float minSeriesInterval = 0.01f;
 	int currentUpdateIdx;
 	double currentTime;
+	QLineEdit* filter;
 	QSplitter* splitter;
+	QGroup* itemGroup;
 	QTreeWidget* itemList;
 	QDataAnalysisModel* model;
 

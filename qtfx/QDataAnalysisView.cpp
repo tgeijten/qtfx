@@ -7,26 +7,33 @@
 #include "flut/system/log_sink.hpp"
 #include "flut/system/types.hpp"
 #include <set>
+#include "qtfx.h"
 
 QDataAnalysisView::QDataAnalysisView( QDataAnalysisModel* m, QWidget* parent ) : QWidget( parent ), model( m ), currentUpdateIdx( 0 )
 {
+	filter = new QLineEdit( this );
+	connect( filter, &QLineEdit::textChanged, this, &QDataAnalysisView::filterChanged );
+
 	itemList = new QTreeWidget( this );
 	itemList->setRootIsDecorated( false );
 	itemList->setColumnCount( 2 );
 	itemList->header()->close();
 	itemList->resize( 100, 100 );
-
 	QStringList headerLabels;
 	headerLabels << "Variable" << "Value";
 	itemList->setHeaderLabels( headerLabels );
+
+	itemGroup = new QVGroup( this, 0, 4 );
+	*itemGroup << filter << itemList;
+
 	//itemList->header()->setStretchLastSection( false );
 
 	connect( itemList, &QTreeWidget::itemChanged, this, &QDataAnalysisView::itemChanged );
 
 	splitter = new QSplitter( this );
 	splitter->setContentsMargins( 0, 0, 0, 0 );
-	splitter->addWidget( itemList );
 	splitter->setObjectName( "Analysis.Splitter" );
+	splitter->addWidget( itemGroup );
 
 	QVBoxLayout* layout = new QVBoxLayout( this );
 	layout->setContentsMargins( 4, 4, 4, 4 );
@@ -126,6 +133,11 @@ void QDataAnalysisView::mouseEvent( QMouseEvent* event )
 #endif
 }
 
+void QDataAnalysisView::filterChanged( const QString& filter )
+{
+	updateFilter();
+}
+
 QColor QDataAnalysisView::getStandardColor( int idx )
 {
 	int a = idx % 3;
@@ -163,6 +175,7 @@ void QDataAnalysisView::reset()
 	currentUpdateIdx = 0;
 	currentTime = 0.0;
 	updateIndicator();
+	updateFilter();
 }
 
 void QDataAnalysisView::updateIndicator()
@@ -174,6 +187,15 @@ void QDataAnalysisView::updateIndicator()
 #else
 	auto pos = chart->mapToPosition( QPointF( currentTime, 0 ) );
 #endif
+}
+
+void QDataAnalysisView::updateFilter()
+{
+	for ( size_t i = 0; i < itemList->topLevelItemCount(); ++i )
+	{
+		auto* item = itemList->topLevelItem( i );
+		item->setHidden( !item->text( 0 ).contains( filter->text() ) );
+	}
 }
 
 void QDataAnalysisView::updateSeries( int idx )
