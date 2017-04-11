@@ -52,6 +52,7 @@ QDataAnalysisView::QDataAnalysisView( QDataAnalysisModel* m, QWidget* parent ) :
 	customPlot = new QCustomPlot();
 	//customPlot->setInteraction( QCP::iRangeDrag, true );
 	customPlot->setInteraction( QCP::iRangeZoom, true );
+	customPlot->setInteraction( QCP::iRangeDrag, true );
 	customPlot->axisRect()->setRangeDrag( Qt::Horizontal );
 	customPlot->axisRect()->setRangeZoom( Qt::Horizontal );
 	customPlot->legend->setVisible( true );
