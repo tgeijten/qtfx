@@ -11,8 +11,16 @@
 
 QDataAnalysisView::QDataAnalysisView( QDataAnalysisModel* m, QWidget* parent ) : QWidget( parent ), model( m ), currentUpdateIdx( 0 )
 {
+	selectAll = new QCheckBox( this );
+	selectAll->setText( "Select All" );
+	selectAll->setDisabled( true );
+	connect( selectAll, &QCheckBox::stateChanged, this, &QDataAnalysisView::selectAllChanged );
+
 	filter = new QLineEdit( this );
 	connect( filter, &QLineEdit::textChanged, this, &QDataAnalysisView::filterChanged );
+
+	auto* header = new QHGroup( this, 0, 4 );
+	*header << filter << selectAll;
 
 	itemList = new QTreeWidget( this );
 	itemList->setRootIsDecorated( false );
@@ -24,7 +32,7 @@ QDataAnalysisView::QDataAnalysisView( QDataAnalysisModel* m, QWidget* parent ) :
 	itemList->setHeaderLabels( headerLabels );
 
 	itemGroup = new QVGroup( this, 0, 4 );
-	*itemGroup << filter << itemList;
+	*itemGroup << header << itemList;
 
 	//itemList->header()->setStretchLastSection( false );
 
@@ -73,7 +81,6 @@ QDataAnalysisView::QDataAnalysisView( QDataAnalysisModel* m, QWidget* parent ) :
 #endif
 
 	splitter->setSizes( QList< int >{ 100, 300 } );
-
 	reset();
 }
 
@@ -138,6 +145,19 @@ void QDataAnalysisView::filterChanged( const QString& filter )
 	updateFilter();
 }
 
+void QDataAnalysisView::selectAllChanged( int state )
+{
+	if ( state != Qt::PartiallyChecked )
+	{
+		for ( size_t i = 0; i < itemList->topLevelItemCount(); ++i )
+		{
+			auto* item = itemList->topLevelItem( i );
+			if ( !item->isHidden() && item->checkState( 0 ) != state )
+				item->setCheckState( 0, Qt::CheckState( state ) );
+		}
+	}
+}
+
 QColor QDataAnalysisView::getStandardColor( int idx )
 {
 	int a = idx % 3;
@@ -191,6 +211,8 @@ void QDataAnalysisView::updateIndicator()
 
 void QDataAnalysisView::updateFilter()
 {
+	selectAll->setDisabled( filter->text().isEmpty() );
+
 	for ( size_t i = 0; i < itemList->topLevelItemCount(); ++i )
 	{
 		auto* item = itemList->topLevelItem( i );
@@ -221,7 +243,9 @@ void QDataAnalysisView::addSeries( int idx )
 	for ( auto& s : series )
 		s.second->setPen( QPen( getStandardColor( i++ ) ) );
 
+	auto range = customPlot->xAxis->range();
 	customPlot->rescaleAxes();
+	customPlot->xAxis->setRange( range );
 	updateIndicator();
 	customPlot->replot();
 #else

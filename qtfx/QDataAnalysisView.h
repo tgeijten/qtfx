@@ -17,6 +17,7 @@
 #endif
 #include "QLineEdit"
 #include "QGroup.h"
+#include "QCheckBox"
 
 class QDataAnalysisView : public QWidget
 {
@@ -36,6 +37,7 @@ public slots:
 	void updateSeries( int index );
 	void mouseEvent( QMouseEvent* m );
 	void filterChanged( const QString& filter );
+	void selectAllChanged( int state );
 
 signals:
 	void timeChanged( double );
@@ -51,6 +53,7 @@ private:
 	float minSeriesInterval = 0.01f;
 	int currentUpdateIdx;
 	double currentTime;
+	QCheckBox* selectAll;
 	QLineEdit* filter;
 	QSplitter* splitter;
 	QGroup* itemGroup;
