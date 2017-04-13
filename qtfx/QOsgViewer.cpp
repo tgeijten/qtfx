@@ -144,6 +144,20 @@ void QOsgViewer::stopCapture()
 	}
 }
 
+void QOsgViewer::captureCurrentFrame( const std::string& filename )
+{
+	stopCapture();
+
+	capture_handler = new osgViewer::ScreenCaptureHandler(
+		new osgViewer::ScreenCaptureHandler::WriteToFile( filename, "png", osgViewer::ScreenCaptureHandler::WriteToFile::OVERWRITE ), -1 );
+	viewer->addEventHandler( capture_handler );
+	capture_handler->startCapture();
+	frame();
+	capture_handler->stopCapture();
+	capture_handler = nullptr;
+	flut::log::info( "Written image to ", filename );
+}
+
 void QOsgViewer::setFrameTime( double t )
 {
 	if ( current_frame_time != t )

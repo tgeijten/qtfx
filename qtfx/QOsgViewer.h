@@ -24,6 +24,7 @@ public:
 	void moveCamera( const osg::Vec3d& delta_pos );
 	void startCapture( const std::string& filename );
 	void stopCapture();
+	void captureCurrentFrame( const std::string& filename );
 	bool isCapturing() { return capture_handler != nullptr; }
 	void startTimer() { _timer.start( 10 ); }
 	void stopTimer() { _timer.stop(); }
