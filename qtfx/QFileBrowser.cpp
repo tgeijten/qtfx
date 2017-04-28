@@ -2,37 +2,34 @@
 #include "QTreeView"
 #include "QHeaderView"
 
-QFileBrowser::QFileBrowser( QWidget* parent, const QString& folder, const QString& filter ) : QTreeView( parent )
+QFileBrowser::QFileBrowser( QWidget* parent, const QString& folder, const QString& filter, int num_columns, QFileSystemModel* model  ) :
+QTreeView( parent ),
+fileModel( nullptr )
 {
-	fileModel = new QFileSystemModel( this );
-	setModel( fileModel );
-	for ( int i = 1; i <= 3; ++i )
-		hideColumn( i );
-
 	connect( this, &QTreeView::activated, this, &QFileBrowser::activateItem );
 	connect( selectionModel(), &QItemSelectionModel::currentChanged, this, &QFileBrowser::selectItem );
-
 	if ( !folder.isEmpty() )
-		setRoot( folder, filter );
+		init( folder, filter, num_columns, model );
 }
 
-QFileBrowser::QFileBrowser( QWidget* parent, QFileSystemModel* model, const QString& folder, const QString& filter  )
+void QFileBrowser::init( const QString& folder, const QString& filter, int num_columns, QFileSystemModel* model )
 {
+	// attach model
 	fileModel = model;
-	model->setParent( this );
-	setModel( model );
-	for ( int i = 1; i <= 3; ++i )
+	if ( fileModel == nullptr )
+		fileModel = new QFileSystemModel( this );
+	else fileModel->setParent( this );
+	setModel( fileModel );
+
+	// set columns
+	for ( int i = num_columns; i <= 3; ++i )
 		hideColumn( i );
 
-	connect( this, &QTreeView::activated, this, &QFileBrowser::activateItem );
-	connect( selectionModel(), &QItemSelectionModel::currentChanged, this, &QFileBrowser::selectItem );
+	header()->setStretchLastSection( false );
+	for ( int i = 0; i < fileModel->columnCount(); ++i )
+		header()->setSectionResizeMode( i, i == 0 ? QHeaderView::Stretch : QHeaderView::ResizeToContents );
 
-	if ( !folder.isEmpty() )
-		setRoot( folder, filter );
-}
-
-void QFileBrowser::setRoot( const QString& folder, const QString& filter )
-{
+	// set folder / filter
 	QDir().mkdir( folder );
 	fileModel->setNameFilters( QStringList( filter ) );
 	fileModel->setNameFilterDisables( false );
