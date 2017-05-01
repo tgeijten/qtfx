@@ -43,7 +43,7 @@ signals:
 	void timeChanged( double );
 
 private:
-	QColor getStandardColor( int idx );
+	QColor getStandardColor( int idx, float brightness = 0.75f );
 	void addSeries( int idx );
 	void removeSeries( int idx );
 	void updateIndicator();

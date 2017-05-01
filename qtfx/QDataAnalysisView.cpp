@@ -8,6 +8,7 @@
 #include "flut/system/types.hpp"
 #include <set>
 #include "qtfx.h"
+#include <array>
 
 QDataAnalysisView::QDataAnalysisView( QDataAnalysisModel* m, QWidget* parent ) : QWidget( parent ), model( m ), currentUpdateIdx( 0 )
 {
@@ -159,14 +160,12 @@ void QDataAnalysisView::selectAllChanged( int state )
 	}
 }
 
-QColor QDataAnalysisView::getStandardColor( int idx )
+QColor QDataAnalysisView::getStandardColor( int idx, float value )
 {
-	int a = idx % 3;
-	int b = ( idx / 3 ) % 3;
-	int hidx = a * 120 + b * 45;
-
-	float hue = fmod( hidx, 360. );
-	vis::color c = vis::make_from_hsv( hue, 1.0f, 0.75f );
+	static std::array< float, 7 > standard_hue{ 0, 45, 90, 165, 210, 270, 315 };
+	float hue = standard_hue[ idx % standard_hue.size() ];
+	float sat = 1.0f / ( 1.0f + idx / standard_hue.size() );
+	vis::color c = vis::make_from_hsv( hue, sat, value );
 	return QColor( 255 * c.r, 255 * c.g, 255 * c.b );
 }
 
