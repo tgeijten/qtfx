@@ -37,7 +37,9 @@ public slots:
 	void updateSeries( int index );
 	void mouseEvent( QMouseEvent* m );
 	void filterChanged( const QString& filter );
-	void selectAllChanged( int state );
+	void setSelectionState( int state );
+	void selectAll() { setSelectionState( Qt::Checked ); }
+	void selectNone() { setSelectionState( Qt::Unchecked ); }
 
 signals:
 	void timeChanged( double );
@@ -53,7 +55,8 @@ private:
 	float minSeriesInterval = 0.01f;
 	int currentUpdateIdx;
 	double currentTime;
-	QCheckBox* selectAll;
+	QToolButton* selectAllButton;
+	QToolButton* selectNoneButton;
 	QLineEdit* filter;
 	QSplitter* splitter;
 	QGroup* itemGroup;

@@ -12,16 +12,19 @@
 
 QDataAnalysisView::QDataAnalysisView( QDataAnalysisModel* m, QWidget* parent ) : QWidget( parent ), model( m ), currentUpdateIdx( 0 )
 {
-	selectAll = new QCheckBox( this );
-	selectAll->setText( "Select All" );
-	selectAll->setDisabled( true );
-	connect( selectAll, &QCheckBox::stateChanged, this, &QDataAnalysisView::selectAllChanged );
+	selectAllButton = new QToolButton( this );
+	connect( selectAllButton, &QPushButton::pressed, this, &QDataAnalysisView::selectAll );
+	selectAllButton->setDisabled( true );
+	selectNoneButton = new QToolButton( this );
+	connect( selectNoneButton, &QPushButton::pressed, this, &QDataAnalysisView::selectNone );
+	selectAllButton->setText( "All" );
+	selectNoneButton->setText( "None" );
 
 	filter = new QLineEdit( this );
 	connect( filter, &QLineEdit::textChanged, this, &QDataAnalysisView::filterChanged );
 
 	auto* header = new QHGroup( this, 0, 4 );
-	*header << filter << selectAll;
+	*header << filter << selectAllButton << selectNoneButton;
 
 	itemList = new QTreeWidget( this );
 	itemList->setRootIsDecorated( false );
@@ -147,7 +150,7 @@ void QDataAnalysisView::filterChanged( const QString& filter )
 	updateFilter();
 }
 
-void QDataAnalysisView::selectAllChanged( int state )
+void QDataAnalysisView::setSelectionState( int state )
 {
 	if ( state != Qt::PartiallyChecked )
 	{
@@ -162,10 +165,12 @@ void QDataAnalysisView::selectAllChanged( int state )
 
 QColor QDataAnalysisView::getStandardColor( int idx, float value )
 {
-	static std::array< float, 7 > standard_hue{ 0, 45, 90, 165, 210, 270, 315 };
+	static std::array< float, 10 > standard_hue{ 0, 60, 120, 180, 240, 300, 30, 210, 270, 330 };
+	static std::array< float, 10 > standard_val{ 1, 0.75, 0.75, 0.75, 1, 1, 1, 0.75, 1, 1 };
 	float hue = standard_hue[ idx % standard_hue.size() ];
 	float sat = 1.0f / ( 1.0f + idx / standard_hue.size() );
-	vis::color c = vis::make_from_hsv( hue, sat, value );
+	float val = standard_val[ idx % standard_hue.size() ];
+	vis::color c = vis::make_from_hsv( hue, sat, val );
 	return QColor( 255 * c.r, 255 * c.g, 255 * c.b );
 }
 
@@ -211,7 +216,7 @@ void QDataAnalysisView::updateIndicator()
 
 void QDataAnalysisView::updateFilter()
 {
-	selectAll->setDisabled( filter->text().isEmpty() );
+	selectAllButton->setDisabled( filter->text().isEmpty() );
 
 	for ( size_t i = 0; i < itemList->topLevelItemCount(); ++i )
 	{
