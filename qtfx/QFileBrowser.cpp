@@ -25,7 +25,7 @@ void QFileBrowser::setModel( QFileSystemModel* model )
 	if ( fileModel == nullptr )
 		fileModel = new QFileSystemModel( this );
 	else fileModel->setParent( this );
-	setModel( fileModel );
+	QTreeView::setModel( fileModel );
 }
 
 void QFileBrowser::setRoot( const QString& folder, const QString& filter )
