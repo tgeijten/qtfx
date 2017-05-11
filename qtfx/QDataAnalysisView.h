@@ -18,6 +18,7 @@
 #include "QLineEdit"
 #include "QGroup.h"
 #include "QCheckBox"
+#include "QToolButton"
 
 class QDataAnalysisView : public QWidget
 {

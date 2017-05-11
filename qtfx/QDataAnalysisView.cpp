@@ -13,10 +13,10 @@
 QDataAnalysisView::QDataAnalysisView( QDataAnalysisModel* m, QWidget* parent ) : QWidget( parent ), model( m ), currentUpdateIdx( 0 )
 {
 	selectAllButton = new QToolButton( this );
-	connect( selectAllButton, &QPushButton::pressed, this, &QDataAnalysisView::selectAll );
+	connect( selectAllButton, &QToolButton::pressed, this, &QDataAnalysisView::selectAll );
 	selectAllButton->setDisabled( true );
 	selectNoneButton = new QToolButton( this );
-	connect( selectNoneButton, &QPushButton::pressed, this, &QDataAnalysisView::selectNone );
+	connect( selectNoneButton, &QToolButton::pressed, this, &QDataAnalysisView::selectNone );
 	selectAllButton->setText( "All" );
 	selectNoneButton->setText( "None" );
 

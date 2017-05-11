@@ -8,19 +8,40 @@ fileModel( nullptr )
 {
 	connect( this, &QTreeView::activated, this, &QFileBrowser::activateItem );
 	connect( selectionModel(), &QItemSelectionModel::currentChanged, this, &QFileBrowser::selectItem );
-	if ( !folder.isEmpty() )
-		init( folder, filter, num_columns, model );
+
+	setModel( model );
+	setRoot( folder, filter );
+	setNumColumns( num_columns );
 }
 
-void QFileBrowser::init( const QString& folder, const QString& filter, int num_columns, QFileSystemModel* model )
+void QFileBrowser::setModel( QFileSystemModel* model )
 {
+	// detach existing (if any) -- perhaps this is not needed
+	if ( fileModel )
+		fileModel->setParent( nullptr );
+
 	// attach model
 	fileModel = model;
 	if ( fileModel == nullptr )
 		fileModel = new QFileSystemModel( this );
 	else fileModel->setParent( this );
 	setModel( fileModel );
+}
 
+void QFileBrowser::setRoot( const QString& folder, const QString& filter )
+{
+	if ( fileModel && !folder.isEmpty() )
+	{
+		// set folder / filter
+		QDir().mkdir( folder );
+		fileModel->setNameFilters( QStringList( filter ) );
+		fileModel->setNameFilterDisables( false );
+		setRootIndex( fileModel->setRootPath( folder ) );
+	}
+}
+
+void QFileBrowser::setNumColumns( int num_columns )
+{
 	// set columns
 	for ( int i = num_columns; i <= 3; ++i )
 		hideColumn( i );
@@ -28,12 +49,6 @@ void QFileBrowser::init( const QString& folder, const QString& filter, int num_c
 	header()->setStretchLastSection( false );
 	for ( int i = 0; i < fileModel->columnCount(); ++i )
 		header()->setSectionResizeMode( i, i == 0 ? QHeaderView::Stretch : QHeaderView::ResizeToContents );
-
-	// set folder / filter
-	QDir().mkdir( folder );
-	fileModel->setNameFilters( QStringList( filter ) );
-	fileModel->setNameFilterDisables( false );
-	setRootIndex( fileModel->setRootPath( folder ) );
 }
 
 void QFileBrowser::activateItem( const QModelIndex& idx )
