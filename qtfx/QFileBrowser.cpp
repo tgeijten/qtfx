@@ -6,12 +6,12 @@ QFileBrowser::QFileBrowser( QWidget* parent, const QString& folder, const QStrin
 QTreeView( parent ),
 fileModel( nullptr )
 {
-	connect( this, &QTreeView::activated, this, &QFileBrowser::activateItem );
-	connect( selectionModel(), &QItemSelectionModel::currentChanged, this, &QFileBrowser::selectItem );
-
 	setModel( model );
 	setRoot( folder, filter );
 	setNumColumns( num_columns );
+
+	connect( this, &QTreeView::activated, this, &QFileBrowser::activateItem );
+	connect( selectionModel(), &QItemSelectionModel::currentChanged, this, &QFileBrowser::selectItem );
 }
 
 void QFileBrowser::setModel( QFileSystemModel* model )
