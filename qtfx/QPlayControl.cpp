@@ -161,7 +161,10 @@ void QPlayControl::toggle()
 void QPlayControl::reset()
 {
 	if ( qtimer.isActive() )
+	{
 		qtimer.stop();
+		emit stopTriggered();
+	}
 
 	setTime( 0 );
 	emit resetTriggered();

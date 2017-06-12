@@ -32,8 +32,8 @@ public slots:
 	void setAutoExtendRange( bool b ) { autoExtendRange = b; }
 	void play();
 	void stop();
-	void toggle();
 	void reset();
+	void toggle();
 	void previous();
 	void next();
 	void faster();
