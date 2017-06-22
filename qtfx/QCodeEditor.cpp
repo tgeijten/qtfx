@@ -30,6 +30,11 @@ textChangedFlag( false )
 QCodeEditor::~QCodeEditor()
 {}
 
+QString QCodeEditor::getPlainText() const
+{
+	return textEdit->toPlainText();
+}
+
 void QCodeEditor::open( const QString& filename )
 {
 	// TODO: create appropriate highlighter
@@ -39,7 +44,7 @@ void QCodeEditor::open( const QString& filename )
 	if ( f.open( QFile::ReadOnly | QFile::Text ) )
 	{
 		QTextStream str( &f );
-		data = str.readAll();
+		QString data = str.readAll();
 		textEdit->setPlainText( data );
 		fileName = filename;
 		textChangedFlag = false;

@@ -13,6 +13,7 @@ public:
 	QCodeEditor( QWidget* parent = 0 );
 	virtual ~QCodeEditor();
 	bool hasTextChanged() { return textChangedFlag; }
+	QString getPlainText() const;
 
 public slots:
 	void open( const QString& filename );
@@ -30,7 +31,6 @@ public:
 	QString defaultFolder;
 	QString fileTypes;
 	QString fileName;
-	QString data;
 	bool textChangedFlag = false;
 
 private:
