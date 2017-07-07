@@ -43,7 +43,6 @@ protected:
 	}
 
 	virtual bool canClose() { return true; }
-
 	void setActiveFile( const QString& filename ) { activeFile = filename; }
 
 	QStatusBar* createStatusBar();
@@ -62,6 +61,10 @@ protected:
 	void saveSettings();
 
 	virtual void closeEvent( QCloseEvent *event ) override;
+
+	void information( const QString& title, const QString& message );
+	void warning( const QString& title, const QString& message );
+	void error( const QString& title, const QString& message );
 
 	QWidget* centralWidget;
 	QMenu* fileMenu;

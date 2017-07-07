@@ -4,6 +4,7 @@
 #include <QDockWidget>
 #include <QBoxLayout>
 #include <QMenuBar>
+#include <QMessageBox>
 #include <iostream>
 #include <QFileDialog>
 #include <QSettings>
@@ -209,4 +210,19 @@ void QCompositeMainWindow::closeEvent( QCloseEvent *event )
 		event->accept();
 	}
 	else event->ignore();
+}
+
+void QCompositeMainWindow::information( const QString& title, const QString& message )
+{
+	QMessageBox::information( this, title, message );
+}
+
+void QCompositeMainWindow::warning( const QString& title, const QString& message )
+{
+	QMessageBox::warning( this, title, message );
+}
+
+void QCompositeMainWindow::error( const QString& title, const QString& message )
+{
+	QMessageBox::critical( this, title, message );
 }
