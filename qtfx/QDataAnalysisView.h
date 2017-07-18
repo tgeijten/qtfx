@@ -14,6 +14,7 @@
 #include "QtCharts/QChart"
 #include "QtCharts/QLineSeries"
 #include "QtCharts/QChartView"
+#include "QtWidgets/QGraphicsLayout"
 #endif
 #include "QLineEdit"
 #include "QGroup.h"

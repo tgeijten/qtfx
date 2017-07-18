@@ -1,7 +1,6 @@
 #include "QDataAnalysisView.h"
 #include "QAction"
 #include "QHeaderView"
-#include "QtWidgets/QGraphicsLayout"
 #include <algorithm>
 #include "simvis/color.h"
 #include "flut/system/log_sink.hpp"

@@ -28,3 +28,13 @@ QPlot::~QPlot()
 {
 
 }
+
+size_t QPlot::addSeries( const QString& label )
+{
+	QtCharts::QLineSeries* ls = new QtCharts::QLineSeries;
+	ls->setName( label );
+	chart->addSeries( ls );
+	chart->createDefaultAxes();
+	chart->zoomReset();
+	return chart->series().size() - 1;
+}
