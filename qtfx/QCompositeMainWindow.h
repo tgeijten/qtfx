@@ -64,6 +64,7 @@ protected:
 
 	void information( const QString& title, const QString& message );
 	void warning( const QString& title, const QString& message );
+	bool question( const QString& title, const QString& message );
 	void error( const QString& title, const QString& message );
 
 	QWidget* centralWidget;

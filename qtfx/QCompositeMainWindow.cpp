@@ -222,6 +222,11 @@ void QCompositeMainWindow::warning( const QString& title, const QString& message
 	QMessageBox::warning( this, title, message );
 }
 
+bool QCompositeMainWindow::question( const QString& title, const QString& message )
+{
+	return QMessageBox::question( this, title, message ) == QMessageBox::Yes;
+}
+
 void QCompositeMainWindow::error( const QString& title, const QString& message )
 {
 	QMessageBox::critical( this, title, message );
