@@ -12,7 +12,8 @@ skipTime( 0.01 ),
 slomoFactor( 1.0 ),
 minTime( 0.0 ),
 maxTime( 1.0 ),
-autoExtendRange( false )
+autoExtendRange( false ),
+timer_delta( 0 )
 {
 	playButton = new QToolButton( this );
 	playButton->setIcon( style()->standardIcon( QStyle::SP_MediaPlay ) );
@@ -136,7 +137,7 @@ void QPlayControl::play()
 			reset();
 		qtimer.start( 10 );
 		timer.reset();
-		timer_delta.reset();
+		timer_delta( 0 );
 		emit playTriggered();
 	}
 }
