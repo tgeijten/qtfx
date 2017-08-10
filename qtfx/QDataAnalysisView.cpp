@@ -51,7 +51,7 @@ QDataAnalysisView::QDataAnalysisView( QDataAnalysisModel* m, QWidget* parent ) :
 	layout->setSpacing( 4 );
 	layout->addWidget( splitter );
 
-#ifdef QTFX_USE_QCUSTOMPLOT
+#if !defined QTFX_NO_QCUSTOMPLOT
 	customPlot = new QCustomPlot();
 	customPlot->setInteraction( QCP::iRangeZoom, true );
 	customPlot->setInteraction( QCP::iRangeDrag, true );
@@ -133,7 +133,7 @@ void QDataAnalysisView::clearSeries()
 
 void QDataAnalysisView::mouseEvent( QMouseEvent* event )
 {
-#ifdef QTFX_USE_QCUSTOMPLOT
+#if !defined QTFX_NO_QCUSTOMPLOT
 	if ( event->buttons() & Qt::LeftButton )
 	{
 		double x = customPlot->xAxis->pixelToCoord( event->pos().x() );
@@ -203,7 +203,7 @@ void QDataAnalysisView::reset()
 
 void QDataAnalysisView::updateIndicator()
 {
-#ifdef QTFX_USE_QCUSTOMPLOT
+#if !defined QTFX_NO_QCUSTOMPLOT
 	customPlotLine->start->setCoords( currentTime, customPlot->yAxis->range().lower );
 	customPlotLine->end->setCoords( currentTime, customPlot->yAxis->range().upper );
 	customPlot->replot();
@@ -235,7 +235,7 @@ void QDataAnalysisView::updateSeries( int idx )
 
 void QDataAnalysisView::addSeries( int idx )
 {
-#ifdef QTFX_USE_QCUSTOMPLOT
+#if !defined QTFX_NO_QCUSTOMPLOT
 	QCPGraph* graph = customPlot->addGraph();
 	graph->setName( model->getLabel( idx ) );
 	auto data = model->getSeries( idx, minSeriesInterval );
@@ -266,7 +266,7 @@ void QDataAnalysisView::addSeries( int idx )
 
 void QDataAnalysisView::removeSeries( int idx )
 {
-#ifdef QTFX_USE_QCUSTOMPLOT
+#if !defined QTFX_NO_QCUSTOMPLOT
 	auto it = series.find( idx );
 	customPlot->removeGraph( it->second );
 	customPlot->rescaleAxes();

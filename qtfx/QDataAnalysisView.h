@@ -8,8 +8,8 @@
 #include "QTreeWidget"
 #include "QDataAnalysisModel.h"
 
-#if defined QTFX_USE_QCUSTOMPLOT
-#include "qcustomplot.h"
+#if !defined QTFX_NO_QCUSTOMPLOT
+#include "qcustomplot/qcustomplot.h"
 #else
 #include "QtCharts/QChart"
 #include "QtCharts/QLineSeries"
@@ -65,7 +65,7 @@ private:
 	QTreeWidget* itemList;
 	QDataAnalysisModel* model;
 
-#if defined QTFX_USE_QCUSTOMPLOT
+#if !defined QTFX_NO_QCUSTOMPLOT
 	QCustomPlot* customPlot;
 	QCPItemLine* customPlotLine;
 	flut::flat_map< int, QCPGraph* > series;
