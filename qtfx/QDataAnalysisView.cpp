@@ -267,12 +267,14 @@ void QDataAnalysisView::addSeries( int idx )
 void QDataAnalysisView::removeSeries( int idx )
 {
 #if !defined QTFX_NO_QCUSTOMPLOT
+	auto range = customPlot->xAxis->range();
 	auto it = series.find( idx );
 	customPlot->removeGraph( it->second );
 	customPlot->rescaleAxes();
-	customPlot->replot();
+	customPlot->xAxis->setRange( range );
 	series.erase( it );
 	updateIndicator();
+	customPlot->replot();
 #else
 	auto it = series.find( idx );
 	chart->removeSeries( it->second );
