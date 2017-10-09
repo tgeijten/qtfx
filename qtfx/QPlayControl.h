@@ -23,19 +23,25 @@ public:
 
 	void setRange( double min, double max );
 	void setTime( double time );
-	bool getLoop();
-	bool getAutoExtendRange() { return autoExtendRange;  }
-	bool isPlaying();
+	void setStepTime( double t ) { stepTime = t; }
+	void setPageTime( double t ) { pageTime = t; }
+	bool loop() const;
+	bool autoExtendRange() const { return autoExtendRange_;  }
+	bool isPlaying() const;
 
 public slots:
 	void setLoop( bool b );
-	void setAutoExtendRange( bool b ) { autoExtendRange = b; }
+	void setAutoExtendRange( bool b ) { autoExtendRange_ = b; }
 	void play();
 	void stop();
 	void reset();
+	void stopReset();
+	void end();
 	void toggle();
-	void previous();
-	void next();
+	void stepBack();
+	void stepForward();
+	void pageBack();
+	void pageForward();
 	void faster();
 	void slower();
 
@@ -65,11 +71,12 @@ private:
 	QSlider *slider;
 	QLCDNumber* label;
 	double currentTime;
-	double skipTime;
+	double stepTime;
+	double pageTime;
 	double slomoFactor;
 	double minTime, maxTime;
 
-	bool autoExtendRange;
+	bool autoExtendRange_;
 
 	QTimer qtimer;
 	flut::timer timer;

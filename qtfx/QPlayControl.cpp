@@ -8,11 +8,12 @@
 QPlayControl::QPlayControl( QWidget *parent ) :
 QWidget( parent ),
 currentTime( 0.0 ),
-skipTime( 0.01 ),
+stepTime( 0.01 ),
+pageTime( 0.1 ),
 slomoFactor( 1.0 ),
 minTime( 0.0 ),
 maxTime( 1.0 ),
-autoExtendRange( false ),
+autoExtendRange_( false ),
 timer_delta( 0 )
 {
 	playButton = new QToolButton( this );
@@ -21,15 +22,15 @@ timer_delta( 0 )
 
 	stopButton = new QToolButton( this );
 	stopButton->setIcon( style()->standardIcon( QStyle::SP_MediaStop ) );
-	connect( stopButton, SIGNAL( clicked() ), this, SLOT( stop() ) );
+	connect( stopButton, SIGNAL( clicked() ), this, SLOT( stopReset() ) );
 
 	nextButton = new QToolButton( this );
 	nextButton->setIcon( style()->standardIcon( QStyle::SP_MediaSkipForward ) );
-	connect( nextButton, SIGNAL( clicked() ), this, SLOT( next() ) );
+	connect( nextButton, SIGNAL( clicked() ), this, SLOT( stepForward() ) );
 
 	previousButton = new QToolButton( this );
 	previousButton->setIcon( style()->standardIcon( QStyle::SP_MediaSkipBackward ) );
-	connect( previousButton, SIGNAL( clicked() ), this, SLOT( previous() ) );
+	connect( previousButton, SIGNAL( clicked() ), this, SLOT( stepBack() ) );
 
 	loopButton = new QToolButton( this );
 	loopButton->setCheckable( true );
@@ -82,28 +83,29 @@ void QPlayControl::setRange( double min, double max )
 
 void QPlayControl::setTime( double time )
 {
-	currentTime = time;
-
-	if ( currentTime > maxTime )
+	if ( time > maxTime )
 	{
-		if ( getAutoExtendRange() )
+		if ( autoExtendRange() ) // adjust maximum
 		{
-			// adjust maximum
-			setRange( minTime, currentTime );
+			setRange( minTime, time );
+			currentTime = time;
 		}
-		else if ( isPlaying() && getLoop() )
+		else if ( isPlaying() && loop() ) // loop
 		{
-			// restart
 			currentTime = minTime;
 		}
-		else
+		else // clamp to maximum and stop playing
 		{
-			// clamp to maximum and stop playing
 			currentTime = maxTime;
 			if ( isPlaying() )
 				stop();
 		}
 	}
+	else if ( time < minTime )
+	{
+		currentTime = minTime;
+	}
+	else currentTime = time;
 
 	slider->blockSignals( true );
 	slider->setValue( int( currentTime * 1000 ) );
@@ -114,12 +116,12 @@ void QPlayControl::setTime( double time )
 	emit timeChanged( currentTime );
 }
 
-bool QPlayControl::getLoop()
+bool QPlayControl::loop() const
 {
 	return loopButton->isChecked();
 }
 
-bool QPlayControl::isPlaying()
+bool QPlayControl::isPlaying() const
 {
 	return qtimer.isActive();
 }
@@ -144,11 +146,14 @@ void QPlayControl::play()
 
 void QPlayControl::stop()
 {
-	if ( qtimer.isActive() )
-	{
-		qtimer.stop();
-		emit stopTriggered();
-	}
+	qtimer.stop();
+	emit stopTriggered();
+}
+
+void QPlayControl::stopReset()
+{
+	if ( isPlaying() )
+		stop();
 	else reset();
 }
 
@@ -161,26 +166,37 @@ void QPlayControl::toggle()
 
 void QPlayControl::reset()
 {
-	if ( qtimer.isActive() )
-	{
-		qtimer.stop();
-		emit stopTriggered();
-	}
-
-	setTime( 0 );
+	if ( isPlaying() )
+		stop();
+	setTime( minTime );
 	emit resetTriggered();
 }
 
-void QPlayControl::previous()
+void QPlayControl::end()
 {
-	setTime( currentTime - skipTime );
-	emit previousTriggered();
+	if ( isPlaying() )
+		stop();
+	setTime( maxTime );
 }
 
-void QPlayControl::next()
+void QPlayControl::stepBack()
 {
-	setTime( currentTime + skipTime );
-	emit nextTriggered();
+	setTime( currentTime - stepTime );
+}
+
+void QPlayControl::stepForward()
+{
+	setTime( currentTime + stepTime );
+}
+
+void QPlayControl::pageBack()
+{
+	setTime( currentTime - pageTime );
+}
+
+void QPlayControl::pageForward()
+{
+	setTime( currentTime + pageTime );
 }
 
 void QPlayControl::faster()
