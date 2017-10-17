@@ -157,7 +157,7 @@ void QPlayControl::stopReset()
 	else reset();
 }
 
-void QPlayControl::toggle()
+void QPlayControl::togglePlay()
 {
 	if ( isPlaying() )
 		stop();

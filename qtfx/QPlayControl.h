@@ -37,7 +37,8 @@ public slots:
 	void reset();
 	void stopReset();
 	void end();
-	void toggle();
+	void togglePlay();
+	void toggleLoop() { setLoop( !loop() ); }
 	void stepBack();
 	void stepForward();
 	void pageBack();
