@@ -53,7 +53,7 @@ private:
 	void updateIndicator();
 	void updateFilter();
 
-	int smallRefreshItemCount = 1000;
+	int smallRefreshItemCount = 100;
 	float minSeriesInterval = 0.01f;
 	int currentUpdateIdx;
 	double currentTime;
