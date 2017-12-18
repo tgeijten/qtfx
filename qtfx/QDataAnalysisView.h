@@ -1,7 +1,7 @@
 #pragma once
 
-#include "flut/flat_map.hpp"
-#include "flut/storage.hpp"
+#include "xo/container/flat_map.h"
+#include "xo/container/storage.h"
 
 #include "QWidget"
 #include "QSplitter"
@@ -68,10 +68,10 @@ private:
 #if !defined QTFX_NO_QCUSTOMPLOT
 	QCustomPlot* customPlot;
 	QCPItemLine* customPlotLine;
-	flut::flat_map< int, QCPGraph* > series;
+	xo::flat_map< int, QCPGraph* > series;
 #else
 	QtCharts::QChart* chart;
-	flut::flat_map< int, QtCharts::QLineSeries* > series;
+	xo::flat_map< int, QtCharts::QLineSeries* > series;
 	QtCharts::QChartView* chartView;
 #endif
 };

@@ -3,8 +3,8 @@
 #include "QHeaderView"
 #include <algorithm>
 #include "simvis/color.h"
-#include "flut/system/log_sink.hpp"
-#include "flut/system/types.hpp"
+#include "xo/system/log_sink.h"
+#include "xo/utility/types.h"
 #include <set>
 #include "qtfx.h"
 #include <array>
@@ -129,7 +129,7 @@ void QDataAnalysisView::itemChanged( QTreeWidgetItem* item, int column )
 void QDataAnalysisView::clearSeries()
 {
 	while ( !series.empty() )
-		removeSeries( series.back().first );
+		removeSeries( series.rbegin()->first );
 }
 
 void QDataAnalysisView::mouseEvent( QMouseEvent* event )
@@ -138,7 +138,7 @@ void QDataAnalysisView::mouseEvent( QMouseEvent* event )
 	if ( event->buttons() & Qt::LeftButton )
 	{
 		double x = customPlot->xAxis->pixelToCoord( event->pos().x() );
-		flut::math::clamp( x, model->getTimeStart(), model->getTimeFinish() );
+		xo::clamp( x, model->getTimeStart(), model->getTimeFinish() );
 		emit timeChanged( x );
 	}
 #endif

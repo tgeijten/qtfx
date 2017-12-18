@@ -24,8 +24,8 @@ template< typename T >
 class StorageDataAnalysisModel : public QDataAnalysisModel
 {
 public:
-	StorageDataAnalysisModel( const flut::storage< T >& s, double freq ) : storage( s ), frequency( freq ) {}
-	const flut::storage< T >& storage;
+	StorageDataAnalysisModel( const xo::storage< T >& s, double freq ) : storage( s ), frequency( freq ) {}
+	const xo::storage< T >& storage;
 	double frequency;
 	virtual QString getLabel( int idx ) const override { return QString( storage.get_label( idx ).c_str() ); }
 	virtual DataSeries getSeries( int idx, double min_interval = 0.0 ) const override {
@@ -40,7 +40,7 @@ public:
 	virtual double getTimeFinish() const override { return storage.frame_size() / frequency; }
 	virtual double getTimeStart() const override { return 0.0; }
 	virtual double getValue( int idx, double time ) const override {
-		int frame_idx = flut::math::clamped< int >( round( time * frequency ), 0, storage.frame_size() - 1 );
+		int frame_idx = xo::clamped< int >( round( time * frequency ), 0, storage.frame_size() - 1 );
 		return storage( frame_idx, idx );
 	}
 
