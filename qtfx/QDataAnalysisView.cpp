@@ -8,7 +8,6 @@
 #include <set>
 #include "qtfx.h"
 #include <array>
-#include "scone/core/Log.h"
 
 QDataAnalysisView::QDataAnalysisView( QDataAnalysisModel* m, QWidget* parent ) : QWidget( parent ), model( m ), currentUpdateIdx( 0 )
 {
