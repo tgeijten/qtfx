@@ -5,9 +5,9 @@
 #include <QLabel>
 #include <QLCDNumber>
 #include <QTimer>
-#include "flut/timer.hpp"
-#include "flut/math/delta.hpp"
-#include "flut/system/types.hpp"
+#include "xo/time/timer.h"
+#include "xo/numerical/delta.h"
+#include "xo/utility/types.h"
 
 class QAbstractButton;
 class QAbstractSlider;
@@ -80,6 +80,6 @@ private:
 	bool autoExtendRange_;
 
 	QTimer qtimer;
-	flut::timer timer;
-	flut::delta< flut::seconds_t > timer_delta;
+	xo::timer timer;
+	xo::delta< xo::seconds_t > timer_delta;
 };

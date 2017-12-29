@@ -3,7 +3,7 @@
 #include <QToolButton>
 #include <QWidget>
 #include <QComboBox>
-#include "flut/system/log.hpp"
+#include "xo/system/log.h"
 
 QPlayControl::QPlayControl( QWidget *parent ) :
 QWidget( parent ),

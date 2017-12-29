@@ -1,7 +1,7 @@
 #include "QCodeEditor.h"
-#include "flut/system_tools.hpp"
-#include "flut/system/assert.hpp"
-#include "flut/string_tools.hpp"
+#include "xo/system/system_tools.h"
+#include "xo/system/assert.h"
+#include "xo/string/string_tools.h"
 #include <QTextStream>
 #include <QMessageBox>
 #include <QFileDialog>
