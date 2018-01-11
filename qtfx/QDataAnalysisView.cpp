@@ -11,19 +11,14 @@
 
 QDataAnalysisView::QDataAnalysisView( QDataAnalysisModel* m, QWidget* parent ) : QWidget( parent ), model( m ), currentUpdateIdx( 0 )
 {
-	selectAllButton = new QToolButton( this );
-	connect( selectAllButton, &QToolButton::pressed, this, &QDataAnalysisView::selectAll );
-	selectAllButton->setDisabled( true );
-	selectNoneButton = new QToolButton( this );
-	connect( selectNoneButton, &QToolButton::pressed, this, &QDataAnalysisView::selectNone );
-	selectAllButton->setText( "All" );
-	selectNoneButton->setText( "None" );
+	selectBox = new QCheckBox( this );
+	connect( selectBox, &QCheckBox::stateChanged, this, &QDataAnalysisView::select );
 
 	filter = new QLineEdit( this );
 	connect( filter, &QLineEdit::textChanged, this, &QDataAnalysisView::filterChanged );
 
 	auto* header = new QHGroup( this, 0, 4 );
-	*header << filter << selectAllButton << selectNoneButton;
+	*header << new QLabel( "Filter", this ) << filter << selectBox;
 
 	itemList = new QTreeWidget( this );
 	itemList->setRootIsDecorated( false );
@@ -36,9 +31,6 @@ QDataAnalysisView::QDataAnalysisView( QDataAnalysisModel* m, QWidget* parent ) :
 
 	itemGroup = new QVGroup( this, 0, 4 );
 	*itemGroup << header << itemList;
-
-	//itemList->header()->setStretchLastSection( false );
-
 	connect( itemList, &QTreeWidget::itemChanged, this, &QDataAnalysisView::itemChanged );
 
 	splitter = new QSplitter( this );
@@ -89,10 +81,10 @@ QDataAnalysisView::QDataAnalysisView( QDataAnalysisModel* m, QWidget* parent ) :
 
 void QDataAnalysisView::refresh( double time, bool refreshAll )
 {
-	if ( itemList->topLevelItemCount() != model->getVariableCount() )
+	if ( itemList->topLevelItemCount() != model->getSeriesCount() )
 		return reset();
 
-	if ( model->getVariableCount() == 0 )
+	if ( model->getSeriesCount() == 0 )
 		return;
 
 	// update state
@@ -101,12 +93,12 @@ void QDataAnalysisView::refresh( double time, bool refreshAll )
 	// draw stuff if visible
 	if ( isVisible() )
 	{
-		int itemCount = refreshAll ? model->getVariableCount() : std::min<int>( smallRefreshItemCount, model->getVariableCount() );
+		int itemCount = refreshAll ? model->getSeriesCount() : std::min<int>( smallRefreshItemCount, model->getSeriesCount() );
 		itemList->setUpdatesEnabled( false );
 		for ( size_t i = 0; i < itemCount; ++i )
 		{
 			itemList->topLevelItem( currentUpdateIdx )->setText( 1, QString().sprintf( "%.3f", model->getValue( currentUpdateIdx, time ) ) );
-			++currentUpdateIdx %= model->getVariableCount();
+			++currentUpdateIdx %= model->getSeriesCount();
 		}
 		itemList->setUpdatesEnabled( true );
 
@@ -186,7 +178,7 @@ void QDataAnalysisView::reset()
 	itemList->clear();
 	clearSeries();
 
-	for ( size_t i = 0; i < model->getVariableCount(); ++i )
+	for ( size_t i = 0; i < model->getSeriesCount(); ++i )
 	{
 		auto* wdg = new QTreeWidgetItem( itemList, QStringList( model->getLabel( i ) ) );
 		wdg->setTextAlignment( 1, Qt::AlignRight );
@@ -214,13 +206,34 @@ void QDataAnalysisView::updateIndicator()
 
 void QDataAnalysisView::updateFilter()
 {
-	selectAllButton->setDisabled( filter->text().isEmpty() );
-
+	//selectAllButton->setDisabled( filter->text().isEmpty() );
 	for ( size_t i = 0; i < itemList->topLevelItemCount(); ++i )
 	{
 		auto* item = itemList->topLevelItem( i );
 		item->setHidden( !item->text( 0 ).contains( filter->text() ) );
 	}
+
+	updateSelectBox();
+}
+
+void QDataAnalysisView::updateSelectBox()
+{
+	size_t checked_count = 0;
+	size_t shown_count = 0;
+
+	for ( size_t i = 0; i < itemList->topLevelItemCount(); ++i )
+	{
+		auto* item = itemList->topLevelItem( i );
+		if ( !item->isHidden() )
+		{
+			shown_count++;
+			checked_count += item->checkState( 0 ) == Qt::Checked;
+		}
+	}
+
+	selectBox->blockSignals( true );
+	selectBox->setCheckState( checked_count > 0 ? ( shown_count == checked_count ? Qt::Checked : Qt::Checked ) : Qt::Unchecked );
+	selectBox->blockSignals( false );
 }
 
 void QDataAnalysisView::updateSeries( int idx )
@@ -231,6 +244,7 @@ void QDataAnalysisView::updateSeries( int idx )
 		addSeries( idx );
 	else if ( series_it != series.end() && item->checkState( 0 ) == Qt::Unchecked )
 		removeSeries( idx );
+	updateSelectBox();
 }
 
 void QDataAnalysisView::addSeries( int idx )
