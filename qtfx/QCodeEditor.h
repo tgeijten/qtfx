@@ -49,13 +49,11 @@ class BasicXMLSyntaxHighlighter : public QSyntaxHighlighter
 public:
 	BasicXMLSyntaxHighlighter( QObject * parent );
 	BasicXMLSyntaxHighlighter( QTextDocument * parent );
-	BasicXMLSyntaxHighlighter( QTextEdit * parent );
 
 	virtual ~BasicXMLSyntaxHighlighter() {}
 
 protected:
 	virtual void highlightBlock( const QString & text );
-
 
 private:
 	void highlightByRegex( const QTextCharFormat & format, const QRegExp & regex, const QString & text );

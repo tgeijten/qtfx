@@ -111,15 +111,7 @@ BasicXMLSyntaxHighlighter::BasicXMLSyntaxHighlighter( QObject * parent ) : QSynt
 	setFormats();
 }
 
-BasicXMLSyntaxHighlighter::BasicXMLSyntaxHighlighter( QTextDocument * parent ) :
-	QSyntaxHighlighter( parent )
-{
-	setRegexes();
-	setFormats();
-}
-
-BasicXMLSyntaxHighlighter::BasicXMLSyntaxHighlighter( QTextEdit * parent ) :
-	QSyntaxHighlighter( parent )
+BasicXMLSyntaxHighlighter::BasicXMLSyntaxHighlighter( QTextDocument * parent ) : QSyntaxHighlighter( parent )
 {
 	setRegexes();
 	setFormats();
