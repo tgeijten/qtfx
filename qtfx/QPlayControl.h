@@ -25,6 +25,7 @@ public:
 	void setTime( double time );
 	void setStepTime( double t ) { stepTime = t; }
 	void setPageTime( double t ) { pageTime = t; }
+	void setDigits( int digits, int decimals );
 	bool loop() const;
 	bool autoExtendRange() const { return autoExtendRange_;  }
 	bool isPlaying() const;
@@ -76,6 +77,7 @@ private:
 	double pageTime;
 	double slomoFactor;
 	double minTime, maxTime;
+	int decimals_;
 
 	bool autoExtendRange_;
 

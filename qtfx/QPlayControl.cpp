@@ -14,7 +14,8 @@ slomoFactor( 1.0 ),
 minTime( 0.0 ),
 maxTime( 1.0 ),
 autoExtendRange_( false ),
-timer_delta( 0 )
+timer_delta( 0 ),
+decimals_( 2 )
 {
 	playButton = new QToolButton( this );
 	playButton->setIcon( style()->standardIcon( QStyle::SP_MediaPlay ) );
@@ -111,9 +112,16 @@ void QPlayControl::setTime( double time )
 	slider->setValue( int( currentTime * 1000 ) );
 	slider->blockSignals( false );
 
-	label->display( QString().sprintf( "%.2f", currentTime ) );
+	label->display( QString().sprintf( "%.*f", decimals_, currentTime ) );
 	
 	emit timeChanged( currentTime );
+}
+
+void QPlayControl::setDigits( int digits, int decimals )
+{
+	decimals_ = decimals;
+	label->setDigitCount( digits );
+	label->display( QString().sprintf( "%.*f", decimals_, currentTime ) );
 }
 
 bool QPlayControl::loop() const
