@@ -77,14 +77,20 @@ void QCodeEditor::save()
 	}
 }
 
-void QCodeEditor::saveAsDialog( const QString& folder, const QString& fileTypes )
+void QCodeEditor::saveAs( const QString& fn )
 {
-	QString fn = QFileDialog::getSaveFileName( this, "Save File As", folder, fileTypes );
-	if ( !fn.isEmpty() )
+	if ( getFileFormat( fn ) != getFileFormat( fileName ) )
 	{
-		fileName = fn;
-		save();
+		std::stringstream stri( textEdit->toPlainText().toStdString() );
+		xo::prop_node pn;
+		stri >> xo::prop_node_deserializer( getFileFormat( fileName ), pn );
+		std::stringstream stro;
+		stro << xo::prop_node_serializer( getFileFormat( fn ), pn );
+		textEdit->setPlainText( QString( stro.str().c_str() ) );
 	}
+
+	fileName = fn;
+	save();
 }
 
 QString QCodeEditor::getTitle()
@@ -99,6 +105,16 @@ void QCodeEditor::textEditChanged()
 		textChangedFlag = true;
 		emit textChanged();
 	}
+}
+
+xo::file_format QCodeEditor::getFileFormat( const QString& filename ) const
+{
+	auto ext = xo::path( filename.toStdString() ).extension();
+	if ( ext == "xml" )
+		return xo::file_format::xml;
+	else if ( ext == "prop" || ext == "pn" )
+		return xo::file_format::prop;
+	else return xo::file_format::unknown;
 }
 
 //

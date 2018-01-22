@@ -4,6 +4,7 @@
 #include <QFileInfo>
 #include <QSyntaxHighlighter>
 #include <QPlainTextEdit>
+#include "xo/serialization/serialize.h"
 
 class QCodeEditor : public QWidget
 {
@@ -19,7 +20,7 @@ public slots:
 	void open( const QString& filename );
 	void openDialog( const QString& folder, const QString& fileTypes );
 	void save();
-	void saveAsDialog( const QString& folder, const QString& fileTypes );
+	void saveAs( const QString& filename );
 
 	QString getTitle();
 	void textEditChanged();
@@ -34,7 +35,7 @@ public:
 	bool textChangedFlag = false;
 
 private:
-
+	xo::file_format getFileFormat( const QString& filename ) const;
 	class BasicXMLSyntaxHighlighter* xmlSyntaxHighlighter;
     class QCodeTextEdit *textEdit;
 };
