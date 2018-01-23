@@ -49,7 +49,7 @@ void QCodeEditor::open( const QString& filename )
 		fileName = filename;
 		textChangedFlag = false;
 	}
-	else return;
+	else xo_error( "Could not open file: " + filename.toStdString() );
 }
 
 void QCodeEditor::openDialog( const QString& folder, const QString& fileTypes )
