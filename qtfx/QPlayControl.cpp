@@ -37,12 +37,12 @@ decimals_( 2 )
 	loopButton->setCheckable( true );
 	loopButton->setIcon( style()->standardIcon( QStyle::SP_BrowserReload ) );
 
-	label = new QLCDNumber( this );
-	label->setDigitCount( 5 );
-	label->setSmallDecimalPoint( true );
-	label->setFrameStyle( QFrame::Box );
-	label->setSegmentStyle( QLCDNumber::Flat );
-	label->display( "0.00" );
+	lcdNumber = new QLCDNumber( this );
+	lcdNumber->setDigitCount( 6 );
+	lcdNumber->setSmallDecimalPoint( true );
+	lcdNumber->setFrameStyle( QFrame::Box );
+	lcdNumber->setSegmentStyle( QLCDNumber::Flat );
+	lcdNumber->display( "0.000" );
 
 	slider = new QSlider( Qt::Horizontal, this );
 	slider->setSingleStep( 10 );
@@ -66,7 +66,7 @@ decimals_( 2 )
 	lo->addWidget( playButton );
 	lo->addWidget( stopButton );
 	lo->addWidget( nextButton );
-	lo->addWidget( label );
+	lo->addWidget( lcdNumber );
 	lo->addWidget( slider );
 	lo->addWidget( loopButton );
 	lo->addWidget( slomoBox );
@@ -112,7 +112,7 @@ void QPlayControl::setTime( double time )
 	slider->setValue( int( currentTime * 1000 ) );
 	slider->blockSignals( false );
 
-	label->display( QString().sprintf( "%.*f", decimals_, currentTime ) );
+	lcdNumber->display( QString().sprintf( "%.*f", decimals_, currentTime ) );
 	
 	emit timeChanged( currentTime );
 }
@@ -120,8 +120,8 @@ void QPlayControl::setTime( double time )
 void QPlayControl::setDigits( int digits, int decimals )
 {
 	decimals_ = decimals;
-	label->setDigitCount( digits );
-	label->display( QString().sprintf( "%.*f", decimals_, currentTime ) );
+	lcdNumber->setDigitCount( digits );
+	lcdNumber->display( QString().sprintf( "%.*f", decimals_, currentTime ) );
 }
 
 bool QPlayControl::loop() const

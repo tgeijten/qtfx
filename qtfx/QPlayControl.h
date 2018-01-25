@@ -71,7 +71,7 @@ private:
 	QAbstractButton *loopButton;
 	QComboBox *slomoBox;
 	QSlider *slider;
-	QLCDNumber* label;
+	QLCDNumber* lcdNumber;
 	double currentTime;
 	double stepTime;
 	double pageTime;
