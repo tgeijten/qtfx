@@ -145,23 +145,21 @@ void QCodeSyntaxHighlighter::highlightBlock( const QString &text )
 			setFormat( matchedPos, matchedLength, m_ElementFormat );
 			xmlElementIndex = m_xmlElementRegex.indexIn( text, matchedPos + matchedLength );
 		}
+		highlightByRegex( m_NumberFormat, m_NumberRegex, text );
+		highlightByRegex( m_AttributeFormat, m_xmlAttributeRegex, text );
 	}
 	else
 	{
+		highlightByRegex( m_NumberFormat, m_NumberRegex, text );
+		highlightByRegex( m_AttributeFormat, m_xmlAttributeRegex, text );
 		highlightByRegex( m_ElementFormat, m_xmlElementRegex, text );
 	}
 
-	highlightByRegex( m_NumberFormat, m_NumberRegex, text );
-	highlightByRegex( m_AttributeFormat, m_xmlAttributeRegex, text );
-	highlightByRegex( m_ValueFormat, m_xmlValueRegex, text );
-
 	// Highlight xml keywords *after* xml elements to fix any occasional / captured into the enclosing element
-	typedef QList<QRegExp>::const_iterator Iter;
-	Iter xmlKeywordRegexesEnd = m_xmlKeywordRegexes.end();
-	for ( Iter it = m_xmlKeywordRegexes.begin(); it != xmlKeywordRegexesEnd; ++it ) {
-		const QRegExp & regex = *it;
+	for ( auto& regex : m_xmlKeywordRegexes )
 		highlightByRegex( m_KeywordFormat, regex, text );
-	}
+
+	highlightByRegex( m_ValueFormat, m_xmlValueRegex, text );
 
 	if ( language == ZML )
 	{
@@ -208,11 +206,11 @@ void QCodeSyntaxHighlighter::setRegexes()
 		m_xmlKeywordRegexes = QList<QRegExp>() << QRegExp( "<\\?" ) << QRegExp( "/>" ) << QRegExp( ">" ) << QRegExp( "<" ) << QRegExp( "</" ) << QRegExp( "\\?>" );
 		break;
 	case ZML:
-		m_xmlElementRegex.setPattern( "\\w+\\s*\\{" );
+		m_xmlElementRegex.setPattern( "\\w+\\s*\\=\\s*\\{" );
 		m_xmlAttributeRegex.setPattern( "\\w+\\s*(\\=)" );
 		m_xmlValueRegex.setPattern( "\"[^\\n\"]+\"" );
 		m_xmlCommentRegex.setPattern( ";[^\\n]*" );
-		m_xmlKeywordRegexes = QList<QRegExp>() << QRegExp( "\\{" ) << QRegExp( "\\}" ) << QRegExp( "\\=" ) << QRegExp( "#\\w+" );
+		m_xmlKeywordRegexes = QList<QRegExp>() << QRegExp( "\\{" ) << QRegExp( "\\}" ) << QRegExp( "\\[" ) << QRegExp( "\\]" ) << QRegExp( "\\=" ) << QRegExp( "#\\w+" );
 		break;
 	default:
 		xo_error( "Unsupported language" );
@@ -223,7 +221,7 @@ void QCodeSyntaxHighlighter::setRegexes()
 
 void QCodeSyntaxHighlighter::setFormats()
 {
-	m_KeywordFormat.setForeground( Qt::blue );
+	m_KeywordFormat.setForeground( Qt::darkGray );
 	m_ElementFormat.setForeground( Qt::darkBlue );
 	m_ElementFormat.setFontWeight( QFont::Bold );
 	m_AttributeFormat.setForeground( Qt::darkBlue );
@@ -325,4 +323,18 @@ void QCodeTextEdit::resizeEvent( QResizeEvent *event )
 	QPlainTextEdit::resizeEvent( event );
 	QRect cr = contentsRect();
 	lineNumberArea->setGeometry( QRect( cr.left(), cr.top(), lineNumberAreaWidth(), cr.height() ) );
+}
+
+void QCodeTextEdit::keyPressEvent( QKeyEvent *e )
+{
+	if ( e->key() == Qt::Key_Return || e->key() == Qt::Key_Enter )
+	{
+		auto line = textCursor().block().text().toStdString();
+		int tabs = 0;
+		while ( tabs < line.size() && line[ tabs ] == '\t' )
+			++tabs;
+		QPlainTextEdit::keyPressEvent( e );
+		QPlainTextEdit::insertPlainText( QString( tabs, '\t' ) );
+	}
+	else QPlainTextEdit::keyPressEvent( e );
 }

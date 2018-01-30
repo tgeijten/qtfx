@@ -117,7 +117,8 @@ public slots:
 	void updateLineNumberArea( const QRect& rect, int dy );
 
 protected:
-	void resizeEvent( QResizeEvent *event );
+	virtual void resizeEvent( QResizeEvent *event ) Q_DECL_OVERRIDE;
+	virtual void keyPressEvent( QKeyEvent *e ) Q_DECL_OVERRIDE;
 
 private:
 	QWidget *lineNumberArea;
