@@ -160,6 +160,7 @@ void QCodeSyntaxHighlighter::highlightBlock( const QString &text )
 		highlightByRegex( m_KeywordFormat, regex, text );
 
 	highlightByRegex( m_ValueFormat, m_xmlValueRegex, text );
+	highlightByRegex( m_SpecialFormat, m_SpecialRegex, text );
 
 	if ( language == ZML )
 	{
@@ -203,6 +204,7 @@ void QCodeSyntaxHighlighter::setRegexes()
 		m_xmlAttributeRegex.setPattern( "\\w+(?=\\=)" );
 		m_xmlValueRegex.setPattern( "\"[^\\n\"]+\"(?=[\\s/>])" );
 		m_xmlCommentRegex.setPattern( "<!--[^\\n]*-->" );
+		m_SpecialRegex.setPattern( "/.^/" );
 		m_xmlKeywordRegexes = QList<QRegExp>() << QRegExp( "<\\?" ) << QRegExp( "/>" ) << QRegExp( ">" ) << QRegExp( "<" ) << QRegExp( "</" ) << QRegExp( "\\?>" );
 		break;
 	case ZML:
@@ -210,7 +212,8 @@ void QCodeSyntaxHighlighter::setRegexes()
 		m_xmlAttributeRegex.setPattern( "\\w+\\s*(\\=)" );
 		m_xmlValueRegex.setPattern( "\"[^\\n\"]+\"" );
 		m_xmlCommentRegex.setPattern( ";[^\\n]*" );
-		m_xmlKeywordRegexes = QList<QRegExp>() << QRegExp( "\\{" ) << QRegExp( "\\}" ) << QRegExp( "\\[" ) << QRegExp( "\\]" ) << QRegExp( "\\=" ) << QRegExp( "#\\w+" );
+		m_SpecialRegex.setPattern( "#\\w+" );
+		m_xmlKeywordRegexes = QList<QRegExp>() << QRegExp( "\\{" ) << QRegExp( "\\}" ) << QRegExp( "\\[" ) << QRegExp( "\\]" ) << QRegExp( "\\=" );
 		break;
 	default:
 		xo_error( "Unsupported language" );
@@ -230,6 +233,9 @@ void QCodeSyntaxHighlighter::setFormats()
 	m_CommentFormat.setForeground( Qt::darkGreen );
 	m_CommentFormat.setFontItalic( true );
 	m_NumberFormat.setForeground( Qt::darkMagenta );
+	m_SpecialFormat.setForeground( Qt::blue );
+	m_SpecialFormat.setFontItalic( true );
+	m_SpecialFormat.setFontWeight( QFont::Bold );
 }
 
 void QCodeSyntaxHighlighter::setLanguage( Language l )

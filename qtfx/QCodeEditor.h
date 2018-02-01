@@ -79,6 +79,7 @@ private:
 	QTextCharFormat     m_ValueFormat;
 	QTextCharFormat     m_CommentFormat;
 	QTextCharFormat     m_NumberFormat;
+	QTextCharFormat     m_SpecialFormat;
 
 	QList<QRegExp>      m_xmlKeywordRegexes;
 	QRegExp             m_xmlElementRegex;
@@ -86,6 +87,7 @@ private:
 	QRegExp             m_xmlValueRegex;
 	QRegExp             m_xmlCommentRegex;
 	QRegExp             m_NumberRegex;
+	QRegExp             m_SpecialRegex;
 };
 
 //
