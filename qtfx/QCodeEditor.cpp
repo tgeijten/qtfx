@@ -252,7 +252,7 @@ QCodeSyntaxHighlighter::Language QCodeSyntaxHighlighter::detectLanguage( const Q
 		return XML;
 	else if ( ext == "zml" )
 		return ZML;
-	else return XML;
+	else return ZML;
 }
 
 //
