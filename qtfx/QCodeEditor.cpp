@@ -110,12 +110,7 @@ void QCodeEditor::textEditChanged()
 
 xo::file_format QCodeEditor::getFileFormat( const QString& filename ) const
 {
-	auto ext = xo::path( filename.toStdString() ).extension();
-	if ( ext == "xml" )
-		return xo::file_format::xml;
-	else if ( ext == "zml" )
-		return xo::file_format::zml;
-	else return xo::file_format::unknown;
+	return xo::detect_file_format( xo::path( filename.toStdString() ) );
 }
 
 //
