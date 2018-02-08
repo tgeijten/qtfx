@@ -2,6 +2,7 @@
 
 #include <QAbstractScrollArea>
 #include <QScrollBar>
+#include "xo\string\string_tools.h"
 
 QLogSink::QLogSink( QWidget* parent, xo::log::level level ) :
 QPlainTextEdit( parent ),
