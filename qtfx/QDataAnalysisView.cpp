@@ -8,6 +8,7 @@
 #include <set>
 #include "qtfx.h"
 #include <array>
+#include "xo/system/log.h"
 
 QDataAnalysisView::QDataAnalysisView( QDataAnalysisModel* m, QWidget* parent ) : QWidget( parent ), model( m ), currentUpdateIdx( 0 )
 {
@@ -59,6 +60,8 @@ QDataAnalysisView::QDataAnalysisView( QDataAnalysisModel* m, QWidget* parent ) :
 	splitter->addWidget( customPlot );
 	connect( customPlot, &QCustomPlot::mousePress, this, &QDataAnalysisView::mouseEvent );
 	connect( customPlot, &QCustomPlot::mouseMove, this, &QDataAnalysisView::mouseEvent );
+	connect( customPlot->xAxis, SIGNAL( rangeChanged( const QCPRange&, const QCPRange& ) ), this, SLOT( rangeChanged( const QCPRange&, const QCPRange& ) ) );
+
 #else
 	chart = new QtCharts::QChart();
 	chart->setBackgroundRoundness( 0 );
@@ -133,6 +136,17 @@ void QDataAnalysisView::mouseEvent( QMouseEvent* event )
 		emit timeChanged( x );
 	}
 #endif
+}
+
+void QDataAnalysisView::rangeChanged( const QCPRange &newRange, const QCPRange &oldRange )
+{
+	auto newZoom = currentSeriesInterval * customPlot->xAxis->axisRect()->width() / newRange.size();
+	auto oldZoom = currentSeriesInterval * customPlot->xAxis->axisRect()->width() / oldRange.size();
+	if ( ( newZoom > 5 && oldZoom <= 5 ) || ( oldZoom > 5 && newZoom <= 5 ) )
+	{
+		xo::log::debug( "Update!" );
+		refreshSeriesStyle();
+	}
 }
 
 void QDataAnalysisView::filterChanged( const QString& filter )
@@ -236,6 +250,21 @@ void QDataAnalysisView::updateSelectBox()
 	selectBox->blockSignals( false );
 }
 
+void QDataAnalysisView::refreshSeriesStyle()
+{
+	auto zoom = currentSeriesInterval * customPlot->xAxis->axisRect()->width() / customPlot->xAxis->range().size();
+	QCPScatterStyle ss = QCPScatterStyle( zoom > 5 ? QCPScatterStyle::ssDisc : QCPScatterStyle::ssNone, 5 );
+	xo::log::trace( "zoom=", zoom );
+
+	int i = 0;
+	for ( auto& s : series )
+	{
+		s.second->setPen( QPen( getStandardColor( i++ ) ) );
+		s.second->setScatterStyle( ss );
+		s.second->setLineStyle( QCPGraph::lsLine );
+	}
+}
+
 void QDataAnalysisView::updateSeries( int idx )
 {
 	auto item = itemList->topLevelItem( idx );
@@ -256,9 +285,9 @@ void QDataAnalysisView::addSeries( int idx )
 	for ( auto& e : data )
 		graph->addData( e.first, e.second );
 	series[ idx ] = graph;
-	int i = 0;
-	for ( auto& s : series )
-		s.second->setPen( QPen( getStandardColor( i++ ) ) );
+	currentSeriesInterval = ( data.back().first - data.front().first ) / data.size();
+
+	refreshSeriesStyle();
 
 	auto range = customPlot->xAxis->range();
 	customPlot->rescaleAxes();

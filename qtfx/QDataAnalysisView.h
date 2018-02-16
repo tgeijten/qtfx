@@ -38,6 +38,7 @@ public slots:
 	void clearSeries();
 	void updateSeries( int index );
 	void mouseEvent( QMouseEvent* m );
+	void rangeChanged( const QCPRange &newRange, const QCPRange &oldRange );
 	void filterChanged( const QString& filter );
 	void setSelectionState( int state );
 	void select( int state ) { setSelectionState( state ); }
@@ -57,6 +58,7 @@ private:
 
 	int smallRefreshItemCount = 100;
 	float minSeriesInterval = 0.01f;
+	float currentSeriesInterval = 0;
 	int currentUpdateIdx;
 	double currentTime;
 	QCheckBox* selectBox;
@@ -75,4 +77,5 @@ private:
 	xo::flat_map< int, QtCharts::QLineSeries* > series;
 	QtCharts::QChartView* chartView;
 #endif
+	void refreshSeriesStyle();
 };
