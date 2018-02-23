@@ -206,7 +206,7 @@ void QCodeSyntaxHighlighter::setRegexes()
 		m_xmlElementRegex.setPattern( "\\w+\\s*\\=\\s*\\{" );
 		m_xmlAttributeRegex.setPattern( "\\w+\\s*(\\=)" );
 		m_xmlValueRegex.setPattern( "\"[^\\n\"]*\"" );
-		m_xmlCommentRegex.setPattern( ";[^\\n]*" );
+		m_xmlCommentRegex.setPattern( "(#\\s|;)[^\\n]*" );
 		m_SpecialRegex.setPattern( "#\\w+" );
 		m_xmlKeywordRegexes = QList<QRegExp>() << QRegExp( "\\{" ) << QRegExp( "\\}" ) << QRegExp( "\\[" ) << QRegExp( "\\]" ) << QRegExp( "\\=" );
 		break;
