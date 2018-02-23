@@ -143,10 +143,7 @@ void QDataAnalysisView::rangeChanged( const QCPRange &newRange, const QCPRange &
 	auto newZoom = currentSeriesInterval * customPlot->xAxis->axisRect()->width() / newRange.size();
 	auto oldZoom = currentSeriesInterval * customPlot->xAxis->axisRect()->width() / oldRange.size();
 	if ( ( newZoom > 5 && oldZoom <= 5 ) || ( oldZoom > 5 && newZoom <= 5 ) )
-	{
-		xo::log::debug( "Update!" );
 		refreshSeriesStyle();
-	}
 }
 
 void QDataAnalysisView::filterChanged( const QString& filter )
@@ -254,7 +251,6 @@ void QDataAnalysisView::refreshSeriesStyle()
 {
 	auto zoom = currentSeriesInterval * customPlot->xAxis->axisRect()->width() / customPlot->xAxis->range().size();
 	QCPScatterStyle ss = QCPScatterStyle( zoom > 5 ? QCPScatterStyle::ssDisc : QCPScatterStyle::ssNone, 5 );
-	xo::log::trace( "zoom=", zoom );
 
 	int i = 0;
 	for ( auto& s : series )
