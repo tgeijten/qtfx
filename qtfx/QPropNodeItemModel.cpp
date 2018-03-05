@@ -28,10 +28,10 @@ QModelIndex QPropNodeItemModel::index( int row, int column, const QModelIndex &p
 	{
 		auto* pn = ( prop_node* )parent.internalPointer();
 		auto* ch = &pn->get_child( row );
-		xo::log::trace( "Creating index for ", ch->get_value() );
+		//xo::log::trace( "Creating index for ", ch->get_value() );
 		return createIndex( row, column, (void*)ch );
 	}
-	else return createIndex( row, column, ( void* )&props_ );
+	else return createIndex( row, column, ( void* )&props_.get_child( row ) );
 }
 
 QModelIndex QPropNodeItemModel::parent( const QModelIndex &child ) const
@@ -50,7 +50,7 @@ int QPropNodeItemModel::rowCount( const QModelIndex &parent /*= QModelIndex() */
 	if ( parent.isValid() )
 	{
 		auto* pn = reinterpret_cast< prop_node* >( parent.internalPointer() );
-		xo::log::trace( "rowCount=", pn->size() );
+		//xo::log::trace( "rowCount=", pn->size() );
 		return pn->size();
 	}
 	else return props_.size();
@@ -63,7 +63,7 @@ int QPropNodeItemModel::columnCount( const QModelIndex &parent /*= QModelIndex()
 
 QVariant QPropNodeItemModel::data( const QModelIndex &index, int role /*= Qt::DisplayRole */ ) const
 {
-	if ( role == Qt::DisplayRole )
+	if ( role == Qt::DisplayRole || role == Qt::EditRole )
 	{
 		auto* pn = reinterpret_cast< prop_node* >( index.internalPointer() );
 		if ( index.column() == 0 )
@@ -75,5 +75,20 @@ QVariant QPropNodeItemModel::data( const QModelIndex &index, int role /*= Qt::Di
 
 bool QPropNodeItemModel::setData( const QModelIndex &index, const QVariant &value, int role /*= Qt::EditRole */ )
 {
-	throw std::logic_error( "The method or operation is not implemented." );
+	if ( role == Qt::EditRole )
+	{
+		auto str = value.toString().toStdString();
+		xo::log::trace( "Setting value to ", str );
+		return true;
+	}
+	else return false;
+}
+
+Qt::ItemFlags QPropNodeItemModel::flags( const QModelIndex &index ) const
+{
+	if ( !index.isValid() )
+		return 0;
+	else if ( index.column() == 1 )
+		return Qt::ItemIsEditable | QAbstractItemModel::flags( index );
+	else return QAbstractItemModel::flags( index );
 }

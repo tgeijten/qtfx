@@ -15,6 +15,7 @@ public:
 	Q_INVOKABLE virtual int columnCount( const QModelIndex &parent = QModelIndex() ) const override;
 	Q_INVOKABLE virtual QVariant data( const QModelIndex &index, int role = Qt::DisplayRole ) const override;
 	Q_INVOKABLE virtual bool setData( const QModelIndex &index, const QVariant &value, int role = Qt::EditRole ) override;
+	Q_INVOKABLE virtual Qt::ItemFlags flags( const QModelIndex &index ) const override;
 
 private:
 	xo::prop_node& props_;
