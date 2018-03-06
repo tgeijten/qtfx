@@ -45,35 +45,37 @@ QModelIndex QPropNodeItemModel::parent( const QModelIndex &child ) const
 	else return QModelIndex();
 }
 
-int QPropNodeItemModel::rowCount( const QModelIndex &parent /*= QModelIndex() */ ) const
+int QPropNodeItemModel::rowCount( const QModelIndex &parent ) const
 {
 	if ( parent.isValid() )
 	{
 		auto* pn = reinterpret_cast< prop_node* >( parent.internalPointer() );
-		//xo::log::trace( "rowCount=", pn->size() );
 		return pn->size();
 	}
 	else return props_.size();
 }
 
-int QPropNodeItemModel::columnCount( const QModelIndex &parent /*= QModelIndex() */ ) const
+int QPropNodeItemModel::columnCount( const QModelIndex &parent ) const
 {
 	return 2;
 }
 
-QVariant QPropNodeItemModel::data( const QModelIndex &index, int role /*= Qt::DisplayRole */ ) const
+QVariant QPropNodeItemModel::data( const QModelIndex &index, int role ) const
 {
 	if ( role == Qt::DisplayRole || role == Qt::EditRole )
 	{
 		auto* pn = reinterpret_cast< prop_node* >( index.internalPointer() );
 		if ( index.column() == 0 )
-			return QVariant( QString( "Label" ) );
+		{
+			auto parent = find_parent_node( &props_, pn );
+			return QVariant( parent.second->get_key( parent.first ).c_str() );
+		}
 		else return QVariant( QString( pn->get_value().c_str() ) );
 	}
 	else return QVariant();
 }
 
-bool QPropNodeItemModel::setData( const QModelIndex &index, const QVariant &value, int role /*= Qt::EditRole */ )
+bool QPropNodeItemModel::setData( const QModelIndex &index, const QVariant &value, int role )
 {
 	if ( role == Qt::EditRole )
 	{
