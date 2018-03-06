@@ -28,7 +28,6 @@ QModelIndex QPropNodeItemModel::index( int row, int column, const QModelIndex &p
 	{
 		auto* pn = ( prop_node* )parent.internalPointer();
 		auto* ch = &pn->get_child( row );
-		//xo::log::trace( "Creating index for ", ch->get_value() );
 		return createIndex( row, column, (void*)ch );
 	}
 	else return createIndex( row, column, ( void* )&props_.get_child( row ) );
@@ -37,11 +36,9 @@ QModelIndex QPropNodeItemModel::index( int row, int column, const QModelIndex &p
 QModelIndex QPropNodeItemModel::parent( const QModelIndex &child ) const
 {
 	prop_node* pn = ( prop_node* )child.internalPointer();
-	if ( pn != &props_ )
-	{
-		auto parent = find_parent_node( &props_, pn );
+	auto parent = find_parent_node( &props_, pn );
+	if ( parent.second != &props_ )
 		return createIndex( parent.first, 0, ( void* )parent.second );
-	}
 	else return QModelIndex();
 }
 
@@ -79,8 +76,8 @@ bool QPropNodeItemModel::setData( const QModelIndex &index, const QVariant &valu
 {
 	if ( role == Qt::EditRole )
 	{
-		auto str = value.toString().toStdString();
-		xo::log::trace( "Setting value to ", str );
+		auto* pn = reinterpret_cast< prop_node* >( index.internalPointer() );
+		pn->set_value( value.toString().toStdString() );
 		return true;
 	}
 	else return false;
