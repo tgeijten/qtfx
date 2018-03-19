@@ -308,10 +308,12 @@ void QDataAnalysisView::removeSeries( int idx )
 #if !defined QTFX_NO_QCUSTOMPLOT
 	auto range = customPlot->xAxis->range();
 	auto it = series.find( idx );
+
 	customPlot->removeGraph( it->second );
+	series.erase( it );
+
 	customPlot->rescaleAxes();
 	customPlot->xAxis->setRange( range );
-	series.erase( it );
 	updateIndicator();
 	customPlot->replot();
 #else
