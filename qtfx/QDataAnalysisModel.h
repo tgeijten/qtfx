@@ -45,5 +45,5 @@ public:
 		return storage( frame_idx, idx );
 	}
 
-	virtual size_t getVariableCount() const override { return storage.channel_size(); }
+	virtual size_t getSeriesCount() const override { return storage.channel_size(); }
 };
