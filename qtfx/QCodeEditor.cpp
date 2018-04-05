@@ -130,8 +130,6 @@ QCodeSyntaxHighlighter::QCodeSyntaxHighlighter( QTextDocument* parent, Language 
 
 void QCodeSyntaxHighlighter::highlightBlock( const QString &text )
 {
-	xo::log::trace( "HL:", text.toStdString() );
-
 	if ( language == XML )
 	{
 		// Special treatment for xml element regex as we use captured text to emulate lookbehind
