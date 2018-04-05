@@ -2,6 +2,7 @@
 #include "xo/system/system_tools.h"
 #include "xo/system/assert.h"
 #include "xo/string/string_tools.h"
+#include "xo/system/log.h"
 #include <QTextStream>
 #include <QMessageBox>
 #include <QFileDialog>
@@ -129,6 +130,8 @@ QCodeSyntaxHighlighter::QCodeSyntaxHighlighter( QTextDocument* parent, Language 
 
 void QCodeSyntaxHighlighter::highlightBlock( const QString &text )
 {
+	xo::log::trace( "HL:", text.toStdString() );
+
 	if ( language == XML )
 	{
 		// Special treatment for xml element regex as we use captured text to emulate lookbehind
@@ -203,7 +206,7 @@ void QCodeSyntaxHighlighter::setRegexes()
 		m_xmlKeywordRegexes = QList<QRegExp>() << QRegExp( "<\\?" ) << QRegExp( "/>" ) << QRegExp( ">" ) << QRegExp( "<" ) << QRegExp( "</" ) << QRegExp( "\\?>" );
 		break;
 	case ZML:
-		m_xmlElementRegex.setPattern( "\\w+\\s*\\=\\s*\\{" );
+		m_xmlElementRegex.setPattern( "\\w+\\s*\\=?\\s*[\\{\\[]" );
 		m_xmlAttributeRegex.setPattern( "\\w+\\s*(\\=)" );
 		m_xmlValueRegex.setPattern( "\"[^\\n\"]*\"" );
 		m_xmlCommentRegex.setPattern( "(#\\s|;)[^\\n]*" );
