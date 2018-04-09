@@ -35,7 +35,7 @@ public:
 	bool textChangedFlag = false;
 
 private:
-	xo::file_format getFileFormat( const QString& filename ) const;
+	std::string getFileFormat( const QString& filename ) const;
 	class QCodeSyntaxHighlighter* xmlSyntaxHighlighter;
     class QCodeTextEdit *textEdit;
 };

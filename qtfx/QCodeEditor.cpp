@@ -6,6 +6,7 @@
 #include <QTextStream>
 #include <QMessageBox>
 #include <QFileDialog>
+#include "xo/serialization/serialize.h"
 
 QCodeEditor::QCodeEditor( QWidget* parent ) :
 QWidget( parent ),
@@ -82,10 +83,9 @@ void QCodeEditor::saveAs( const QString& fn )
 	if ( getFileFormat( fn ) != getFileFormat( fileName ) )
 	{
 		std::stringstream stri( textEdit->toPlainText().toStdString() );
-		xo::prop_node pn;
-		stri >> xo::prop_node_deserializer( getFileFormat( fileName ), pn );
+		xo::prop_node pn = xo::make_serializer( getFileFormat( fileName ) )->read_stream( stri );
 		std::stringstream stro;
-		stro << xo::prop_node_serializer( getFileFormat( fn ), pn );
+		xo::make_serializer( getFileFormat( fn ) )->write_stream( stro, pn );
 
 		QCodeSyntaxHighlighter* xmlSyntaxHighlighter = new QCodeSyntaxHighlighter( textEdit->document(), QCodeSyntaxHighlighter::detectLanguage( fn ) );
 		textEdit->setPlainText( QString( stro.str().c_str() ) );
@@ -109,9 +109,9 @@ void QCodeEditor::textEditChanged()
 	}
 }
 
-xo::file_format QCodeEditor::getFileFormat( const QString& filename ) const
+std::string QCodeEditor::getFileFormat( const QString& filename ) const
 {
-	return xo::detect_file_format( xo::path( filename.toStdString() ) );
+	return xo::path( filename.toStdString() ).extension().string();
 }
 
 //
