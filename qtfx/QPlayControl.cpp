@@ -1,8 +1,10 @@
 #include "QPlayControl.h"
 
-#include <QToolButton>
-#include <QWidget>
-#include <QComboBox>
+#include <QtWidgets/QToolButton>
+#include <QtWidgets/QWidget>
+#include <QtWidgets/QComboBox>
+#include <QtWidgets/QBoxLayout>
+
 #include "xo/system/log.h"
 
 QPlayControl::QPlayControl( QWidget *parent ) :

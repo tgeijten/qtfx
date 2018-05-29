@@ -1,11 +1,14 @@
 #include "QCodeEditor.h"
+
+#include <QTextStream>
+#include <QMessageBox>
+#include <QFileDialog>
+#include <QBoxLayout>
+
 #include "xo/system/system_tools.h"
 #include "xo/system/assert.h"
 #include "xo/string/string_tools.h"
 #include "xo/system/log.h"
-#include <QTextStream>
-#include <QMessageBox>
-#include <QFileDialog>
 #include "xo/serialization/serialize.h"
 
 QCodeEditor::QCodeEditor( QWidget* parent ) :
