@@ -25,25 +25,27 @@ template< typename T >
 class StorageDataAnalysisModel : public QDataAnalysisModel
 {
 public:
-	StorageDataAnalysisModel( const xo::storage< T >& s, double freq ) : storage( s ), frequency( freq ) {}
+	StorageDataAnalysisModel( const xo::storage< T >& s ) : storage( s ) {}
 	const xo::storage< T >& storage;
-	double frequency;
 	virtual QString getLabel( int idx ) const override { return QString( storage.get_label( idx ).c_str() ); }
 	virtual DataSeries getSeries( int idx, double min_interval = 0.0 ) const override {
 		std::vector< std::pair< float, float > > series;
-		size_t d = std::min< size_t >( 1, static_cast< size_t >( min_interval / ( 1 / frequency ) ) );
-		series.reserve( storage.frame_size() / d );
-		for ( size_t i = 0; i < storage.frame_size(); i += d ) {
-			series.emplace_back( static_cast<float>( i / frequency ), static_cast<float>( storage( i, idx ) ) );
+		if ( storage.channel_size() < 2 )
+			return series;
+
+		series.reserve( storage.frame_size() );
+		for ( size_t i = 0; i < storage.frame_size(); ++i ) {
+			series.emplace_back( static_cast<float>( storage( i, 0 ) ), static_cast<float>( storage( i, idx + 1 ) ) );
 		}
 		return series;
 	}
-	virtual double getTimeFinish() const override { return storage.frame_size() / frequency; }
-	virtual double getTimeStart() const override { return 0.0; }
+	virtual double getTimeFinish() const override { return storage[ 0 ]; }
+	virtual double getTimeStart() const override { return storage( 0, 0 ); }
 	virtual double getValue( int idx, double time ) const override {
+		auto frequency = double( storage.frame_size() - 1 ) / storage( storage.frame_size() - 1, 0 ) - storage( 0, 0 );
 		int frame_idx = xo::clamped< int >( round( time * frequency ), 0, storage.frame_size() - 1 );
 		return storage( frame_idx, idx );
 	}
 
-	virtual size_t getSeriesCount() const override { return storage.channel_size(); }
+	virtual size_t getSeriesCount() const override { return storage.empty() ? 0 : storage.channel_size() - 1; }
 };
