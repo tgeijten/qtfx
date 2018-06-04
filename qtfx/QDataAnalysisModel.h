@@ -25,24 +25,27 @@ template< typename T >
 class StorageDataAnalysisModel : public QDataAnalysisModel
 {
 public:
-	StorageDataAnalysisModel( const xo::storage< T >& s ) : sto_( s ) {}
-	const xo::storage< T >& sto_;
-	virtual QString getLabel( int idx ) const override { return QString( sto_.get_label( idx + 1 ).c_str() ); }
+	StorageDataAnalysisModel( const xo::storage< T >* s = nullptr ) : sto_( s ) {}
+
+	void setStorage( const xo::storage< T >* s ) { sto_ = s; }
+	virtual QString getLabel( int idx ) const override { return QString( sto_->get_label( idx + 1 ).c_str() ); }
 	virtual DataSeries getSeries( int idx, double min_interval = 0.0 ) const override {
 		std::vector< std::pair< float, float > > series;
-		if ( sto_.channel_size() < 2 )
+		if ( sto_->channel_size() < 2 )
 			return series;
-		series.reserve( sto_.frame_size() );
-		for ( size_t i = 0; i < sto_.frame_size(); ++i )
-			series.emplace_back( static_cast<float>( sto_( i, 0 ) ), static_cast<float>( sto_( i, idx + 1 ) ) );
+		series.reserve( sto_->frame_size() );
+		for ( size_t i = 0; i < sto_->frame_size(); ++i )
+			series.emplace_back( static_cast<float>( (*sto_)( i, 0 ) ), static_cast<float>( ( *sto_ )( i, idx + 1 ) ) );
 		return series;
 	}
-	virtual double getTimeFinish() const override { return sto_.back()[ 0 ]; }
-	virtual double getTimeStart() const override { return sto_.front()[ 0 ]; }
+	virtual double getTimeFinish() const override { return sto_->back()[ 0 ]; }
+	virtual double getTimeStart() const override { return sto_->front()[ 0 ]; }
 	virtual double getValue( int idx, double time ) const override {
-		auto frequency = double( sto_.frame_size() - 1 ) / ( sto_.back()[ 0 ] - sto_.front()[ 0 ] );
-		int frame_idx = xo::clamped< int >( round( time * frequency ), 0, sto_.frame_size() - 1 );
-		return sto_( frame_idx, idx + 1 );
+		auto frequency = double( sto_->frame_size() - 1 ) / ( sto_->back()[ 0 ] - sto_->front()[ 0 ] );
+		int frame_idx = xo::clamped< int >( round( time * frequency ), 0, sto_->frame_size() - 1 );
+		return (*sto_)( frame_idx, idx + 1 );
 	}
-	virtual size_t getSeriesCount() const override { return sto_.empty() ? 0 : sto_.channel_size() - 1; }
+	virtual size_t getSeriesCount() const override { return sto_->empty() ? 0 : sto_->channel_size() - 1; }
+private:
+	const xo::storage< T >* sto_;
 };
