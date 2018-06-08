@@ -56,6 +56,7 @@ private:
 	void updateFilter();
 	void updateSelectBox();
 
+	size_t maxSeriesCount = 20;
 	int smallRefreshItemCount = 100;
 	float minSeriesInterval = 0.01f;
 	float currentSeriesInterval = 0;

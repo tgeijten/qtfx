@@ -266,9 +266,15 @@ void QDataAnalysisView::updateSeries( int idx )
 	auto item = itemList->topLevelItem( idx );
 	auto series_it = series.find( idx );
 	if ( item->checkState( 0 ) == Qt::Checked && series_it == series.end() )
-		addSeries( idx );
+	{
+		if ( series.size() < maxSeriesCount )
+			addSeries( idx );
+		else item->setCheckState( 0, Qt::Unchecked );
+	}
 	else if ( series_it != series.end() && item->checkState( 0 ) == Qt::Unchecked )
+	{
 		removeSeries( idx );
+	}
 	updateSelectBox();
 }
 
