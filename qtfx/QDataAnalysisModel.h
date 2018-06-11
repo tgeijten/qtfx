@@ -38,8 +38,8 @@ public:
 			series.emplace_back( static_cast<float>( (*sto_)( i, 0 ) ), static_cast<float>( ( *sto_ )( i, idx + 1 ) ) );
 		return series;
 	}
-	virtual double getTimeFinish() const override { return sto_->back()[ 0 ]; }
-	virtual double getTimeStart() const override { return sto_->front()[ 0 ]; }
+	virtual double getTimeFinish() const override { return sto_->empty() ? 0.0 : sto_->back()[ 0 ]; }
+	virtual double getTimeStart() const override { return sto_->empty() ? 0.0 : sto_->front()[ 0 ]; }
 	virtual double getValue( int idx, double time ) const override {
 		auto frequency = double( sto_->frame_size() - 1 ) / ( sto_->back()[ 0 ] - sto_->front()[ 0 ] );
 		int frame_idx = xo::clamped< int >( round( time * frequency ), 0, sto_->frame_size() - 1 );
