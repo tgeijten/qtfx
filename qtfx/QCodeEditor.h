@@ -2,8 +2,10 @@
 
 #include <QWidget>
 #include <QFileInfo>
-#include <QSyntaxHighlighter>
+
+#include "QCodeHighlighter.h"
 #include <QPlainTextEdit>
+
 #include "xo/serialization/serialize.h"
 
 class QCodeEditor : public QWidget
@@ -39,65 +41,6 @@ private:
 	class QCodeSyntaxHighlighter* xmlSyntaxHighlighter;
     class QCodeTextEdit *textEdit;
 };
-
-//
-// BasicXMLSyntaxHighlighter
-//
-
-class QCodeSyntaxHighlighter : public QSyntaxHighlighter
-{
-	Q_OBJECT
-public:
-	enum Language { XML, ZML };
-
-	QCodeSyntaxHighlighter( QObject* parent, Language f );
-	QCodeSyntaxHighlighter( QTextDocument* parent, Language f );
-
-	void setLanguage( Language l );
-	static Language detectLanguage( const QString& filename );
-
-	virtual ~QCodeSyntaxHighlighter() {}
-
-protected:
-	virtual void highlightBlock( const QString& text );
-
-private:
-	void highlightByRegex( const QTextCharFormat& format, const QRegExp& regex, const QString& text );
-	void setRegexes();
-	void setFormats();
-
-private:
-	Language language;
-	struct HighlightRule {
-		HighlightRule( const char* e, QTextCharFormat f ) : regExp( e ), format( f ) {}
-		QRegExp regExp;
-		QTextCharFormat format;
-	};
-	std::vector< HighlightRule > rules;
-
-
-	QTextCharFormat m_KeywordFormat;
-	QTextCharFormat m_ElementFormat;
-	QTextCharFormat m_AttributeFormat;
-	QTextCharFormat m_ValueFormat;
-	QTextCharFormat m_CommentFormat;
-	QTextCharFormat m_NumberFormat;
-	QTextCharFormat m_SpecialFormat;
-
-	QList<QRegExp> m_xmlKeywordRegexes;
-	QRegExp m_xmlElementRegex;
-	QRegExp m_xmlAttributeRegex;
-	QRegExp m_xmlValueRegex;
-	QRegExp m_xmlCommentRegex;
-	QRegExp m_NumberRegex;
-	QRegExp m_SpecialRegex;
-	QRegExp commentStartRegex;
-	QRegExp commentEndRegex;
-};
-
-//
-// QCodeTextEdit
-//
 
 class QCodeTextEdit : public QPlainTextEdit
 {

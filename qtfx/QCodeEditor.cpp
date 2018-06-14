@@ -10,6 +10,7 @@
 #include "xo/string/string_tools.h"
 #include "xo/system/log.h"
 #include "xo/serialization/serialize.h"
+#include "xo/numerical/math.h"
 
 QCodeEditor::QCodeEditor( QWidget* parent ) :
 QWidget( parent ),
@@ -42,7 +43,7 @@ QString QCodeEditor::getPlainText() const
 
 void QCodeEditor::open( const QString& filename )
 {
-	QCodeSyntaxHighlighter* xmlSyntaxHighlighter = new QCodeSyntaxHighlighter( textEdit->document(), QCodeSyntaxHighlighter::detectLanguage( filename ) );
+	QCodeHighlighter* xmlSyntaxHighlighter = new QCodeHighlighter( textEdit->document(), QCodeHighlighter::detectLanguage( filename ) );
 
 	QFile f( filename );
 	if ( f.open( QFile::ReadOnly | QFile::Text ) )
@@ -90,7 +91,7 @@ void QCodeEditor::saveAs( const QString& fn )
 		std::stringstream stro;
 		xo::make_serializer( getFileFormat( fn ) )->write_stream( stro, pn );
 
-		QCodeSyntaxHighlighter* xmlSyntaxHighlighter = new QCodeSyntaxHighlighter( textEdit->document(), QCodeSyntaxHighlighter::detectLanguage( fn ) );
+		QCodeHighlighter* xmlSyntaxHighlighter = new QCodeHighlighter( textEdit->document(), QCodeHighlighter::detectLanguage( fn ) );
 		textEdit->setPlainText( QString( stro.str().c_str() ) );
 	}
 
@@ -115,148 +116,6 @@ void QCodeEditor::textEditChanged()
 std::string QCodeEditor::getFileFormat( const QString& filename ) const
 {
 	return xo::path( filename.toStdString() ).extension().string();
-}
-
-//
-// BasicXMLSyntaxHighlighter
-//
-
-QCodeSyntaxHighlighter::QCodeSyntaxHighlighter( QObject* parent, Language l ) : QSyntaxHighlighter( parent )
-{
-	setLanguage( l );
-}
-
-QCodeSyntaxHighlighter::QCodeSyntaxHighlighter( QTextDocument* parent, Language l ) : QSyntaxHighlighter( parent )
-{
-	setLanguage( l );
-}
-
-void QCodeSyntaxHighlighter::highlightBlock( const QString &text )
-{
-	if ( language == XML )
-	{
-		// Special treatment for xml element regex as we use captured text to emulate lookbehind
-		int xmlElementIndex = m_xmlElementRegex.indexIn( text );
-		while ( xmlElementIndex >= 0 )
-		{
-			int matchedPos = m_xmlElementRegex.pos( 1 );
-			int matchedLength = m_xmlElementRegex.cap( 1 ).length();
-			setFormat( matchedPos, matchedLength, m_ElementFormat );
-			xmlElementIndex = m_xmlElementRegex.indexIn( text, matchedPos + matchedLength );
-		}
-		highlightByRegex( m_NumberFormat, m_NumberRegex, text );
-		highlightByRegex( m_AttributeFormat, m_xmlAttributeRegex, text );
-	}
-	else
-	{
-		highlightByRegex( m_NumberFormat, m_NumberRegex, text );
-		highlightByRegex( m_AttributeFormat, m_xmlAttributeRegex, text );
-		highlightByRegex( m_ElementFormat, m_xmlElementRegex, text );
-	}
-
-	// Highlight xml keywords *after* xml elements to fix any occasional / captured into the enclosing element
-	for ( auto& regex : m_xmlKeywordRegexes )
-		highlightByRegex( m_KeywordFormat, regex, text );
-
-	highlightByRegex( m_ValueFormat, m_xmlValueRegex, text );
-	highlightByRegex( m_SpecialFormat, m_SpecialRegex, text );
-
-	if ( language == ZML )
-	{
-		int i = m_xmlCommentRegex.indexIn( text );
-		while  ( i >= 0 )
-		{
-			int quotes_before = 0;
-			for ( int x = 0; x <= i; ++x )
-				quotes_before += int( text[ x ] == '\"' );
-			if ( quotes_before % 2 == 0 )
-			{
-				setFormat( i, m_xmlCommentRegex.matchedLength(), m_CommentFormat );
-				break;
-			}
-			else i = m_xmlCommentRegex.indexIn( text, i + 1 );
-		}
-	}
-	else 
-	{
-		highlightByRegex( m_CommentFormat, m_xmlCommentRegex, text );
-	}
-}
-
-void QCodeSyntaxHighlighter::highlightByRegex( const QTextCharFormat & format, const QRegExp & regex, const QString & text )
-{
-	int index = regex.indexIn( text );
-	while ( index >= 0 )
-	{
-		int matchedLength = regex.matchedLength();
-		setFormat( index, matchedLength, format );
-		index = regex.indexIn( text, index + matchedLength );
-	}
-}
-
-void QCodeSyntaxHighlighter::setRegexes()
-{
-	switch ( language )
-	{
-	case XML:
-		// TODO: convert to rules
-		m_xmlElementRegex.setPattern( "<[\\s]*[/]?[\\s]*([^\\n]\\w*)(?=[\\s/>])" );
-		m_xmlAttributeRegex.setPattern( "\\w+(?=\\=)" );
-		m_xmlValueRegex.setPattern( "\"[^\\n\"]+\"(?=[\\s/>])" );
-		m_xmlCommentRegex.setPattern( "<!--[^\\n]*-->" );
-		m_SpecialRegex.setPattern( "/.^/" );
-		m_xmlKeywordRegexes = QList<QRegExp>() << QRegExp( "<\\?" ) << QRegExp( "/>" ) << QRegExp( ">" ) << QRegExp( "<" ) << QRegExp( "</" ) << QRegExp( "\\?>" );
-		break;
-
-	case ZML:
-		// TODO: convert to rules
-		rules.emplace_back( "\\w+\\s*\\=?\\s*[\\{\\[]", m_ElementFormat );
-
-		m_xmlElementRegex.setPattern( "\\w+\\s*\\=?\\s*[\\{\\[]" );
-		m_xmlAttributeRegex.setPattern( "\\w+\\s*(\\=)" );
-		m_xmlValueRegex.setPattern( "\"[^\\n\"]*\"" );
-		m_xmlCommentRegex.setPattern( "(#\\s|;|//)[^\\n]*" );
-		m_SpecialRegex.setPattern( "#\\w+" );
-		m_xmlKeywordRegexes = QList<QRegExp>() << QRegExp( "\\{" ) << QRegExp( "\\}" ) << QRegExp( "\\[" ) << QRegExp( "\\]" ) << QRegExp( "\\=" );
-		break;
-	default:
-		xo_error( "Unsupported language" );
-	}
-
-	m_NumberRegex.setPattern( "\\b([-+]?[\\.\\d]+)" );
-}
-
-void QCodeSyntaxHighlighter::setFormats()
-{
-	m_KeywordFormat.setForeground( Qt::darkGray );
-	m_ElementFormat.setForeground( Qt::darkBlue );
-	m_ElementFormat.setFontWeight( QFont::Bold );
-	m_AttributeFormat.setForeground( Qt::darkBlue );
-	//m_AttributeFormat.setFontWeight( QFont::Bold );
-	m_ValueFormat.setForeground( Qt::darkRed );
-	m_CommentFormat.setForeground( Qt::darkGreen );
-	m_CommentFormat.setFontItalic( true );
-	m_NumberFormat.setForeground( Qt::darkMagenta );
-	m_SpecialFormat.setForeground( Qt::blue );
-	m_SpecialFormat.setFontItalic( true );
-	m_SpecialFormat.setFontWeight( QFont::Bold );
-}
-
-void QCodeSyntaxHighlighter::setLanguage( Language l )
-{
-	language = l;
-	setRegexes();
-	setFormats();
-}
-
-QCodeSyntaxHighlighter::Language QCodeSyntaxHighlighter::detectLanguage( const QString& filename )
-{
-	auto ext = xo::path( filename.toStdString() ).extension();
-	if ( ext == "xml" )
-		return XML;
-	else if ( ext == "zml" )
-		return ZML;
-	else return ZML;
 }
 
 //
