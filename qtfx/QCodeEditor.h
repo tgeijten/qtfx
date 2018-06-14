@@ -68,26 +68,31 @@ private:
 
 private:
 	Language language;
-	struct Rule {
+	struct HighlightRule {
+		HighlightRule( const char* e, QTextCharFormat f ) : regExp( e ), format( f ) {}
 		QRegExp regExp;
 		QTextCharFormat format;
 	};
+	std::vector< HighlightRule > rules;
 
-	QTextCharFormat     m_KeywordFormat;
-	QTextCharFormat     m_ElementFormat;
-	QTextCharFormat     m_AttributeFormat;
-	QTextCharFormat     m_ValueFormat;
-	QTextCharFormat     m_CommentFormat;
-	QTextCharFormat     m_NumberFormat;
-	QTextCharFormat     m_SpecialFormat;
 
-	QList<QRegExp>      m_xmlKeywordRegexes;
-	QRegExp             m_xmlElementRegex;
-	QRegExp             m_xmlAttributeRegex;
-	QRegExp             m_xmlValueRegex;
-	QRegExp             m_xmlCommentRegex;
-	QRegExp             m_NumberRegex;
-	QRegExp             m_SpecialRegex;
+	QTextCharFormat m_KeywordFormat;
+	QTextCharFormat m_ElementFormat;
+	QTextCharFormat m_AttributeFormat;
+	QTextCharFormat m_ValueFormat;
+	QTextCharFormat m_CommentFormat;
+	QTextCharFormat m_NumberFormat;
+	QTextCharFormat m_SpecialFormat;
+
+	QList<QRegExp> m_xmlKeywordRegexes;
+	QRegExp m_xmlElementRegex;
+	QRegExp m_xmlAttributeRegex;
+	QRegExp m_xmlValueRegex;
+	QRegExp m_xmlCommentRegex;
+	QRegExp m_NumberRegex;
+	QRegExp m_SpecialRegex;
+	QRegExp commentStartRegex;
+	QRegExp commentEndRegex;
 };
 
 //

@@ -199,6 +199,7 @@ void QCodeSyntaxHighlighter::setRegexes()
 	switch ( language )
 	{
 	case XML:
+		// TODO: convert to rules
 		m_xmlElementRegex.setPattern( "<[\\s]*[/]?[\\s]*([^\\n]\\w*)(?=[\\s/>])" );
 		m_xmlAttributeRegex.setPattern( "\\w+(?=\\=)" );
 		m_xmlValueRegex.setPattern( "\"[^\\n\"]+\"(?=[\\s/>])" );
@@ -206,7 +207,11 @@ void QCodeSyntaxHighlighter::setRegexes()
 		m_SpecialRegex.setPattern( "/.^/" );
 		m_xmlKeywordRegexes = QList<QRegExp>() << QRegExp( "<\\?" ) << QRegExp( "/>" ) << QRegExp( ">" ) << QRegExp( "<" ) << QRegExp( "</" ) << QRegExp( "\\?>" );
 		break;
+
 	case ZML:
+		// TODO: convert to rules
+		rules.emplace_back( "\\w+\\s*\\=?\\s*[\\{\\[]", m_ElementFormat );
+
 		m_xmlElementRegex.setPattern( "\\w+\\s*\\=?\\s*[\\{\\[]" );
 		m_xmlAttributeRegex.setPattern( "\\w+\\s*(\\=)" );
 		m_xmlValueRegex.setPattern( "\"[^\\n\"]*\"" );
