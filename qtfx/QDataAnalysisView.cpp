@@ -40,7 +40,7 @@ QDataAnalysisView::QDataAnalysisView( QDataAnalysisModel* m, QWidget* parent ) :
 	splitter->addWidget( itemGroup );
 
 	QVBoxLayout* layout = new QVBoxLayout( this );
-	layout->setContentsMargins( 4, 4, 4, 4 );
+	layout->setContentsMargins( 2, 0, 2, 0 );
 	layout->setSpacing( 4 );
 	layout->addWidget( splitter );
 
