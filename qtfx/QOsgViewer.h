@@ -13,11 +13,12 @@
 #include "simvis/osg_camera_man.h"
 #include "simvis/plane.h"
 #include "xo/filesystem/path.h"
+#include "osg/MatrixTransform"
 
 class QOsgViewer : public QWidget, public osgViewer::CompositeViewer
 {
 public:
-	QOsgViewer(QWidget* parent = 0, Qt::WindowFlags f = 0, osgViewer::ViewerBase::ThreadingModel threadingModel=osgViewer::CompositeViewer::SingleThreaded);
+	QOsgViewer( QWidget* parent = 0, Qt::WindowFlags f = 0, osgViewer::ViewerBase::ThreadingModel threadingModel = osgViewer::CompositeViewer::SingleThreaded );
 	QWidget* addViewWidget( osgQt::GraphicsWindowQt* gw );
 	osgQt::GraphicsWindowQt* createGraphicsWindow( int x, int y, int w, int h, const std::string& name="", bool windowDecoration=false );
 
@@ -35,15 +36,19 @@ public:
 	void stopTimer() { timer_.stop(); }
 	vis::osg_camera_man& getCameraMan() { return *camera_man_; }
 	void setFrameTime( double t );
+	bool handle( const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa );
 
 protected:
 	bool eventFilter( QObject* obj, QEvent* event );
+	void updateHudPos();
 	size_t frame_count_;
 	QTimer timer_;
+	int width_, height_;
 	osg::ref_ptr< vis::osg_camera_man > camera_man_;
 	osg::ref_ptr< osgViewer::ScreenCaptureHandler > capture_handler_;
 	osg::ref_ptr< osgViewer::View > view_;
 	vis::scene* scene_;
+	osg::ref_ptr< osg::MatrixTransform > hud_trans_;
 	vis::plane hud_;
 	double current_frame_time_;
 	double last_drawn_frame_time_;

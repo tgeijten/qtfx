@@ -7,19 +7,18 @@
 #include "qevent.h"
 #include "simvis/group.h"
 #include "simvis/scene.h"
+#include "osg/MatrixTransform"
 
+// class for routing GUI events to QOsgViewer
+// This is needed because QOsgViewer can't derive from GUIEventHandler directly
+// because both are derived from osg::Object (basically, because of bad design)
 class QOsgEventHandler : public osgGA::GUIEventHandler 
 { 
-public: 
-	virtual bool handle( const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa, osg::Object* o, osg::NodeVisitor* nv )
-	{
-		if ( ea.getEventType() == osgGA::GUIEventAdapter::RESIZE )
-		{
-			xo::log::info( "Viewer resized to ", ea.getWindowWidth(), "x", ea.getWindowHeight() );
-			return true;
-		}
-		else return false;
-	}
+public:
+	QOsgEventHandler( QOsgViewer& viewer ) : viewer_( viewer ) {}
+	virtual bool handle( const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa ) { return viewer_.handle( ea, aa ); }
+private:
+	QOsgViewer& viewer_;
 };
 
 QOsgViewer::QOsgViewer( QWidget* parent /*= 0*/, Qt::WindowFlags f /*= 0*/, osgViewer::ViewerBase::ThreadingModel threadingModel/*=osgViewer::CompositeViewer::SingleThreaded*/ ) :
@@ -62,7 +61,7 @@ QWidget* QOsgViewer::addViewWidget( osgQt::GraphicsWindowQt* gw )
 
 	// add event handlers
 	view_->addEventHandler( new osgViewer::StatsHandler );
-	view_->addEventHandler( new QOsgEventHandler );
+	view_->addEventHandler( new QOsgEventHandler( *this ) );
 
 	// disable lighting by default
 	view_->setLightingMode( osg::View::NO_LIGHT );
@@ -95,6 +94,9 @@ osgQt::GraphicsWindowQt* QOsgViewer::createGraphicsWindow( int x, int y, int w, 
 	traits->sampleBuffers = ds->getMultiSamples();
 	traits->samples = ds->getNumMultiSamples();
 
+	width_ = w;
+	height_ = h;
+
 	return new osgQt::GraphicsWindowQt( traits.get() );
 }
 
@@ -118,10 +120,24 @@ void QOsgViewer::setScene( vis::scene* s )
 
 void QOsgViewer::setHud( const xo::path& file )
 {
-	//hud_ = vis::plane( xo::vec3f( 1, 0, 0 ), xo::vec3f( 0, 1, 0 ), file, 1.0f, 1.0f );
-	//hud_ = vis::plane( xo::vec3f( 1, 0, 0 ), xo::vec3f( 0, 1, 0 ), file, 1.0f, 1.0f );
-	//scene_->attach( hud_ );
-	//view_->getCamera()->addChild( hud_.osg_node() );
+	float s = 0.1f;
+	hud_ = vis::plane( xo::vec3f( s, 0, 0 ), xo::vec3f( 0, s, 0 ), file, 1.0f, 1.0f );
+	hud_.osg_trans_node().setReferenceFrame( osg::Transform::ABSOLUTE_RF );
+	auto geostate = hud_.osg_group().getChild( 0 )->asGeode()->getDrawable( 0 )->getOrCreateStateSet();
+	geostate->setMode( GL_DEPTH_TEST, osg::StateAttribute::OFF );
+	geostate->setMode( GL_BLEND, osg::StateAttribute::ON );
+	view_->getCamera()->addChild( hud_.osg_node() );
+	//updateHudPos();
+}
+
+void QOsgViewer::updateHudPos()
+{
+	double fovy, aspect, nearplane, farplane;
+	view_->getCamera()->getProjectionMatrixAsPerspective( fovy, aspect, nearplane, farplane );
+	xo::log::info( "aspect ratio = ", aspect );
+	auto hh = tan( xo::deg_to_rad( fovy ) / 2 );
+	auto hw = tan( atan( hh * aspect ) );
+	hud_.pos( xo::vec3f( -hw + 0.0666f, -hh + 0.0666f, -1 ) );
 }
 
 void QOsgViewer::setClearColor( const osg::Vec4& col )
@@ -132,6 +148,19 @@ void QOsgViewer::setClearColor( const osg::Vec4& col )
 void QOsgViewer::moveCamera( const osg::Vec3d& delta_pos )
 {
 	camera_man_->setCenter( camera_man_->getCenter() + delta_pos );
+}
+
+bool QOsgViewer::handle( const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa )
+{
+	if ( ea.getEventType() == osgGA::GUIEventAdapter::RESIZE )
+	{
+		width_ = ea.getWindowWidth();
+		height_ = ea.getWindowHeight();
+		xo::log::info( "Viewer resized to ", width_, "x", height_ );
+		updateHudPos();
+		return true;
+	}
+	return false;
 }
 
 void QOsgViewer::startCapture( const std::string& filename )
