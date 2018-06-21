@@ -31,6 +31,7 @@ QDataAnalysisView::QDataAnalysisView( QDataAnalysisModel* m, QWidget* parent ) :
 	itemList->setHeaderLabels( headerLabels );
 
 	itemGroup = new QVGroup( this, 0, 4 );
+	itemGroup->setContentsMargins( 0, 0, 0, 0 );
 	*itemGroup << header << itemList;
 	connect( itemList, &QTreeWidget::itemChanged, this, &QDataAnalysisView::itemChanged );
 
@@ -40,7 +41,7 @@ QDataAnalysisView::QDataAnalysisView( QDataAnalysisModel* m, QWidget* parent ) :
 	splitter->addWidget( itemGroup );
 
 	QVBoxLayout* layout = new QVBoxLayout( this );
-	layout->setContentsMargins( 2, 0, 2, 0 );
+	layout->setContentsMargins( 0, 0, 0, 0 );
 	layout->setSpacing( 4 );
 	layout->addWidget( splitter );
 
