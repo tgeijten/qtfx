@@ -5,10 +5,10 @@
 #include "simvis/color.h"
 #include "xo/system/log_sink.h"
 #include "xo/utility/types.h"
-#include <set>
 #include "qtfx.h"
 #include <array>
 #include "xo/system/log.h"
+#include "xo/container/sorted_vector.h"
 
 QDataAnalysisView::QDataAnalysisView( QDataAnalysisModel* m, QWidget* parent ) : QWidget( parent ), model( m ), currentUpdateIdx( 0 )
 {
@@ -29,6 +29,7 @@ QDataAnalysisView::QDataAnalysisView( QDataAnalysisModel* m, QWidget* parent ) :
 	QStringList headerLabels;
 	headerLabels << "Variable" << "Value";
 	itemList->setHeaderLabels( headerLabels );
+	//itemList->setFrameStyle( QFrame::NoFrame );
 
 	itemGroup = new QVGroup( this, 0, 4 );
 	itemGroup->setContentsMargins( 0, 0, 0, 0 );
@@ -37,10 +38,12 @@ QDataAnalysisView::QDataAnalysisView( QDataAnalysisModel* m, QWidget* parent ) :
 
 	splitter = new QSplitter( this );
 	splitter->setContentsMargins( 0, 0, 0, 0 );
+	splitter->setFrameShape( QFrame::NoFrame );
 	splitter->setObjectName( "Analysis.Splitter" );
 	splitter->addWidget( itemGroup );
 
 	QVBoxLayout* layout = new QVBoxLayout( this );
+	setLayout( layout );
 	layout->setContentsMargins( 0, 0, 0, 0 );
 	layout->setSpacing( 4 );
 	layout->addWidget( splitter );
@@ -62,7 +65,6 @@ QDataAnalysisView::QDataAnalysisView( QDataAnalysisModel* m, QWidget* parent ) :
 	connect( customPlot, &QCustomPlot::mousePress, this, &QDataAnalysisView::mouseEvent );
 	connect( customPlot, &QCustomPlot::mouseMove, this, &QDataAnalysisView::mouseEvent );
 	connect( customPlot->xAxis, SIGNAL( rangeChanged( const QCPRange&, const QCPRange& ) ), this, SLOT( rangeChanged( const QCPRange&, const QCPRange& ) ) );
-
 #else
 	chart = new QtCharts::QChart();
 	chart->setBackgroundRoundness( 0 );
@@ -179,7 +181,7 @@ QColor QDataAnalysisView::getStandardColor( int idx, float value )
 void QDataAnalysisView::reset()
 {
 	// remove series, keep names
-	std::set< QString > keep_series;
+	xo::sorted_vector< QString > keep_series;
 	for ( size_t i = 0; i < itemList->topLevelItemCount(); ++i )
 	{
 		auto* item = itemList->topLevelItem( i );
@@ -195,7 +197,7 @@ void QDataAnalysisView::reset()
 		auto* wdg = new QTreeWidgetItem( itemList, QStringList( model->getLabel( i ) ) );
 		wdg->setTextAlignment( 1, Qt::AlignRight );
 		wdg->setFlags( wdg->flags() | Qt::ItemIsUserCheckable );
-		wdg->setCheckState( 0, keep_series.count( model->getLabel( i ) ) > 0 ? Qt::Checked : Qt::Unchecked );
+		wdg->setCheckState( 0, keep_series.find( model->getLabel( i ) ) != keep_series.end() ? Qt::Checked : Qt::Unchecked );
 	}
 	itemList->resizeColumnToContents( 0 );
 

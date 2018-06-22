@@ -124,6 +124,7 @@ std::string QCodeEditor::getFileFormat( const QString& filename ) const
 
 QCodeTextEdit::QCodeTextEdit( QWidget* parent ) : QPlainTextEdit( parent )
 {
+	setFrameStyle( QFrame::NoFrame );
 	lineNumberArea = new LineNumberArea( this );
 
 	connect( this, SIGNAL( blockCountChanged( int ) ), this, SLOT( updateLineNumberAreaWidth( int ) ) );
@@ -135,7 +136,8 @@ QCodeTextEdit::QCodeTextEdit( QWidget* parent ) : QPlainTextEdit( parent )
 void QCodeTextEdit::lineNumberAreaPaintEvent( QPaintEvent *event )
 {
 	QPainter painter( lineNumberArea );
-	painter.fillRect( event->rect(), Qt::lightGray );
+	QColor c = palette().color( QWidget::backgroundRole() );
+	painter.fillRect( event->rect(), c );
 
 	QTextBlock block = firstVisibleBlock();
 	int blockNumber = block.blockNumber();
@@ -145,7 +147,7 @@ void QCodeTextEdit::lineNumberAreaPaintEvent( QPaintEvent *event )
 	while ( block.isValid() && top <= event->rect().bottom() ) {
 		if ( block.isVisible() && bottom >= event->rect().top() ) {
 			QString number = QString::number( blockNumber + 1 );
-			painter.setPen( Qt::black );
+			painter.setPen( Qt::gray );
 			painter.drawText( 0, top, lineNumberArea->width() - 2, fontMetrics().height(),
 				Qt::AlignRight, number );
 		}
