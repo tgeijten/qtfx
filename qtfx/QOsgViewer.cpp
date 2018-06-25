@@ -120,8 +120,7 @@ void QOsgViewer::setScene( vis::scene* s )
 
 void QOsgViewer::setHud( const xo::path& file )
 {
-	float s = 0.1f;
-	hud_ = vis::plane( xo::vec3f( s, 0, 0 ), xo::vec3f( 0, s, 0 ), file, 1.0f, 1.0f );
+	hud_ = vis::plane( xo::vec3f( hud_size, 0, 0 ), xo::vec3f( 0, hud_size, 0 ), file, 1.0f, 1.0f );
 	hud_.osg_trans_node().setReferenceFrame( osg::Transform::ABSOLUTE_RF );
 	auto geostate = hud_.osg_group().getChild( 0 )->asGeode()->getDrawable( 0 )->getOrCreateStateSet();
 	geostate->setMode( GL_DEPTH_TEST, osg::StateAttribute::OFF );
@@ -137,7 +136,7 @@ void QOsgViewer::updateHudPos()
 	xo::log::info( "aspect ratio = ", aspect );
 	auto hh = tan( xo::deg_to_rad( fovy ) / 2 );
 	auto hw = tan( atan( hh * aspect ) );
-	hud_.pos( xo::vec3f( -hw + 0.0666f, -hh + 0.0666f, -1 ) );
+	hud_.pos( xo::vec3f( hw - 0.55f * hud_size, -hh + 0.55f * hud_size, -1 ) );
 }
 
 void QOsgViewer::setClearColor( const osg::Vec4& col )

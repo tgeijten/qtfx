@@ -49,6 +49,7 @@ protected:
 	osg::ref_ptr< osgViewer::View > view_;
 	vis::scene* scene_;
 	osg::ref_ptr< osg::MatrixTransform > hud_trans_;
+	float hud_size = 0.075f;
 	vis::plane hud_;
 	double current_frame_time_;
 	double last_drawn_frame_time_;
