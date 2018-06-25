@@ -9,8 +9,8 @@
 #include "xo/numerical/delta.h"
 #include "xo/utility/types.h"
 
-class QAbstractButton;
 class QAbstractSlider;
+class QToolButton;
 class QComboBox;
 
 class QPlayControl : public QWidget
@@ -64,11 +64,11 @@ private slots:
 	void timeout();
 
 private:
-	QAbstractButton *playButton;
-	QAbstractButton *stopButton;
-	QAbstractButton *nextButton;
-	QAbstractButton *previousButton;
-	QAbstractButton *loopButton;
+	QToolButton *playButton;
+	QToolButton *resetButton;
+	QToolButton *nextButton;
+	QToolButton *previousButton;
+	QToolButton *loopButton;
 	QComboBox *slomoBox;
 	QSlider *slider;
 	QLCDNumber* lcdNumber;
