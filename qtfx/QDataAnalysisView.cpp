@@ -61,10 +61,11 @@ QDataAnalysisView::QDataAnalysisView( QDataAnalysisModel* m, QWidget* parent ) :
 	//QCP2 customPlotLine->setHead( QCPLineEnding( QCPLineEnding::esDiamond, 9, 9, true ) );
 	//QCP2 customPlotLine->setTail( QCPLineEnding( QCPLineEnding::esDiamond, 9, 9, true ) );
 	//QCP2 customPlot->addItem( customPlotLine ); 
+
 	splitter->addWidget( customPlot );
-	connect( customPlot, &QCustomPlot::mousePress, this, &QDataAnalysisView::mouseEvent );
-	connect( customPlot, &QCustomPlot::mouseMove, this, &QDataAnalysisView::mouseEvent );
-	connect( customPlot->xAxis, SIGNAL( rangeChanged( const QCPRange&, const QCPRange& ) ), this, SLOT( rangeChanged( const QCPRange&, const QCPRange& ) ) );
+	//QCP2 connect( customPlot, &QCustomPlot::mousePress, this, &QDataAnalysisView::mouseEvent );
+	//QCP2 connect( customPlot, &QCustomPlot::mouseMove, this, &QDataAnalysisView::mouseEvent );
+	//QCP2 connect( customPlot->xAxis, SIGNAL( rangeChanged( const QCPRange&, const QCPRange& ) ), this, SLOT( rangeChanged( const QCPRange&, const QCPRange& ) ) );
 #else
 	chart = new QtCharts::QChart();
 	chart->setBackgroundRoundness( 0 );
