@@ -60,7 +60,7 @@ QDataAnalysisView::QDataAnalysisView( QDataAnalysisModel* m, QWidget* parent ) :
 	customPlotLine = new QCPItemLine( customPlot );
 	customPlotLine->setHead( QCPLineEnding( QCPLineEnding::esDiamond, 9, 9, true ) );
 	customPlotLine->setTail( QCPLineEnding( QCPLineEnding::esDiamond, 9, 9, true ) );
-	customPlot->addItem( customPlotLine );
+	//QCP2 customPlot->addItem( customPlotLine ); 
 	splitter->addWidget( customPlot );
 	connect( customPlot, &QCustomPlot::mousePress, this, &QDataAnalysisView::mouseEvent );
 	connect( customPlot, &QCustomPlot::mouseMove, this, &QDataAnalysisView::mouseEvent );
@@ -143,8 +143,8 @@ void QDataAnalysisView::mouseEvent( QMouseEvent* event )
 
 void QDataAnalysisView::rangeChanged( const QCPRange &newRange, const QCPRange &oldRange )
 {
-	auto newZoom = currentSeriesInterval * customPlot->xAxis->axisRect()->width() / newRange.size();
-	auto oldZoom = currentSeriesInterval * customPlot->xAxis->axisRect()->width() / oldRange.size();
+	auto newZoom = currentSeriesInterval * customPlot->xAxis->axisRect()->width() / ( newRange.upper - newRange.lower );
+	auto oldZoom = currentSeriesInterval * customPlot->xAxis->axisRect()->width() / ( oldRange.upper - oldRange.lower );
 	if ( ( newZoom > 5 && oldZoom <= 5 ) || ( oldZoom > 5 && newZoom <= 5 ) )
 		refreshSeriesStyle();
 }
@@ -252,7 +252,8 @@ void QDataAnalysisView::updateSelectBox()
 
 void QDataAnalysisView::refreshSeriesStyle()
 {
-	auto zoom = currentSeriesInterval * customPlot->xAxis->axisRect()->width() / customPlot->xAxis->range().size();
+	auto range_size = customPlot->xAxis->range().upper - customPlot->xAxis->range().lower;
+	auto zoom = currentSeriesInterval * customPlot->xAxis->axisRect()->width() / range_size;
 	QCPScatterStyle ss = QCPScatterStyle( zoom > 5 ? QCPScatterStyle::ssDisc : QCPScatterStyle::ssNone, 5 );
 
 	int i = 0;
