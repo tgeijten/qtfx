@@ -57,9 +57,9 @@ QDataAnalysisView::QDataAnalysisView( QDataAnalysisModel* m, QWidget* parent ) :
 	customPlot->legend->setVisible( true );
 	customPlot->legend->setFont( itemList->font() );
 	customPlot->legend->setRowSpacing( -6 );
-	customPlotLine = new QCPItemLine( customPlot );
-	customPlotLine->setHead( QCPLineEnding( QCPLineEnding::esDiamond, 9, 9, true ) );
-	customPlotLine->setTail( QCPLineEnding( QCPLineEnding::esDiamond, 9, 9, true ) );
+	//QCP2 customPlotLine = new QCPItemLine( customPlot );
+	//QCP2 customPlotLine->setHead( QCPLineEnding( QCPLineEnding::esDiamond, 9, 9, true ) );
+	//QCP2 customPlotLine->setTail( QCPLineEnding( QCPLineEnding::esDiamond, 9, 9, true ) );
 	//QCP2 customPlot->addItem( customPlotLine ); 
 	splitter->addWidget( customPlot );
 	connect( customPlot, &QCustomPlot::mousePress, this, &QDataAnalysisView::mouseEvent );
@@ -210,8 +210,8 @@ void QDataAnalysisView::reset()
 void QDataAnalysisView::updateIndicator()
 {
 #if !defined QTFX_NO_QCUSTOMPLOT
-	customPlotLine->start->setCoords( currentTime, customPlot->yAxis->range().lower );
-	customPlotLine->end->setCoords( currentTime, customPlot->yAxis->range().upper );
+	//QCP2 customPlotLine->start->setCoords( currentTime, customPlot->yAxis->range().lower );
+	//QCP2 customPlotLine->end->setCoords( currentTime, customPlot->yAxis->range().upper );
 	customPlot->replot();
 #else
 	auto pos = chart->mapToPosition( QPointF( currentTime, 0 ) );
@@ -289,7 +289,7 @@ void QDataAnalysisView::addSeries( int idx )
 	graph->setName( model->getLabel( idx ) );
 	auto data = model->getSeries( idx, minSeriesInterval );
 	for ( auto& e : data )
-		graph->addData( e.first, e.second );
+		graph->addData( double( e.first ), double( e.second ) );
 	series[ idx ] = graph;
 	currentSeriesInterval = ( data.back().first - data.front().first ) / data.size();
 
