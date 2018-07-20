@@ -3,7 +3,7 @@
 #include "QHeaderView"
 #include <algorithm>
 #include "simvis/color.h"
-#include "xo/system/log_sink.h"
+#include "xo/system/log.h"
 #include "xo/utility/types.h"
 #include "qtfx.h"
 #include <array>
@@ -143,7 +143,15 @@ void QDataAnalysisView::mouseEvent( QMouseEvent* event )
 
 void QDataAnalysisView::rangeChanged( const QCPRange &newRange, const QCPRange &oldRange )
 {
-	auto newZoom = currentSeriesInterval * customPlot->xAxis->axisRect()->width() / newRange.size();
+	QCPRange fixedRange = QCPRange( xo::max( newRange.lower, model->getTimeStart() ), xo::min( newRange.upper, model->getTimeFinish() ) );
+	if ( fixedRange != newRange )
+	{
+		customPlot->xAxis->blockSignals( true );
+		customPlot->xAxis->setRange( fixedRange );
+		customPlot->xAxis->blockSignals( false );
+	}
+
+	auto newZoom = currentSeriesInterval * customPlot->xAxis->axisRect()->width() / fixedRange.size();
 	auto oldZoom = currentSeriesInterval * customPlot->xAxis->axisRect()->width() / oldRange.size();
 	if ( ( newZoom > 5 && oldZoom <= 5 ) || ( oldZoom > 5 && newZoom <= 5 ) )
 		refreshSeriesStyle();
