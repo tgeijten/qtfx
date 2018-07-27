@@ -28,6 +28,7 @@ public slots:
 	void textEditChanged();
 
 signals:
+	// TODO: use isModified / setModified! from QTextEdit
 	void textChanged();
 
 public:
@@ -65,6 +66,7 @@ public:
 public slots:
 	void updateLineNumberAreaWidth( int newBlockCount );
 	void updateLineNumberArea( const QRect& rect, int dy );
+	void formatDocument();
 
 protected:
 	virtual void resizeEvent( QResizeEvent *event ) Q_DECL_OVERRIDE;

@@ -173,6 +173,38 @@ int QCodeTextEdit::lineNumberAreaWidth()
 	return space;
 }
 
+void QCodeTextEdit::formatDocument()
+{
+	auto cursor = textCursor();
+	cursor.movePosition( QTextCursor::Start );
+
+	auto indents = 0;
+	while ( !cursor.atEnd() )
+	{
+		QString line = cursor.block().text();
+
+		// count current amount of tabs
+		auto tab_count = 0;
+		while ( tab_count < line.size() && line[ tab_count ] == '\t' )
+			++tab_count;
+
+		QChar first_char = tab_count < line.size() ? line[ tab_count ] : QChar();
+		auto desired_tabs = xo::max( 0, indents - int( first_char == '}' ) );
+
+		// add or remove tabs
+		if ( desired_tabs > tab_count )
+			cursor.insertText( QString().fill( '\t', desired_tabs - tab_count ) );
+		else if ( desired_tabs < tab_count )
+			while ( tab_count-- > desired_tabs )
+				cursor.deleteChar();
+
+		// update indents
+		indents += line.count( '{' ) - line.count( '}' );
+
+		cursor.movePosition( QTextCursor::NextBlock );
+	}
+}
+
 void QCodeTextEdit::updateLineNumberAreaWidth( int newBlockCount )
 {
 	setViewportMargins( lineNumberAreaWidth(), 0, 0, 0 );
@@ -198,14 +230,17 @@ void QCodeTextEdit::resizeEvent( QResizeEvent *event )
 
 void QCodeTextEdit::keyPressEvent( QKeyEvent *e )
 {
-	if ( e->key() == Qt::Key_Return || e->key() == Qt::Key_Enter )
+	if ( e->key() == Qt::Key_Return || e->key() == Qt::Key_Enter || e->key() == '{' || e->key() == '}' )
 	{
-		auto line = textCursor().block().text().toStdString();
-		int tabs = 0;
-		while ( tabs < line.size() && line[ tabs ] == '\t' )
-			++tabs;
 		QPlainTextEdit::keyPressEvent( e );
-		QPlainTextEdit::insertPlainText( QString( tabs, '\t' ) );
+		formatDocument();
+
+		//auto line = textCursor().block().text().toStdString();
+		//int tabs = 0;
+		//while ( tabs < line.size() && line[ tabs ] == '\t' )
+		//	++tabs;
+		//QPlainTextEdit::keyPressEvent( e );
+		//QPlainTextEdit::insertPlainText( QString( tabs, '\t' ) );
 	}
 	else QPlainTextEdit::keyPressEvent( e );
 }
