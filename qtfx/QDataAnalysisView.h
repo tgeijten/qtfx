@@ -55,6 +55,7 @@ private:
 	void updateIndicator();
 	void updateFilter();
 	void updateSelectBox();
+	int decimalPoints( double v );
 
 	size_t maxSeriesCount = 20;
 	int smallRefreshItemCount = 100;

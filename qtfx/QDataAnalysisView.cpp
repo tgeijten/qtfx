@@ -85,6 +85,13 @@ QDataAnalysisView::QDataAnalysisView( QDataAnalysisModel* m, QWidget* parent ) :
 	reset();
 }
 
+int QDataAnalysisView::decimalPoints( double v )
+{
+	if ( v != 0 && abs( v ) < 0.01 )
+		return 6;
+	else return 3;
+}
+
 void QDataAnalysisView::refresh( double time, bool refreshAll )
 {
 	if ( itemList->topLevelItemCount() != model->getSeriesCount() )
@@ -103,7 +110,8 @@ void QDataAnalysisView::refresh( double time, bool refreshAll )
 		itemList->setUpdatesEnabled( false );
 		for ( size_t i = 0; i < itemCount; ++i )
 		{
-			itemList->topLevelItem( currentUpdateIdx )->setText( 1, QString().sprintf( "%.3f", model->getValue( currentUpdateIdx, time ) ) );
+			auto y = model->getValue( currentUpdateIdx, time );
+			itemList->topLevelItem( currentUpdateIdx )->setText( 1, QString().sprintf( "%.*f", decimalPoints( y ), y ) );
 			++currentUpdateIdx %= model->getSeriesCount();
 		}
 		itemList->setUpdatesEnabled( true );
