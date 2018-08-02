@@ -20,6 +20,7 @@
 #include "QGroup.h"
 #include "QCheckBox"
 #include "QToolButton"
+#include "xo/container/sorted_vector.h"
 
 class QDataAnalysisView : public QWidget
 {
@@ -74,6 +75,7 @@ private:
 	QCustomPlot* customPlot;
 	QCPItemLine* customPlotLine;
 	xo::flat_map< int, QCPGraph* > series;
+	xo::sorted_vector< QString > persistentSerieNames;
 #else
 	QtCharts::QChart* chart;
 	xo::flat_map< int, QtCharts::QLineSeries* > series;
