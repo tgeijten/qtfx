@@ -4,6 +4,7 @@
 #include <utility>
 
 #include "QString"
+#include "xo/container/storage_tools.h"
 
 typedef std::vector< std::pair< float, float > > DataSeries;
 
@@ -42,21 +43,23 @@ public:
 	virtual double timeStart() const override { return sto_->empty() ? 0.0 : sto_->front()[ 0 ]; }
 	virtual double value( int channel, double time ) const override {
 		// TODO: make this more efficient with binary search (and use iterators)
-		size_t frame_idx = 0;
-		for ( ; frame_idx < sto_->frame_size(); ++frame_idx )
-		{
-			auto t1 = ( *sto_ )( frame_idx, 0 );
-			if ( t1 > time )
-			{
-				if ( frame_idx > 0 )
-				{
-					auto t0 = ( *sto_ )( frame_idx - 1, 0 );
-					if ( time - t0 < t1 - time )
-						--frame_idx; // time is closer to the previous sample
-				}
-				break;
-			}
-		}
+		auto frame_idx = xo::find_frame_index( *sto_, float( time ), 0 );
+
+		//size_t frame_idx = 0;
+		//for ( ; frame_idx < sto_->frame_size(); ++frame_idx )
+		//{
+		//	auto t1 = ( *sto_ )( frame_idx, 0 );
+		//	if ( t1 > time )
+		//	{
+		//		if ( frame_idx > 0 )
+		//		{
+		//			auto t0 = ( *sto_ )( frame_idx - 1, 0 );
+		//			if ( time - t0 < t1 - time )
+		//				--frame_idx; // time is closer to the previous sample
+		//		}
+		//		break;
+		//	}
+		//}
 
 		//auto frequency = double( sto_->frame_size() - 1 ) / ( sto_->back()[ 0 ] - sto_->front()[ 0 ] );
 		//int frame_idx = xo::clamped< int >( round( time * frequency ), 0, sto_->frame_size() - 1 );
