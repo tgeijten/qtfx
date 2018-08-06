@@ -15,8 +15,11 @@ class QCodeEditor : public QWidget
 public:
 	QCodeEditor( QWidget* parent = 0 );
 	virtual ~QCodeEditor();
+
 	bool hasTextChanged() { return textChangedFlag; }
 	QString getPlainText() const;
+	bool isEmpty() const { return fileName.isEmpty(); }
+	QString getTitle();
 
 public slots:
 	void open( const QString& filename );
@@ -24,7 +27,6 @@ public slots:
 	void save();
 	void saveAs( const QString& filename );
 
-	QString getTitle();
 	void textEditChanged();
 
 signals:
