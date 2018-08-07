@@ -9,6 +9,7 @@
 #include <array>
 #include "xo/system/log.h"
 #include "xo/container/sorted_vector.h"
+#include "xo/numerical/constants.h"
 
 QDataAnalysisView::QDataAnalysisView( QDataAnalysisModel* m, QWidget* parent ) : QWidget( parent ), model( m ), currentUpdateIdx( 0 )
 {
@@ -87,7 +88,7 @@ QDataAnalysisView::QDataAnalysisView( QDataAnalysisModel* m, QWidget* parent ) :
 
 int QDataAnalysisView::decimalPoints( double v )
 {
-	if ( v != 0 && abs( v ) < 0.01 )
+	if ( v != 0 && xo::less_or_equal( abs( v ), 0.05 ) )
 		return 6;
 	else return 3;
 }
@@ -143,8 +144,8 @@ void QDataAnalysisView::mouseEvent( QMouseEvent* event )
 	if ( event->buttons() & Qt::LeftButton )
 	{
 		double x = customPlot->xAxis->pixelToCoord( event->pos().x() );
-		xo::clamp( x, model->timeStart(), model->timeFinish() );
-		emit timeChanged( x );
+		double t = model->value( 0, x );
+		emit timeChanged( t );
 	}
 #endif
 }
