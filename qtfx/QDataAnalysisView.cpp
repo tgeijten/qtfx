@@ -144,7 +144,7 @@ void QDataAnalysisView::mouseEvent( QMouseEvent* event )
 	if ( event->buttons() & Qt::LeftButton )
 	{
 		double x = customPlot->xAxis->pixelToCoord( event->pos().x() );
-		double t = model->value( 0, x );
+		double t = model->timeValue( model->timeIndex( x ) );
 		emit timeChanged( t );
 	}
 #endif

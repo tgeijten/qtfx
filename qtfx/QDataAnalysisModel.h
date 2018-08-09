@@ -5,6 +5,7 @@
 
 #include "QString"
 #include "xo/container/storage_tools.h"
+#include "xo/utility/types.h"
 
 typedef std::vector< std::pair< float, float > > DataSeries;
 
@@ -15,11 +16,15 @@ public:
 	virtual ~QDataAnalysisModel() {}
 
 	virtual size_t seriesCount() const = 0;
+	virtual size_t samplesCount() const = 0;
 	virtual QString label( int idx ) const = 0;
 	virtual double value( int idx, double time ) const = 0;
 	virtual DataSeries getSeries( int idx, double min_interval = 0.0 ) const = 0;
+
 	virtual double timeStart() const { return 0.0; }
 	virtual double timeFinish() const { return 0.0; }
+	virtual xo::index_t timeIndex( double time ) const = 0;
+	virtual double timeValue( xo::index_t idx ) const = 0;
 };
 
 template< typename T >
@@ -39,14 +44,16 @@ public:
 			series.emplace_back( static_cast<float>( (*sto_)( i, 0 ) ), static_cast<float>( ( *sto_ )( i, idx ) ) );
 		return series;
 	}
+
+	virtual double value( int channel, double time ) const override { return ( *sto_ )( timeIndex( time ), channel ); }
+
 	virtual double timeFinish() const override { return sto_->empty() ? 0.0 : sto_->back()[ 0 ]; }
 	virtual double timeStart() const override { return sto_->empty() ? 0.0 : sto_->front()[ 0 ]; }
-	virtual double value( int channel, double time ) const override {
-		// TODO: make this more efficient with binary search (and use iterators)
-		auto frame_idx = xo::find_frame_index( *sto_, float( time ), 0 );
-		return (*sto_)( frame_idx, channel );
-	}
+	virtual xo::index_t timeIndex( double time ) const override { return xo::find_frame_index( *sto_, float( time ), 0 ); }
+	virtual double timeValue( xo::index_t idx ) const override { return ( *sto_ )( idx, 0 ); }
+
 	virtual size_t seriesCount() const override { return sto_->empty() ? 0 : sto_->channel_size(); }
+	virtual size_t samplesCount() const override { return sto_->frame_size(); }
 private:
 	const xo::storage< T >* sto_;
 };
