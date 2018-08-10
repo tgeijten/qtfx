@@ -11,7 +11,10 @@
 #include "xo/container/sorted_vector.h"
 #include "xo/numerical/constants.h"
 
-QDataAnalysisView::QDataAnalysisView( QDataAnalysisModel* m, QWidget* parent ) : QWidget( parent ), model( m ), currentUpdateIdx( 0 )
+QDataAnalysisView::QDataAnalysisView( QDataAnalysisModel* m, QWidget* parent ) :
+	QWidget( parent ),
+	model( m ),
+	currentUpdateIdx( 0 )
 {
 	selectBox = new QCheckBox( this );
 	connect( selectBox, &QCheckBox::stateChanged, this, &QDataAnalysisView::select );
@@ -48,6 +51,9 @@ QDataAnalysisView::QDataAnalysisView( QDataAnalysisModel* m, QWidget* parent ) :
 	layout->setContentsMargins( 0, 0, 0, 0 );
 	layout->setSpacing( 4 );
 	layout->addWidget( splitter );
+
+	for ( int i = 0; i < maxSeriesCount; ++i )
+		freeColors.insert( i );
 
 #if !defined QTFX_NO_QCUSTOMPLOT
 	customPlot = new QCustomPlot();
@@ -135,7 +141,7 @@ void QDataAnalysisView::itemChanged( QTreeWidgetItem* item, int column )
 void QDataAnalysisView::clearSeries()
 {
 	while ( !series.empty() )
-		removeSeries( series.rbegin()->first );
+		removeSeries( series.rbegin()->channel );
 }
 
 void QDataAnalysisView::mouseEvent( QMouseEvent* event )
@@ -266,16 +272,16 @@ void QDataAnalysisView::refreshSeriesStyle()
 	int i = 0;
 	for ( auto& s : series )
 	{
-		s.second->setPen( QPen( getStandardColor( i++ ) ) );
-		s.second->setScatterStyle( ss );
-		s.second->setLineStyle( QCPGraph::lsLine );
+		//s.second->setPen( QPen( getStandardColor( i++ ) ) );
+		s.graph->setScatterStyle( ss );
+		s.graph->setLineStyle( QCPGraph::lsLine );
 	}
 }
 
 void QDataAnalysisView::updateSeries( int idx )
 {
 	auto item = itemList->topLevelItem( idx );
-	auto series_it = series.find( idx );
+	auto series_it = xo::find_if( series, [&]( auto& p ) { return idx == p.channel; } );
 	if ( item->checkState( 0 ) == Qt::Checked && series_it == series.end() )
 	{
 		if ( series.size() < maxSeriesCount )
@@ -299,11 +305,18 @@ void QDataAnalysisView::addSeries( int idx )
 	QCPGraph* graph = customPlot->addGraph();
 	QString name = model->label( idx );
 	graph->setName( name );
+
+	xo_assert( !freeColors.empty() );
+
+	graph->setPen( getStandardColor( freeColors.front() ) );
+
 	auto data = model->getSeries( idx, minSeriesInterval );
 	for ( auto& e : data )
 		graph->addData( e.first, e.second );
 
-	series[ idx ] = graph;
+	series.emplace_back( Series{ idx, freeColors.front(), graph } );
+	freeColors.erase( freeColors.begin() );
+
 	currentSeriesInterval = ( data.back().first - data.front().first ) / data.size();
 
 	refreshSeriesStyle();
@@ -313,7 +326,6 @@ void QDataAnalysisView::addSeries( int idx )
 	customPlot->xAxis->setRange( range );
 	updateIndicator();
 	customPlot->replot();
-
 
 #else
 	QtCharts::QLineSeries* ls = new QtCharts::QLineSeries;
@@ -332,9 +344,12 @@ void QDataAnalysisView::removeSeries( int idx )
 {
 #if !defined QTFX_NO_QCUSTOMPLOT
 	auto range = customPlot->xAxis->range();
-	auto it = series.find( idx );
-	auto name = it->second->name();
-	customPlot->removeGraph( it->second );
+	auto it = xo::find_if( series, [&]( auto& p ) { return idx == p.channel; } );
+	auto name = it->graph->name();
+
+	freeColors.insert( it->color );
+
+	customPlot->removeGraph( it->graph );
 	series.erase( it );
 
 	customPlot->rescaleAxes();

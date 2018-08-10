@@ -74,7 +74,15 @@ private:
 #if !defined QTFX_NO_QCUSTOMPLOT
 	QCustomPlot* customPlot;
 	QCPItemLine* customPlotLine;
-	xo::flat_map< int, QCPGraph* > series;
+	xo::sorted_vector< int > freeColors;
+
+	struct Series {
+		int channel;
+		int color;
+		QCPGraph* graph;
+	};
+	std::vector< Series > series;
+
 	xo::sorted_vector< QString > persistentSerieNames;
 #else
 	QtCharts::QChart* chart;
