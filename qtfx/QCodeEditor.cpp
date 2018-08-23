@@ -87,9 +87,11 @@ void QCodeEditor::saveAs( const QString& fn )
 	if ( getFileFormat( fn ) != getFileFormat( fileName ) )
 	{
 		std::stringstream stri( textEdit->toPlainText().toStdString() );
-		xo::prop_node pn = xo::make_serializer( getFileFormat( fileName ) )->read_stream( stri );
+		xo::prop_node pn;
+		stri >> *xo::make_serializer( getFileFormat( fileName ), pn );
+
 		std::stringstream stro;
-		xo::make_serializer( getFileFormat( fn ) )->write_stream( stro, pn );
+		stro << *xo::make_serializer( getFileFormat( fn ), pn );
 
 		QCodeHighlighter* xmlSyntaxHighlighter = new QCodeHighlighter( textEdit->document(), QCodeHighlighter::detectLanguage( fn ) );
 		textEdit->setPlainText( QString( stro.str().c_str() ) );
