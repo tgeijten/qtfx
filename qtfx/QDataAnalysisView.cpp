@@ -10,6 +10,7 @@
 #include "xo/system/log.h"
 #include "xo/container/sorted_vector.h"
 #include "xo/numerical/constants.h"
+#include "qt_tools.h"
 
 QDataAnalysisView::QDataAnalysisView( QDataAnalysisModel* m, QWidget* parent ) :
 	QWidget( parent ),
@@ -190,15 +191,9 @@ void QDataAnalysisView::setSelectionState( int state )
 	}
 }
 
-QColor QDataAnalysisView::getStandardColor( int idx, float value )
+QColor QDataAnalysisView::getStandardColor( int idx )
 {
-	static std::array< float, 10 > standard_hue{ 0, 60, 120, 180, 240, 300, 30, 210, 270, 330 };
-	static std::array< float, 10 > standard_val{ 1, 0.75, 0.75, 0.75, 1, 1, 1, 0.75, 1, 1 };
-	float hue = standard_hue[ idx % standard_hue.size() ];
-	float sat = 1.0f / ( 1.0f + idx / standard_hue.size() );
-	float val = standard_val[ idx % standard_hue.size() ];
-	vis::color c = vis::make_from_hsv( hue, sat, val );
-	return QColor( 255 * c.r, 255 * c.g, 255 * c.b );
+	return make_qt( vis::make_unique_color( size_t( idx ) ) );
 }
 
 void QDataAnalysisView::reset()

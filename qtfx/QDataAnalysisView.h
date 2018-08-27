@@ -50,7 +50,7 @@ signals:
 	void timeChanged( double );
 
 private:
-	QColor getStandardColor( int idx, float brightness = 0.75f );
+	QColor getStandardColor( int idx );
 	void addSeries( int idx );
 	void removeSeries( int idx );
 	void updateIndicator();
