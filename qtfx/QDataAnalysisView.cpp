@@ -303,7 +303,7 @@ void QDataAnalysisView::addSeries( int idx )
 
 	xo_assert( !freeColors.empty() );
 
-	graph->setPen( getStandardColor( freeColors.front() ) );
+	graph->setPen( QPen( getStandardColor( freeColors.front() ), lineWidth ) );
 
 	auto data = model->getSeries( idx, minSeriesInterval );
 	for ( auto& e : data )

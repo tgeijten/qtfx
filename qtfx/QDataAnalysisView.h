@@ -32,6 +32,7 @@ public:
 	void refresh( double time, bool refreshAll = true );
 	void reset();
 
+	void setLineWidth( float f ) { lineWidth = f; }
 	void setMinSeriesInterval( float f ) { minSeriesInterval = f; }
 
 public slots:
@@ -62,6 +63,7 @@ private:
 	int smallRefreshItemCount = 100;
 	float minSeriesInterval = 0.01f;
 	float currentSeriesInterval = 0;
+	float lineWidth = 1.5f;
 	int currentUpdateIdx;
 	double currentTime;
 	QCheckBox* selectBox;
