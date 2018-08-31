@@ -167,10 +167,7 @@ void QDataAnalysisView::rangeChanged( const QCPRange &newRange, const QCPRange &
 		customPlot->xAxis->blockSignals( false );
 	}
 
-	auto newZoom = currentSeriesInterval * customPlot->xAxis->axisRect()->width() / fixedRange.size();
-	auto oldZoom = currentSeriesInterval * customPlot->xAxis->axisRect()->width() / oldRange.size();
-	if ( ( newZoom > 5 && oldZoom <= 5 ) || ( oldZoom > 5 && newZoom <= 5 ) )
-		refreshSeriesStyle();
+	updateSeriesStyle();
 }
 
 void QDataAnalysisView::filterChanged( const QString& filter )
@@ -259,17 +256,20 @@ void QDataAnalysisView::updateSelectBox()
 	selectBox->blockSignals( false );
 }
 
-void QDataAnalysisView::refreshSeriesStyle()
+void QDataAnalysisView::updateSeriesStyle()
 {
 	auto zoom = currentSeriesInterval * customPlot->xAxis->axisRect()->width() / customPlot->xAxis->range().size();
-	QCPScatterStyle ss = QCPScatterStyle( zoom > 5 ? QCPScatterStyle::ssDisc : QCPScatterStyle::ssNone, 5 );
+	SeriesStyle newstyle = zoom > 8 ? discStyle : lineStyle;
 
-	int i = 0;
-	for ( auto& s : series )
+	if ( newstyle != seriesStyle )
 	{
-		//s.second->setPen( QPen( getStandardColor( i++ ) ) );
-		s.graph->setScatterStyle( ss );
-		s.graph->setLineStyle( QCPGraph::lsLine );
+		seriesStyle = newstyle;
+		QCPScatterStyle ss = QCPScatterStyle( zoom > 8 ? QCPScatterStyle::ssDisc : QCPScatterStyle::ssNone, 4 );
+		for ( auto& s : series )
+		{
+			s.graph->setScatterStyle( ss );
+			s.graph->setLineStyle( QCPGraph::lsLine );
+		}
 	}
 }
 
@@ -314,7 +314,7 @@ void QDataAnalysisView::addSeries( int idx )
 
 	currentSeriesInterval = ( data.back().first - data.front().first ) / data.size();
 
-	refreshSeriesStyle();
+	updateSeriesStyle();
 
 	auto range = customPlot->xAxis->range();
 	customPlot->rescaleAxes();

@@ -76,4 +76,5 @@ protected:
 
 private:
 	QWidget *lineNumberArea;
+	QRect previousRect;
 };

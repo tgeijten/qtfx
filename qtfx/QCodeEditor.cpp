@@ -225,9 +225,13 @@ void QCodeTextEdit::updateLineNumberArea( const QRect& rect, int dy )
 
 void QCodeTextEdit::resizeEvent( QResizeEvent *event )
 {
-	QPlainTextEdit::resizeEvent( event );
 	QRect cr = contentsRect();
-	lineNumberArea->setGeometry( QRect( cr.left(), cr.top(), lineNumberAreaWidth(), cr.height() ) );
+	if ( cr != previousRect ) // this is a hack to prevent a Qt bug causing infinite QResizeEvents
+	{
+		previousRect = cr;
+		QPlainTextEdit::resizeEvent( event );
+		lineNumberArea->setGeometry( QRect( cr.left(), cr.top(), lineNumberAreaWidth(), cr.height() ) );
+	}
 }
 
 void QCodeTextEdit::keyPressEvent( QKeyEvent *e )

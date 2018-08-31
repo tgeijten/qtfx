@@ -59,6 +59,8 @@ private:
 	void updateSelectBox();
 	int decimalPoints( double v );
 
+	enum SeriesStyle { noStyle, lineStyle, discStyle };
+	SeriesStyle seriesStyle = noStyle;
 	size_t maxSeriesCount = 20;
 	int smallRefreshItemCount = 100;
 	float minSeriesInterval = 0.01f;
@@ -91,5 +93,5 @@ private:
 	xo::flat_map< int, QtCharts::QLineSeries* > series;
 	QtCharts::QChartView* chartView;
 #endif
-	void refreshSeriesStyle();
+	void updateSeriesStyle();
 };
