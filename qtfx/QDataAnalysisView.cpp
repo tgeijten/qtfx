@@ -264,7 +264,7 @@ void QDataAnalysisView::updateSeriesStyle()
 	if ( newstyle != seriesStyle )
 	{
 		seriesStyle = newstyle;
-		QCPScatterStyle ss = QCPScatterStyle( zoom > 8 ? QCPScatterStyle::ssDisc : QCPScatterStyle::ssNone, 4 );
+		QCPScatterStyle ss = QCPScatterStyle( seriesStyle == discStyle ? QCPScatterStyle::ssDisc : QCPScatterStyle::ssNone, 4 );
 		for ( auto& s : series )
 		{
 			s.graph->setScatterStyle( ss );
@@ -303,6 +303,7 @@ void QDataAnalysisView::addSeries( int idx )
 
 	xo_assert( !freeColors.empty() );
 
+	graph->setScatterStyle( QCPScatterStyle( seriesStyle == discStyle ? QCPScatterStyle::ssDisc : QCPScatterStyle::ssNone, 4 ) );
 	graph->setPen( QPen( getStandardColor( freeColors.front() ), lineWidth ) );
 
 	auto data = model->getSeries( idx, minSeriesInterval );
