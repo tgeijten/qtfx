@@ -203,7 +203,8 @@ void QCodeTextEdit::formatDocument()
 		// update indents
 		indents += line.count( '{' ) - line.count( '}' );
 
-		cursor.movePosition( QTextCursor::NextBlock );
+		if ( !cursor.movePosition( QTextCursor::NextBlock ) )
+			break; // prevent eternal loop if this fails
 	}
 }
 
