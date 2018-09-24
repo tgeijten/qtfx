@@ -21,36 +21,29 @@ protected:
 	bool isBetweenQuotes( const QString& text, int index );
 
 private:
-	void highlightByRegex( const QTextCharFormat& format, const QRegularExpression& regex, const QString& text );
-	QRegularExpressionMatch match( const QRegularExpression& regex, const QString& text, int index );
-	void setRegexes();
-	void setFormats();
-
-private:
-	Language language;
 	struct HighlightRule {
 		HighlightRule( const char* e, QTextCharFormat f ) : regExp( e ), format( f ) {}
 		QRegularExpression regExp;
 		QTextCharFormat format;
 	};
+
+	void applyRule( const QString& text, const HighlightRule& r );
+	QRegularExpressionMatch match( const QRegularExpression& regex, const QString& text, int index );
+	void setRegexes();
+	void setFormats();
+
+	Language language;
 	std::vector< HighlightRule > rules;
 
+	QTextCharFormat operatorFormat;
+	QTextCharFormat elementFormat;
+	QTextCharFormat attributeFormat;
+	QTextCharFormat valueFormat;
+	QTextCharFormat commentFormat;
+	QTextCharFormat numberFormat;
+	QTextCharFormat specialFormat;
+	QTextCharFormat macroFormat;
 
-	QTextCharFormat m_OperatorFormat;
-	QTextCharFormat m_ElementFormat;
-	QTextCharFormat m_AttributeFormat;
-	QTextCharFormat m_ValueFormat;
-	QTextCharFormat m_CommentFormat;
-	QTextCharFormat m_NumberFormat;
-	QTextCharFormat m_SpecialFormat;
-
-	QRegularExpression m_OperatorRegex;
-	QRegularExpression m_xmlElementRegex;
-	QRegularExpression m_AttributeRegex;
-	QRegularExpression m_StringRegex;
-	QRegularExpression m_CommentRegex;
-	QRegularExpression m_NumberRegex;
-	QRegularExpression m_SpecialRegex;
 	QRegularExpression commentStartRegex;
 	QRegularExpression commentEndRegex;
 };

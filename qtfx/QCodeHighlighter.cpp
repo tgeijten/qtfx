@@ -16,32 +16,10 @@ QCodeHighlighter::QCodeHighlighter( QTextDocument* parent, Language l ) : QSynta
 
 void QCodeHighlighter::highlightBlock( const QString &text )
 {
-	if ( language == XML )
-	{
-		// Special treatment for xml element regex as we use captured text to emulate lookbehind
-		auto m = match( m_xmlElementRegex, text, 0 );
-		while ( m.hasMatch() )
-		{
-			setFormat( m.capturedStart( 1 ), m.capturedLength( 1 ), m_ElementFormat );
-			m = match( m_xmlElementRegex, text, m.capturedEnd( 1 ) );
-		}
-		highlightByRegex( m_NumberFormat, m_NumberRegex, text );
-		highlightByRegex( m_AttributeFormat, m_AttributeRegex, text );
-	}
-	else
-	{
-		highlightByRegex( m_NumberFormat, m_NumberRegex, text );
-		highlightByRegex( m_AttributeFormat, m_AttributeRegex, text );
-		highlightByRegex( m_ElementFormat, m_xmlElementRegex, text );
-	}
+	for ( auto& r : rules )
+		applyRule( text, r );
 
-	// Highlight xml keywords *after* xml elements to fix any occasional / captured into the enclosing element
-	highlightByRegex( m_OperatorFormat, m_OperatorRegex, text );
-	highlightByRegex( m_ValueFormat, m_StringRegex, text );
-	highlightByRegex( m_SpecialFormat, m_SpecialRegex, text );
-	highlightByRegex( m_CommentFormat, m_CommentRegex, text );
-
-	// finally, apply multi-line comments
+	// apply multi-line comments
 	setCurrentBlockState( 0 );
 	int startIndex = previousBlockState() != 1 ? match( commentStartRegex, text, 0 ).capturedStart() : 0;
 	while ( startIndex >= 0 )
@@ -50,12 +28,12 @@ void QCodeHighlighter::highlightBlock( const QString &text )
 		if ( !mend.hasMatch() )
 		{
 			setCurrentBlockState( 1 );
-			setFormat( startIndex, text.length() - startIndex, m_CommentFormat );
+			setFormat( startIndex, text.length() - startIndex, commentFormat );
 			break;
 		}
 		else
 		{
-			setFormat( startIndex, mend.capturedEnd() - startIndex, m_CommentFormat );
+			setFormat( startIndex, mend.capturedEnd() - startIndex, commentFormat );
 			startIndex = match( commentStartRegex, text, mend.capturedEnd() ).capturedStart();
 		}
 	}
@@ -77,14 +55,10 @@ QRegularExpressionMatch QCodeHighlighter::match( const QRegularExpression & rege
 	return m;
 }
 
-void QCodeHighlighter::highlightByRegex( const QTextCharFormat & format, const QRegularExpression& regex, const QString & text )
+void QCodeHighlighter::applyRule( const QString& text, const HighlightRule& r )
 {
-	auto m = match( regex, text, 0 );
-	while ( m.hasMatch() )
-	{
-		setFormat( m.capturedStart(), m.capturedLength(), format );
-		m = match( regex, text, m.capturedEnd() );
-	}
+	for ( auto m = match( r.regExp, text, 0 ); m.hasMatch(); m = match( r.regExp, text, m.capturedEnd() ) )
+		setFormat( m.capturedStart(), m.capturedLength(), r.format );
 }
 
 void QCodeHighlighter::setRegexes()
@@ -92,26 +66,26 @@ void QCodeHighlighter::setRegexes()
 	switch ( language )
 	{
 	case XML:
-		// TODO: convert to rules
-		m_xmlElementRegex.setPattern( "<[\\s]*[/]?[\\s]*([^\\n]\\w*)(?=[\\s/>])" );
-		m_AttributeRegex.setPattern( "\\w+(?=\\=)" );
-		m_StringRegex.setPattern( "\"[^\\n\"]+\"(?=[\\s/>])" );
-		m_CommentRegex.setPattern( "<!--[^\\n]*-->" );
-		m_SpecialRegex.setPattern( "/.^/" );
-		m_OperatorRegex.setPattern( "(<\\?|/>|>|<|</|\\?>" );
+		rules.emplace_back( "<[\\s]*[/]?[\\s]*([^\\n]\\w*)(?=[\\s/>])", elementFormat );
+		rules.emplace_back( "\\w+(?=\\=)", attributeFormat );
+		rules.emplace_back( "\"[^\\n\"]+\"(?=[\\s/>])", valueFormat );
+		rules.emplace_back( "<!--[^\\n]*-->", commentFormat );
+		rules.emplace_back( "/.^/", specialFormat );
+		rules.emplace_back( "(<\\?|/>|>|<|</|\\?>", operatorFormat );
+		rules.emplace_back( "\\b([-+]?[\\.\\d]+)", numberFormat );
 		commentStartRegex.setPattern( "<!--" );
 		commentEndRegex.setPattern( "-->" );
 		break;
 
 	case ZML:
-		// TODO: convert to rules
-		//rules.emplace_back( "\\w+\\s*\\=?\\s*[\\{\\[]", m_ElementFormat );
-		m_xmlElementRegex.setPattern( "\\w+\\s*\\=?\\s*[\\{\\[]" );
-		m_AttributeRegex.setPattern( "\\w+\\s*(\\=)" );
-		m_StringRegex.setPattern( "\"[^\\n\"]*\"" );
-		m_CommentRegex.setPattern( "(;|//)[^\\n]*" );
-		m_SpecialRegex.setPattern( "#\\w+" );
-		m_OperatorRegex.setPattern( "[\\{\\}\\[\\]\\=]" );
+		rules.emplace_back( "\\w+\\s*\\=?\\s*[\\{\\[]", elementFormat );
+		rules.emplace_back( "\\w+\\s*(\\=)", attributeFormat );
+		rules.emplace_back( "\"[^\\n\"]*\"", valueFormat );
+		rules.emplace_back( "(;|//)[^\\n]*", commentFormat );
+		rules.emplace_back( "#\\w+", specialFormat );
+		rules.emplace_back( "[\\{\\}\\[\\]\\=]", operatorFormat );
+		rules.emplace_back( "\\(\\w+\\)", macroFormat );
+		rules.emplace_back( "\\b([-+]?[\\.\\d]+)", numberFormat );
 		commentStartRegex.setPattern( "/\\*" );
 		commentEndRegex.setPattern( "\\*/" );
 		break;
@@ -119,31 +93,29 @@ void QCodeHighlighter::setRegexes()
 	default:
 		xo_error( "Unsupported language" );
 	}
-
-	m_NumberRegex.setPattern( "\\b([-+]?[\\.\\d]+)" );
 }
 
 void QCodeHighlighter::setFormats()
 {
-	m_OperatorFormat.setForeground( Qt::darkGray );
-	m_ElementFormat.setForeground( Qt::darkBlue );
-	m_ElementFormat.setFontWeight( QFont::Bold );
-	m_AttributeFormat.setForeground( Qt::darkBlue );
-	//m_AttributeFormat.setFontItalic( true );
-	m_ValueFormat.setForeground( Qt::darkRed );
-	m_CommentFormat.setForeground( Qt::darkGreen );
-	m_CommentFormat.setFontItalic( true );
-	m_NumberFormat.setForeground( Qt::darkCyan );
-	m_SpecialFormat.setForeground( Qt::blue );
-	m_SpecialFormat.setFontItalic( true );
-	m_SpecialFormat.setFontWeight( QFont::Bold );
+	operatorFormat.setForeground( Qt::darkGray );
+	elementFormat.setForeground( Qt::darkBlue );
+	elementFormat.setFontWeight( QFont::Bold );
+	attributeFormat.setForeground( Qt::darkBlue );
+	valueFormat.setForeground( Qt::darkRed );
+	commentFormat.setForeground( Qt::darkGreen );
+	commentFormat.setFontItalic( true );
+	numberFormat.setForeground( Qt::darkCyan );
+	macroFormat.setForeground( Qt::darkMagenta );
+	specialFormat.setForeground( Qt::blue );
+	specialFormat.setFontItalic( true );
+	specialFormat.setFontWeight( QFont::Bold );
 }
 
 void QCodeHighlighter::setLanguage( Language l )
 {
 	language = l;
-	setRegexes();
 	setFormats();
+	setRegexes();
 }
 
 QCodeHighlighter::Language QCodeHighlighter::detectLanguage( const QString& filename )
