@@ -204,7 +204,7 @@ void QCodeTextEdit::formatDocument()
 		indents += line.count( '{' ) - line.count( '}' );
 
 		if ( !cursor.movePosition( QTextCursor::NextBlock ) )
-			break; // prevent eternal loop if this fails
+			break; // prevent infinite loop if this fails
 	}
 }
 
@@ -241,13 +241,6 @@ void QCodeTextEdit::keyPressEvent( QKeyEvent *e )
 	{
 		QPlainTextEdit::keyPressEvent( e );
 		formatDocument();
-
-		//auto line = textCursor().block().text().toStdString();
-		//int tabs = 0;
-		//while ( tabs < line.size() && line[ tabs ] == '\t' )
-		//	++tabs;
-		//QPlainTextEdit::keyPressEvent( e );
-		//QPlainTextEdit::insertPlainText( QString( tabs, '\t' ) );
 	}
 	else QPlainTextEdit::keyPressEvent( e );
 }
