@@ -69,7 +69,6 @@ void QCodeHighlighter::setRegexes()
 		rules.emplace_back( "<[\\s]*[/]?[\\s]*([^\\n]\\w*)(?=[\\s/>])", elementFormat );
 		rules.emplace_back( "\\w+(?=\\=)", attributeFormat );
 		rules.emplace_back( "\"[^\\n\"]+\"(?=[\\s/>])", valueFormat );
-		rules.emplace_back( "<!--[^\\n]*-->", commentFormat );
 		rules.emplace_back( "/.^/", specialFormat );
 		rules.emplace_back( "(<\\?|/>|>|<|</|\\?>", operatorFormat );
 		rules.emplace_back( "\\b([-+]?[\\.\\d]+)", numberFormat );
@@ -81,11 +80,11 @@ void QCodeHighlighter::setRegexes()
 		rules.emplace_back( "\\w+\\s*\\=?\\s*[\\{\\[]", elementFormat );
 		rules.emplace_back( "\\w+\\s*(\\=)", attributeFormat );
 		rules.emplace_back( "\"[^\\n\"]*\"", valueFormat );
-		rules.emplace_back( "(;|//)[^\\n]*", commentFormat );
 		rules.emplace_back( "#\\w+", specialFormat );
 		rules.emplace_back( "[\\{\\}\\[\\]\\=]", operatorFormat );
-		rules.emplace_back( "\\(\\w+\\)", macroFormat );
 		rules.emplace_back( "\\b([-+]?[\\.\\d]+)", numberFormat );
+		rules.emplace_back( "\\(\\w+\\)", macroFormat );
+		rules.emplace_back( "(;|//)[^\\n]*", commentFormat );
 		commentStartRegex.setPattern( "/\\*" );
 		commentEndRegex.setPattern( "\\*/" );
 		break;
