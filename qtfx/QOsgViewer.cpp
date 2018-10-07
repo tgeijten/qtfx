@@ -8,6 +8,8 @@
 #include "simvis/group.h"
 #include "simvis/scene.h"
 #include "osg/MatrixTransform"
+#include "xo/geometry/quat.h"
+#include "simvis/osg_tools.h"
 
 // class for routing GUI events to QOsgViewer
 // This is needed because QOsgViewer can't derive from GUIEventHandler directly
@@ -24,7 +26,8 @@ private:
 QOsgViewer::QOsgViewer( QWidget* parent /*= 0*/, Qt::WindowFlags f /*= 0*/, osgViewer::ViewerBase::ThreadingModel threadingModel/*=osgViewer::CompositeViewer::SingleThreaded*/ ) :
 QWidget( parent, f ),
 capture_handler_( nullptr ),
-frame_count_( 0 )
+frame_count_( 0 ),
+scene_light_offset_( -3, 8, 2 )
 {
 	QCoreApplication::instance()->installEventFilter( this );
 	setThreadingModel( threadingModel );
@@ -106,6 +109,8 @@ void QOsgViewer::paintEvent( QPaintEvent* event )
 	if ( isCapturing() && current_frame_time_ == last_drawn_frame_time_ )
 		return; // this frame was already captured, skip
 
+	updateLightPos();
+
 	++frame_count_;
 	frame();
 	last_drawn_frame_time_ = current_frame_time_;
@@ -116,6 +121,10 @@ void QOsgViewer::setScene( vis::scene* s )
 	scene_ = s;
 	for ( size_t i = 0; i < getNumViews(); ++i )
 		getView( i )->setSceneData( s->osg_node() );
+
+	// init light
+	scene_light_ = scene_->add_light( scene_light_offset_, vis::make_white( 1 ) );
+	scene_light_.attenuation( 1.0f, 0.0f, 0.0f );
 }
 
 void QOsgViewer::setHud( const xo::path& file )
@@ -137,6 +146,14 @@ void QOsgViewer::updateHudPos()
 	auto hh = tan( xo::deg_to_rad( fovy ) / 2 );
 	auto hw = tan( atan( hh * aspect ) );
 	hud_.pos( xo::vec3f( hw - 0.55f * hud_size, -hh + 0.55f * hud_size, -1 ) );
+}
+
+void QOsgViewer::updateLightPos()
+{
+	auto center = camera_man_->getCenter();
+	auto ori = xo::quat_from_axis_angle( xo::vec3f::unit_y(), camera_man_->getYaw() );
+	auto v = ori * scene_light_offset_;
+	scene_light_.pos( vis::vec3f( vis::from_osg( center ) ) + v );
 }
 
 void QOsgViewer::setClearColor( const osg::Vec4& col )

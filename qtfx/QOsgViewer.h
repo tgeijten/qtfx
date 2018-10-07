@@ -14,6 +14,7 @@
 #include "simvis/plane.h"
 #include "xo/filesystem/path.h"
 #include "osg/MatrixTransform"
+#include "simvis/light.h"
 
 class QOsgViewer : public QWidget, public osgViewer::CompositeViewer
 {
@@ -41,6 +42,7 @@ public:
 protected:
 	bool eventFilter( QObject* obj, QEvent* event );
 	void updateHudPos();
+	void updateLightPos();
 	size_t frame_count_;
 	QTimer timer_;
 	int width_, height_;
@@ -53,4 +55,7 @@ protected:
 	vis::plane hud_;
 	double current_frame_time_;
 	double last_drawn_frame_time_;
+
+	vis::vec3f scene_light_offset_;
+	vis::light scene_light_;
 };
