@@ -27,7 +27,7 @@ QOsgViewer::QOsgViewer( QWidget* parent /*= 0*/, Qt::WindowFlags f /*= 0*/, osgV
 QWidget( parent, f ),
 capture_handler_( nullptr ),
 frame_count_( 0 ),
-scene_light_offset_( -3, 8, 2 )
+scene_light_offset_( -2, 8, 3 )
 {
 	QCoreApplication::instance()->installEventFilter( this );
 	setThreadingModel( threadingModel );
