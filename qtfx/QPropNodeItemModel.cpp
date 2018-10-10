@@ -1,6 +1,6 @@
 #include "QPropNodeItemModel.h"
-#include "xo\container\prop_node_tools.h"
-#include "xo\system\log.h"
+#include "xo/container/prop_node_tools.h"
+#include "xo/system/log.h"
 
 using xo::prop_node;
 

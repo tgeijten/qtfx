@@ -1,13 +1,13 @@
 #pragma once
 
 #include "QAbstractItemModel"
-#include "xo/container/prop_node.h"
+#include "xo/system/settings.h"
 
-class QPropNodeItemModel : public QAbstractItemModel
+class QSettingsItemModel : public QAbstractItemModel
 {
 public:
-	QPropNodeItemModel( xo::prop_node& pn ) : QAbstractItemModel(), props_( pn ) {}
-	virtual ~QPropNodeItemModel() {}
+	QSettingsItemModel( xo::settings& pn ) : QAbstractItemModel(), settings_( pn ) {}
+	virtual ~QSettingsItemModel() {}
 
 	virtual QModelIndex index( int row, int column, const QModelIndex &parent = QModelIndex() ) const override;
 	virtual QModelIndex parent( const QModelIndex &child ) const override;
@@ -18,5 +18,5 @@ public:
 	virtual Qt::ItemFlags flags( const QModelIndex &index ) const override;
 
 private:
-	xo::prop_node& props_;
+	xo::settings& settings_;
 };
