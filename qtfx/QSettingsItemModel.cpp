@@ -35,7 +35,7 @@ QModelIndex QSettingsItemModel::index( int row, int column, const QModelIndex &p
 	if ( parent.isValid() )
 	{
 		auto* pn = (prop_node*)parent.internalPointer();
-		auto* ch = &pn->get_child( row );
+		auto* ch = &pn->get_child( pn->has_key( "label" ) ? row + 1 : row );
 		return createIndex( row, column, (void*)ch );
 	}
 	else return createIndex( row, column, (void*)&settings_.schema().get_child( row ) );
@@ -57,6 +57,8 @@ int QSettingsItemModel::rowCount( const QModelIndex &parent ) const
 		auto* pn = reinterpret_cast<prop_node*>( parent.internalPointer() );
 		if ( pn->has_key( "default" ) )
 			return 0;
+		else if ( pn->has_key( "label" ) )
+			return (int)pn->size() - 1;
 		else return (int)pn->size();
 	}
 	else return (int)settings_.schema().size();
@@ -64,7 +66,7 @@ int QSettingsItemModel::rowCount( const QModelIndex &parent ) const
 
 int QSettingsItemModel::columnCount( const QModelIndex &parent ) const
 {
-	return 3;
+	return 2;
 }
 
 QVariant QSettingsItemModel::data( const QModelIndex &index, int role ) const
@@ -73,19 +75,15 @@ QVariant QSettingsItemModel::data( const QModelIndex &index, int role ) const
 	{
 		auto* pn = reinterpret_cast<prop_node*>( index.internalPointer() );
 		auto parent = find_parent_node( &settings_.schema(), pn );
+		auto parent_key = parent.second->get_key( parent.first );
+		auto id = xo::find_query_to_node( &settings_.schema(), pn ).second;
 
 		if ( index.column() == 0 )
 		{
-			auto parent_key = parent.second->get_key( parent.first );
-			return QVariant( parent_key.c_str() );
+			return QVariant( QString( pn->get< std::string >( "label", parent_key ).c_str() ) );
 		}
-		else if ( index.column() == 1 && pn->has_key( "label" ) )
+		else if ( index.column() == 1 && pn->has_key( "default" ) )
 		{
-			return QVariant( QString( pn->get< std::string >( "label" ).c_str() ) );
-		}
-		else if ( index.column() == 2 && pn->has_key( "default" ) )
-		{
-			auto id = xo::find_query_to_node( &settings_.schema(), pn ).second;
 			return QVariant( QString( settings_.get< std::string >( id ).c_str() ) );
 		}
 	}
@@ -110,7 +108,20 @@ Qt::ItemFlags QSettingsItemModel::flags( const QModelIndex &index ) const
 {
 	if ( !index.isValid() )
 		return 0;
-	else if ( index.column() == 2 )
+	else if ( index.column() == 1 )
 		return Qt::ItemIsEditable | QAbstractItemModel::flags( index );
 	else return QAbstractItemModel::flags( index );
+}
+
+QVariant QSettingsItemModel::headerData( int section, Qt::Orientation orientation, int role ) const
+{
+	if ( role != Qt::DisplayRole )
+		return QVariant();
+
+	switch ( section )
+	{
+	case 0: return tr( "Setting" );
+	case 1: return tr( "Value" );
+	default: return tr( "Whatever" );
+	}
 }
