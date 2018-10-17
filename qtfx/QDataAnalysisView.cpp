@@ -10,7 +10,7 @@
 #include "xo/system/log.h"
 #include "xo/container/sorted_vector.h"
 #include "xo/numerical/constants.h"
-#include "qt_tools.h"
+#include "qt_convert.h"
 
 QDataAnalysisView::QDataAnalysisView( QDataAnalysisModel* m, QWidget* parent ) :
 	QWidget( parent ),
@@ -190,7 +190,7 @@ void QDataAnalysisView::setSelectionState( int state )
 
 QColor QDataAnalysisView::getStandardColor( int idx )
 {
-	return make_qt( vis::make_unique_color( size_t( idx ) ) );
+	return to_qt( vis::make_unique_color( size_t( idx ) ) );
 }
 
 void QDataAnalysisView::reset()
