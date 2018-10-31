@@ -34,7 +34,7 @@ void QFileBrowser::setRoot( const QString& folder, const QString& filter )
 	{
 		// set folder / filter
 		QDir().mkdir( folder );
-		fileModel->setNameFilters( QStringList( filter ) );
+		fileModel->setNameFilters( filter.split( ';' ) );
 		fileModel->setNameFilterDisables( false );
 		setRootIndex( fileModel->setRootPath( folder ) );
 	}
