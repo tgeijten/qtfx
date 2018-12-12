@@ -2,6 +2,7 @@
 
 #include <QPlainTextEdit>
 #include <QThread>
+#include <QTimer>
 
 #include "xo/system/log_sink.h"
 #include "xo/utility/types.h"

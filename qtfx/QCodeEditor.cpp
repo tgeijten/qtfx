@@ -4,6 +4,7 @@
 #include <QMessageBox>
 #include <QFileDialog>
 #include <QBoxLayout>
+#include <QPainter>
 
 #include "xo/system/system_tools.h"
 #include "xo/system/assert.h"
