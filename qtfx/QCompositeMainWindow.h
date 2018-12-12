@@ -4,6 +4,7 @@
 #include <QStringList>
 #include <QStatusBar>
 #include <QSettings>
+#include <QMenu>
 
 class QCompositeMainWindow : public QMainWindow
 {

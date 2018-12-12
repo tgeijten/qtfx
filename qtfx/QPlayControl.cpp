@@ -7,6 +7,8 @@
 
 #include "xo/system/log.h"
 
+#include <math.h>
+
 QPlayControl::QPlayControl( QWidget *parent ) :
 QWidget( parent ),
 currentTime( 0.0 ),
