@@ -16,6 +16,7 @@ public:
 	virtual void openFile( const QString& filename ) { }
 	virtual void saveFile() { }
 	virtual void saveFileAs( const QString& filename ) { }
+	virtual bool tryExit() { return true; }
 
 	QDockWidget* createDockWidget( const QString& title, QWidget* widget, Qt::DockWidgetArea area );
 	int registerDockWidget( QDockWidget* widget, const QString& menu_text );
@@ -42,7 +43,6 @@ protected:
 		return a;
 	}
 
-	virtual bool canClose() { return true; }
 	void setActiveFile( const QString& filename ) { activeFile = filename; }
 
 	QStatusBar* createStatusBar();

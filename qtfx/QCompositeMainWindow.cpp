@@ -71,6 +71,7 @@ void QCompositeMainWindow::fileSaveAsTriggered()
 
 void QCompositeMainWindow::fileExitTriggered()
 {
+	close();
 }
 
 void QCompositeMainWindow::windowMenuTriggered()
@@ -126,8 +127,8 @@ void QCompositeMainWindow::createFileMenu( const QString& default_folder, const 
 	recentFilesMenu = addMenuAction( fileMenu, "Open &Recent", this, &QCompositeMainWindow::fileOpenTriggered, QKeySequence(), true );
 	addMenuAction( fileMenu, "&Save", this, &QCompositeMainWindow::fileSaveTriggered, QKeySequence( "Ctrl+S" ) );
 	addMenuAction( fileMenu, "Save &As...", this, &QCompositeMainWindow::fileSaveAsTriggered, QKeySequence( "Ctrl+Shift+S" ) );
-	addMenuAction( fileMenu, "&Close", this, &QCompositeMainWindow::fileCloseTriggered, QKeySequence( "Ctrl+F4" ), true );
-	addMenuAction( fileMenu, "E&xit", this, &QCompositeMainWindow::fileCloseTriggered, QKeySequence( "Alt+X" ) );
+	addMenuAction( fileMenu, "&Close", this, &QCompositeMainWindow::fileCloseTriggered, QKeySequence( "Ctrl+W" ), true );
+	addMenuAction( fileMenu, "E&xit", this, &QCompositeMainWindow::fileExitTriggered, QKeySequence( "Alt+X" ) );
 
 	fileFolder = default_folder;
 	fileTypes = file_types;
@@ -202,11 +203,10 @@ void QCompositeMainWindow::saveSettings()
 
 void QCompositeMainWindow::closeEvent( QCloseEvent *event )
 {
-	if ( canClose() )
+	if ( tryExit() )
 	{
 		if ( settings )
 			saveSettings();
-
 		event->accept();
 	}
 	else event->ignore();
