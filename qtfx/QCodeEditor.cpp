@@ -195,7 +195,7 @@ void QCodeTextEdit::formatDocument()
 			++leading_whitespace;
 
 		QChar first_char = tab_count < line.size() ? line[ tab_count ] : QChar();
-		auto desired_tabs = xo::max( 0, indents - int( first_char == '}' ) );
+		auto desired_tabs = xo::max( 0, indents - int( first_char == '}' || first_char == ']' ) );
 
 		if ( leading_whitespace != desired_tabs )
 		{
@@ -205,7 +205,7 @@ void QCodeTextEdit::formatDocument()
 		}
 
 		// update indents
-		indents += line.count( '{' ) - line.count( '}' );
+		indents += line.count( '{' ) + line.count( '[' ) - line.count( '}' ) - line.count( ']' );
 
 		if ( !cursor.movePosition( QTextCursor::NextBlock ) )
 			break; // prevent infinite loop if this fails
