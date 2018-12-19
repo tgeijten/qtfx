@@ -46,11 +46,8 @@ protected:
 	void setActiveFile( const QString& filename ) { activeFile = filename; }
 
 	QStatusBar* createStatusBar();
-	void createFileMenu( const QString& default_folder, const QString& file_types );
-	QString fileFolder;
-	QString fileTypes;
-	QString activeFile;
 
+	void createFileMenu( const QString& default_folder, const QString& file_types );
 	void createWindowMenu();
 	void createHelpMenu();
 
@@ -69,6 +66,9 @@ protected:
 
 	QWidget* centralWidget;
 	QMenu* fileMenu;
+	QString fileFolder;
+	QString fileTypes;
+	QString activeFile;
 	QAction* recentFilesMenu;
 	QMenu* windowMenu;
 	QMenu* helpMenu;
