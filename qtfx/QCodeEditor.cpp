@@ -191,18 +191,22 @@ void QCodeTextEdit::formatDocument()
 		while ( tab_count < line.size() && line[ tab_count ] == '\t' )
 			++tab_count;
 
-		QChar first_char = tab_count < line.size() ? line[ tab_count ] : QChar();
-		auto desired_tabs = xo::max( 0, indents - int( first_char == '}' ) );
+		auto leading_whitespace = tab_count;
+		while ( leading_whitespace < line.size() && line[ leading_whitespace ].isSpace() )
+			++leading_whitespace;
 
-		// add or remove tabs
-		if ( desired_tabs > tab_count )
-			cursor.insertText( QString().fill( '\t', desired_tabs - tab_count ) );
-		else if ( desired_tabs < tab_count )
-			while ( tab_count-- > desired_tabs )
-				cursor.deleteChar();
+		QChar first_char = tab_count < line.size() ? line[ tab_count ] : QChar();
+		auto desired_tabs = xo::max( 0, indents - int( first_char == '}' || first_char == ']' ) );
+
+		if ( leading_whitespace != desired_tabs )
+		{
+			cursor.movePosition( QTextCursor::Right, QTextCursor::KeepAnchor, leading_whitespace );
+			cursor.removeSelectedText();
+			cursor.insertText( QString().fill( '\t', desired_tabs ) );
+		}
 
 		// update indents
-		indents += line.count( '{' ) - line.count( '}' );
+		indents += line.count( '{' ) + line.count( '[' ) - line.count( '}' ) - line.count( ']' );
 
 		if ( !cursor.movePosition( QTextCursor::NextBlock ) )
 			break; // prevent infinite loop if this fails

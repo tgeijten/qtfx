@@ -78,13 +78,15 @@ void QCodeHighlighter::setRegexes()
 
 	case ZML:
 		rules.emplace_back( "\\w+\\s*\\=?\\s*[\\{\\[]", elementFormat );
-		rules.emplace_back( "\\w+\\s*(\\=)", attributeFormat );
+		rules.emplace_back( "\\w+\\s*(\\=)", attributeFormat ); // key = value
+		rules.emplace_back( "\\w+(:\\s+)", attributeFormat ); // key: value
 		rules.emplace_back( "\"[^\\n\"]*\"", valueFormat );
 		rules.emplace_back( "#\\w+", specialFormat );
-		rules.emplace_back( "[\\{\\}\\[\\]\\=]", operatorFormat );
+		rules.emplace_back( "<--\\s", macroFormat );
+		rules.emplace_back( "([\\{\\}\\[\\]\\=]|:\\s)", operatorFormat );
 		rules.emplace_back( "\\b([-+]?[\\.\\d]+)", numberFormat );
-		rules.emplace_back( "\\(\\w+\\)", macroFormat );
-		rules.emplace_back( "(;|//)[^\\n]*", commentFormat );
+		rules.emplace_back( "\\@\\w+", macroFormat );
+		rules.emplace_back( "(;|//|#\\s)[^\\n]*", commentFormat ); // ; // #
 		commentStartRegex.setPattern( "/\\*" );
 		commentEndRegex.setPattern( "\\*/" );
 		break;
@@ -100,6 +102,7 @@ void QCodeHighlighter::setFormats()
 	elementFormat.setForeground( Qt::darkBlue );
 	elementFormat.setFontWeight( QFont::Bold );
 	attributeFormat.setForeground( Qt::darkBlue );
+	//attributeFormat.setFontItalic( true );
 	valueFormat.setForeground( Qt::darkRed );
 	commentFormat.setForeground( Qt::darkGreen );
 	commentFormat.setFontItalic( true );
