@@ -9,7 +9,7 @@
 #include <array>
 #include "xo/system/log.h"
 #include "xo/container/sorted_vector.h"
-#include "xo/numerical/constants.h"
+#include "xo/numerical/numconst.h"
 #include "qt_convert.h"
 
 QDataAnalysisView::QDataAnalysisView( QDataAnalysisModel* m, QWidget* parent ) :
