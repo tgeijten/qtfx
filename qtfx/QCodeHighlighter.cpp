@@ -103,14 +103,15 @@ void QCodeHighlighter::setFormats()
 	elementFormat.setFontWeight( QFont::Bold );
 	attributeFormat.setForeground( Qt::darkBlue );
 	//attributeFormat.setFontItalic( true );
+	//attributeFormat.setFontWeight( QFont::Bold );
 	valueFormat.setForeground( Qt::darkRed );
 	commentFormat.setForeground( Qt::darkGreen );
 	commentFormat.setFontItalic( true );
 	numberFormat.setForeground( Qt::darkCyan );
 	macroFormat.setForeground( Qt::darkMagenta );
-	specialFormat.setForeground( Qt::blue );
+	specialFormat.setForeground( Qt::darkMagenta );
 	specialFormat.setFontItalic( true );
-	specialFormat.setFontWeight( QFont::Bold );
+	//specialFormat.setFontWeight( QFont::Bold );
 }
 
 void QCodeHighlighter::setLanguage( Language l )
