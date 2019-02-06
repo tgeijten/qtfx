@@ -128,7 +128,8 @@ void QDataAnalysisView::refresh( double time, bool refreshAll )
 		updateIndicator();
 
 #ifdef QTFX_USE_QCUSTOMPLOT
-		customPlot->replot( QCustomPlot::rpQueued );
+		if ( refreshAll )
+			customPlot->replot( QCustomPlot::rpQueued );
 #endif
 	}
 }
@@ -218,7 +219,6 @@ void QDataAnalysisView::updateIndicator()
 #if !defined QTFX_NO_QCUSTOMPLOT
 	customPlotLine->start->setCoords( currentTime, customPlot->yAxis->range().lower );
 	customPlotLine->end->setCoords( currentTime, customPlot->yAxis->range().upper );
-	customPlot->replot();
 #else
 	auto pos = chart->mapToPosition( QPointF( currentTime, 0 ) );
 #endif
