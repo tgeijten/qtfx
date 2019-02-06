@@ -78,7 +78,7 @@ decimals_( 2 )
 	lo->addWidget( slomoBox );
 	setLayout( lo );
 
-	connect( &qtimer, SIGNAL( timeout() ), this, SLOT( timeout() ) );
+	connect( &qtimer, &QTimer::timeout, this, &QPlayControl::updateTime );
 }
 
 void QPlayControl::setRange( double min, double max )
@@ -162,6 +162,7 @@ void QPlayControl::play()
 void QPlayControl::stop()
 {
 	qtimer.stop();
+	updateTime();
 	playButton->setIcon( style()->standardIcon( QStyle::SP_MediaPlay ) );
 	emit stopTriggered();
 }
@@ -237,7 +238,7 @@ void QPlayControl::updateSlider( int value )
 	emit sliderChanged( value );
 }
 
-void QPlayControl::timeout()
+void QPlayControl::updateTime()
 {
 	setTime( currentTime + slomoFactor * timer_delta( timer.seconds() ) );
 }

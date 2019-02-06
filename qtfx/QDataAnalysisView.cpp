@@ -127,7 +127,7 @@ void QDataAnalysisView::refresh( double time, bool refreshAll )
 		// update graph
 		updateIndicator();
 
-#ifdef QTFX_USE_QCUSTOMPLOT
+#if !QTFX_NO_QCUSTOMPLOT
 		if ( refreshAll )
 			customPlot->replot( QCustomPlot::rpQueued );
 #endif

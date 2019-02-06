@@ -61,7 +61,7 @@ signals:
 private slots:
 	void updateSlider( int );
 	void updateSlowMotion( int );
-	void timeout();
+	void updateTime();
 
 private:
 	QToolButton *playButton;
