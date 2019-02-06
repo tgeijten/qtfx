@@ -105,7 +105,7 @@ void QCodeHighlighter::setFormats()
 	//attributeFormat.setFontItalic( true );
 	//attributeFormat.setFontWeight( QFont::Bold );
 	valueFormat.setForeground( Qt::darkRed );
-	commentFormat.setForeground( Qt::darkGreen );
+	commentFormat.setForeground( Qt::gray );
 	commentFormat.setFontItalic( true );
 	numberFormat.setForeground( Qt::darkCyan );
 	macroFormat.setForeground( Qt::darkMagenta );
