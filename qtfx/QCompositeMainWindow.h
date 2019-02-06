@@ -65,7 +65,6 @@ protected:
 	bool question( const QString& title, const QString& message );
 	void error( const QString& title, const QString& message );
 
-	QWidget* centralWidget;
 	QMenu* fileMenu;
 	QString fileFolder;
 	QString fileTypes;

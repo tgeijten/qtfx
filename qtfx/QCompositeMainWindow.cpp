@@ -19,11 +19,6 @@ fileMenu( nullptr ),
 windowMenu( nullptr ),
 settings( nullptr )
 {
-	centralWidget = new QWidget( this );
-	QLayout* centralLayout = new QVBoxLayout( centralWidget );
-	centralLayout->setSpacing( 0 );
-	centralLayout->setContentsMargins( 0, 0, 0, 0 );
-	setCentralWidget( centralWidget );
 }
 
 QCompositeMainWindow::~QCompositeMainWindow()
