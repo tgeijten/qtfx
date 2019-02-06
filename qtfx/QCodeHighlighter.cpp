@@ -82,7 +82,7 @@ void QCodeHighlighter::setRegexes()
 		rules.emplace_back( "\\w+(:\\s+)", attributeFormat ); // key: value
 		rules.emplace_back( "\"[^\\n\"]*\"", valueFormat );
 		rules.emplace_back( "#\\w+", specialFormat );
-		rules.emplace_back( "<<<\\s.*\\s>>>", specialFormat );
+		rules.emplace_back( "<<\\s.*\\s>>", specialFormat );
 		rules.emplace_back( "([\\{\\}\\[\\]\\=]|:\\s)", operatorFormat );
 		rules.emplace_back( "\\b([-+]?[\\.\\d]+)", numberFormat );
 		rules.emplace_back( "\\@\\w+", macroFormat );
