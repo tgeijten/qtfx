@@ -21,10 +21,11 @@ QDataAnalysisView::QDataAnalysisView( QDataAnalysisModel* m, QWidget* parent ) :
 	connect( selectBox, &QCheckBox::stateChanged, this, &QDataAnalysisView::select );
 
 	filter = new QLineEdit( this );
+	filter->setPlaceholderText( "Filter channels" );
 	connect( filter, &QLineEdit::textChanged, this, &QDataAnalysisView::filterChanged );
 
 	auto* header = new QHGroup( this, 0, 4 );
-	*header << new QLabel( "Filter", this ) << filter << selectBox;
+	*header << filter << selectBox;
 
 	itemList = new QTreeWidget( this );
 	itemList->setRootIsDecorated( false );
@@ -34,7 +35,6 @@ QDataAnalysisView::QDataAnalysisView( QDataAnalysisModel* m, QWidget* parent ) :
 	QStringList headerLabels;
 	headerLabels << "Variable" << "Value";
 	itemList->setHeaderLabels( headerLabels );
-	//itemList->setFrameStyle( QFrame::NoFrame );
 
 	itemGroup = new QVGroup( this, 0, 4 );
 	itemGroup->setContentsMargins( 0, 0, 0, 0 );
@@ -43,7 +43,6 @@ QDataAnalysisView::QDataAnalysisView( QDataAnalysisModel* m, QWidget* parent ) :
 
 	splitter = new QSplitter( this );
 	splitter->setContentsMargins( 0, 0, 0, 0 );
-	splitter->setFrameShape( QFrame::NoFrame );
 	splitter->setObjectName( "Analysis.Splitter" );
 	splitter->addWidget( itemGroup );
 
