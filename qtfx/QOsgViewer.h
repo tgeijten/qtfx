@@ -8,13 +8,13 @@
 #include <osgViewer/CompositeViewer>
 #include <osgViewer/ViewerEventHandlers>
 #include <osgQt/GraphicsWindowQt>
-#include <iostream>
+#include <osg/MatrixTransform>
 
 #include "simvis/osg_camera_man.h"
 #include "simvis/plane.h"
-#include "xo/filesystem/path.h"
-#include "osg/MatrixTransform"
 #include "simvis/light.h"
+
+#include "xo/filesystem/path.h"
 
 class QOsgViewer : public QWidget, public osgViewer::CompositeViewer
 {
