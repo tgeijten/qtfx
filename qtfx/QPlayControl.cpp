@@ -8,6 +8,7 @@
 #include "xo/system/log.h"
 
 #include <math.h>
+#include "scone/core/Log.h"
 
 QPlayControl::QPlayControl( QWidget *parent ) :
 QWidget( parent ),
@@ -161,10 +162,13 @@ void QPlayControl::play()
 
 void QPlayControl::stop()
 {
-	qtimer.stop();
-	updateTime();
-	playButton->setIcon( style()->standardIcon( QStyle::SP_MediaPlay ) );
-	emit stopTriggered();
+	if ( isPlaying() )
+	{
+		qtimer.stop();
+		updateTime();
+		playButton->setIcon( style()->standardIcon( QStyle::SP_MediaPlay ) );
+		emit stopTriggered();
+	}
 }
 
 void QPlayControl::stopReset()
