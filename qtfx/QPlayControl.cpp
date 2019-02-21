@@ -8,7 +8,6 @@
 #include "xo/system/log.h"
 
 #include <math.h>
-#include "scone/core/Log.h"
 
 QPlayControl::QPlayControl( QWidget *parent ) :
 QWidget( parent ),
