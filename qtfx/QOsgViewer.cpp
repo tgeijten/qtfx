@@ -134,8 +134,9 @@ void QOsgViewer::setHud( const xo::path& file )
 	auto geostate = hud_.osg_group().getChild( 0 )->asGeode()->getDrawable( 0 )->getOrCreateStateSet();
 	geostate->setMode( GL_DEPTH_TEST, osg::StateAttribute::OFF );
 	geostate->setMode( GL_BLEND, osg::StateAttribute::ON );
+	scene_->detach( hud_ );
 	view_->getCamera()->addChild( hud_.osg_node() );
-	//updateHudPos();
+	updateHudPos();
 }
 
 void QOsgViewer::updateHudPos()
