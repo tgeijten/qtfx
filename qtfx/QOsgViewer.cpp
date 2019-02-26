@@ -5,7 +5,7 @@
 #include "simvis/osg_camera_man.h"
 #include "xo/system/log.h"
 #include "qevent.h"
-#include "simvis/group.h"
+#include "simvis/node.h"
 #include "simvis/scene.h"
 #include "osg/MatrixTransform"
 #include "xo/geometry/quat.h"
