@@ -129,7 +129,7 @@ void QOsgViewer::setScene( vis::scene* s )
 
 void QOsgViewer::setHud( const xo::path& file )
 {
-	hud_ = vis::plane( xo::vec3f( hud_size, 0, 0 ), xo::vec3f( 0, hud_size, 0 ), file, 1.0f, 1.0f );
+	hud_ = vis::plane( *scene_, xo::vec3f( hud_size, 0, 0 ), xo::vec3f( 0, hud_size, 0 ), file, 1.0f, 1.0f );
 	hud_.osg_trans_node().setReferenceFrame( osg::Transform::ABSOLUTE_RF );
 	auto geostate = hud_.osg_group().getChild( 0 )->asGeode()->getDrawable( 0 )->getOrCreateStateSet();
 	geostate->setMode( GL_DEPTH_TEST, osg::StateAttribute::OFF );
