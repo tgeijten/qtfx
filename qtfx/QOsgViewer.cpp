@@ -123,7 +123,7 @@ void QOsgViewer::setScene( vis::scene* s )
 		getView( i )->setSceneData( s->osg_node() );
 
 	// init light
-	scene_light_ = scene_->add_light( scene_light_offset_, vis::make_white( 1 ) );
+	scene_light_ = scene_->add_light( scene_light_offset_, vis::make_white() );
 	scene_light_.attenuation( 1.0f, 0.0f, 0.0f );
 }
 

@@ -57,7 +57,7 @@ decimals_( 2 )
 	connect( slider, SIGNAL( sliderReleased() ), this, SIGNAL( sliderReleased() ) );
 
 	slomoBox = new QComboBox( this );
-	for ( int slomo = 2; slomo >= -5; --slomo )
+	for ( int slomo = 2; slomo >= -6; --slomo )
 	{
 		QString label = slomo >= 0 ? QString().sprintf( "%d x", (int)pow( 2, slomo ) ) : QString().sprintf( "1/%d x", (int)pow( 2, -slomo ) );
 		slomoBox->addItem( label, QVariant( pow( 2, slomo ) ) );
