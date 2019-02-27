@@ -141,12 +141,15 @@ void QOsgViewer::setHud( const xo::path& file )
 
 void QOsgViewer::updateHudPos()
 {
-	double fovy, aspect, nearplane, farplane;
-	view_->getCamera()->getProjectionMatrixAsPerspective( fovy, aspect, nearplane, farplane );
-	//xo::log::info( "aspect ratio = ", aspect );
-	auto hh = tan( xo::deg_to_rad( fovy ) / 2 );
-	auto hw = tan( atan( hh * aspect ) );
-	hud_.pos( xo::vec3f( hw - 0.55f * hud_size, -hh + 0.55f * hud_size, -1 ) );
+	if ( hud_ )
+	{
+		double fovy, aspect, nearplane, farplane;
+		view_->getCamera()->getProjectionMatrixAsPerspective( fovy, aspect, nearplane, farplane );
+		//xo::log::info( "aspect ratio = ", aspect );
+		auto hh = tan( xo::deg_to_rad( fovy ) / 2 );
+		auto hw = tan( atan( hh * aspect ) );
+		hud_.pos( xo::vec3f( hw - 0.55f * hud_size, -hh + 0.55f * hud_size, -1 ) );
+	}
 }
 
 void QOsgViewer::updateLightPos()
