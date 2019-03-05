@@ -57,12 +57,7 @@ decimals_( 2 )
 	connect( slider, SIGNAL( sliderReleased() ), this, SIGNAL( sliderReleased() ) );
 
 	slomoBox = new QComboBox( this );
-	for ( int slomo = 2; slomo >= -6; --slomo )
-	{
-		QString label = slomo >= 0 ? QString().sprintf( "%d x", (int)pow( 2, slomo ) ) : QString().sprintf( "1/%d x", (int)pow( 2, -slomo ) );
-		slomoBox->addItem( label, QVariant( pow( 2, slomo ) ) );
-	}
-	slomoBox->setCurrentIndex( 2 );
+	setSlomoRange( 2, -5 );
 	connect( slomoBox, SIGNAL( currentIndexChanged( int ) ), this, SLOT( updateSlowMotion( int ) ) );
 
 	QBoxLayout *lo = new QHBoxLayout;
@@ -79,6 +74,16 @@ decimals_( 2 )
 	setLayout( lo );
 
 	connect( &qtimer, &QTimer::timeout, this, &QPlayControl::updateTime );
+}
+
+void QPlayControl::setSlomoRange( int max_power_of_2, int min_power_of_2 )
+{
+	for ( int slomo = max_power_of_2; slomo >= min_power_of_2; --slomo )
+	{
+		QString label = slomo >= 0 ? QString().sprintf( "%d x", (int)pow( 2, slomo ) ) : QString().sprintf( "1/%d x", (int)pow( 2, -slomo ) );
+		slomoBox->addItem( label, QVariant( pow( 2, slomo ) ) );
+	}
+	slomoBox->setCurrentIndex( max_power_of_2 );
 }
 
 void QPlayControl::setRange( double min, double max )

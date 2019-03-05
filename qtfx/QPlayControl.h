@@ -19,7 +19,10 @@ class QPlayControl : public QWidget
 
 public:
 	QPlayControl( QWidget *parent = 0 );
+
+
 	double slowMotionFactor() const { return slomoFactor; }
+	void setSlomoRange( int max_power_of_2, int min_power_of_2 );
 
 	void setRange( double min, double max );
 	void setTime( double time );
