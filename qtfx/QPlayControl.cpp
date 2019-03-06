@@ -78,6 +78,7 @@ decimals_( 2 )
 
 void QPlayControl::setSlomoRange( int max_power_of_2, int min_power_of_2 )
 {
+	slomoBox->clear();
 	for ( int slomo = max_power_of_2; slomo >= min_power_of_2; --slomo )
 	{
 		QString label = slomo >= 0 ? QString().sprintf( "%d x", (int)pow( 2, slomo ) ) : QString().sprintf( "1/%d x", (int)pow( 2, -slomo ) );
