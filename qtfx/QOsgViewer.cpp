@@ -2,14 +2,15 @@
 
 #include <osgGA/TrackballManipulator>
 #include <osgViewer/ViewerEventHandlers>
-#include "simvis/osg_camera_man.h"
 #include "xo/system/log.h"
 #include "qevent.h"
-#include "simvis/node.h"
-#include "simvis/scene.h"
+#include "vis/node.h"
+#include "vis/scene.h"
 #include "osg/MatrixTransform"
 #include "xo/geometry/quat.h"
-#include "simvis/osg_tools.h"
+
+#include "vis-osg/osg_camera_man.h"
+#include "vis-osg/osg_tools.h"
 
 // class for routing GUI events to QOsgViewer
 // This is needed because QOsgViewer can't derive from GUIEventHandler directly
@@ -129,27 +130,27 @@ void QOsgViewer::setScene( vis::scene* s )
 
 void QOsgViewer::setHud( const xo::path& file )
 {
-	hud_ = vis::plane( *scene_, xo::vec3f( hud_size, 0, 0 ), xo::vec3f( 0, hud_size, 0 ), file, 1.0f, 1.0f );
-	hud_.osg_trans_node().setReferenceFrame( osg::Transform::ABSOLUTE_RF );
-	auto geostate = hud_.osg_group().getChild( 0 )->asGeode()->getDrawable( 0 )->getOrCreateStateSet();
-	geostate->setMode( GL_DEPTH_TEST, osg::StateAttribute::OFF );
-	geostate->setMode( GL_BLEND, osg::StateAttribute::ON );
-	scene_->detach( hud_ );
-	view_->getCamera()->addChild( hud_.osg_node() );
-	updateHudPos();
+	//hud_ = vis::plane( *scene_, xo::vec3f( hud_size, 0, 0 ), xo::vec3f( 0, hud_size, 0 ), file, 1.0f, 1.0f );
+	//hud_.osg_trans_node().setReferenceFrame( osg::Transform::ABSOLUTE_RF );
+	//auto geostate = hud_.osg_group().getChild( 0 )->asGeode()->getDrawable( 0 )->getOrCreateStateSet();
+	//geostate->setMode( GL_DEPTH_TEST, osg::StateAttribute::OFF );
+	//geostate->setMode( GL_BLEND, osg::StateAttribute::ON );
+	//scene_->detach( hud_ );
+	//view_->getCamera()->addChild( hud_.osg_node() );
+	//updateHudPos();
 }
 
 void QOsgViewer::updateHudPos()
 {
-	if ( hud_ )
-	{
-		double fovy, aspect, nearplane, farplane;
-		view_->getCamera()->getProjectionMatrixAsPerspective( fovy, aspect, nearplane, farplane );
-		//xo::log::info( "aspect ratio = ", aspect );
-		auto hh = tan( xo::deg_to_rad( fovy ) / 2 );
-		auto hw = tan( atan( hh * aspect ) );
-		hud_.pos( xo::vec3f( hw - 0.55f * hud_size, -hh + 0.55f * hud_size, -1 ) );
-	}
+	//if ( hud_ )
+	//{
+	//	double fovy, aspect, nearplane, farplane;
+	//	view_->getCamera()->getProjectionMatrixAsPerspective( fovy, aspect, nearplane, farplane );
+	//	//xo::log::info( "aspect ratio = ", aspect );
+	//	auto hh = tan( xo::deg_to_rad( fovy ) / 2 );
+	//	auto hw = tan( atan( hh * aspect ) );
+	//	hud_.pos( xo::vec3f( hw - 0.55f * hud_size, -hh + 0.55f * hud_size, -1 ) );
+	//}
 }
 
 void QOsgViewer::updateLightPos()

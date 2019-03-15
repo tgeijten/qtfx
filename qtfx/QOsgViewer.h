@@ -10,9 +10,10 @@
 #include <osgQt/GraphicsWindowQt>
 #include <osg/MatrixTransform>
 
-#include "simvis/osg_camera_man.h"
-#include "simvis/plane.h"
-#include "simvis/light.h"
+#include "vis/plane.h"
+#include "vis/light.h"
+
+#include "vis-osg/osg_camera_man.h"
 
 #include "xo/filesystem/path.h"
 

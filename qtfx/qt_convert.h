@@ -4,7 +4,7 @@
 #include <string>
 #include "xo/filesystem/path.h"
 #include "QColor"
-#include "simvis/color.h"
+#include "vis/color.h"
 
 inline QString to_qt( const std::string& s ) { return QString( s.c_str() ); }
 inline QString to_qt( const xo::path& s ) { return QString( s.string().c_str() ); }

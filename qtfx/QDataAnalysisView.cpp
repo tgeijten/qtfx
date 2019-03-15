@@ -2,7 +2,7 @@
 #include "QAction"
 #include "QHeaderView"
 #include <algorithm>
-#include "simvis/color.h"
+#include "vis/color.h"
 #include "xo/system/log.h"
 #include "xo/utility/types.h"
 #include "qtfx.h"
