@@ -26,7 +26,7 @@ public:
 
 	virtual void paintEvent( QPaintEvent* event ) override;
 
-	void setScene( vis::scene* s );
+	void setScene( osg::Group* s );
 	void setHud( const xo::path& file );
 	void setClearColor( const osg::Vec4& col );
 	void moveCamera( const osg::Vec3d& delta_pos );
@@ -50,13 +50,15 @@ protected:
 	osg::ref_ptr< vis::osg_camera_man > camera_man_;
 	osg::ref_ptr< osgViewer::ScreenCaptureHandler > capture_handler_;
 	osg::ref_ptr< osgViewer::View > view_;
-	vis::scene* scene_;
-	osg::ref_ptr< osg::MatrixTransform > hud_trans_;
-	float hud_size = 0.075f;
-	vis::plane hud_;
+	osg::ref_ptr< osg::Group > scene_;
+
+	osg::ref_ptr< osg::Light > scene_light_;
+	xo::vec3f scene_light_offset_;
+
+	//osg::ref_ptr< osg::MatrixTransform > hud_trans_;
+	//float hud_size = 0.075f;
+	//vis::plane hud_;
 	double current_frame_time_;
 	double last_drawn_frame_time_;
 
-	vis::vec3f scene_light_offset_;
-	vis::light scene_light_;
 };

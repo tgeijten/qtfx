@@ -117,40 +117,54 @@ void QOsgViewer::paintEvent( QPaintEvent* event )
 	last_drawn_frame_time_ = current_frame_time_;
 }
 
-void QOsgViewer::setScene( vis::scene* s )
+void QOsgViewer::setScene( osg::Group* s )
 {
 	scene_ = s;
 	for ( size_t i = 0; i < getNumViews(); ++i )
-		getView( i )->setSceneData( s->osg_node() );
+		getView( i )->setSceneData( s );
 
 	// init light
-	scene_light_ = scene_->add_light( scene_light_offset_, vis::color::white() );
-	scene_light_.attenuation( 1.0f, 0.0f, 0.0f );
+	scene_light_ = new osg::Light;
+	scene_light_->setLightNum( 0 );
+	scene_light_->setPosition( osg::Vec4f( scene_light_offset_.x, scene_light_offset_.y, scene_light_offset_.z, 1 ) );
+	scene_light_->setDiffuse( to_osg( vis::color::white() ) );
+	scene_light_->setSpecular( osg::Vec4( 1, 1, 1, 1 ) );
+	scene_light_->setAmbient( osg::Vec4( 1, 1, 1, 1 ) );
+
+	auto light_source = new osg::LightSource;
+	light_source->setLight( scene_light_ );
+	light_source->setLocalStateSetModes( osg::StateAttribute::ON );
+	light_source->setReferenceFrame( osg::LightSource::RELATIVE_RF );
+
+	// directly add the light to the parent node
+	s->addChild( light_source );
+	s->getOrCreateStateSet()->setMode( GL_LIGHT0, osg::StateAttribute::ON );
+	scene_light_->setConstantAttenuation( 1.0f );
 }
 
 void QOsgViewer::setHud( const xo::path& file )
 {
-	hud_ = vis::plane( *scene_, xo::vec3f( hud_size, 0, 0 ), xo::vec3f( 0, hud_size, 0 ), file, 1.0f, 1.0f );
-	hud_.osg_trans_node().setReferenceFrame( osg::Transform::ABSOLUTE_RF );
-	auto geostate = hud_.osg_group().getChild( 0 )->asGeode()->getDrawable( 0 )->getOrCreateStateSet();
-	geostate->setMode( GL_DEPTH_TEST, osg::StateAttribute::OFF );
-	geostate->setMode( GL_BLEND, osg::StateAttribute::ON );
-	scene_->detach( hud_ );
-	view_->getCamera()->addChild( hud_.osg_node() );
-	updateHudPos();
+	//hud_ = vis::plane( *scene_, xo::vec3f( hud_size, 0, 0 ), xo::vec3f( 0, hud_size, 0 ), file, 1.0f, 1.0f );
+	//hud_.osg_trans_node().setReferenceFrame( osg::Transform::ABSOLUTE_RF );
+	//auto geostate = hud_.osg_group().getChild( 0 )->asGeode()->getDrawable( 0 )->getOrCreateStateSet();
+	//geostate->setMode( GL_DEPTH_TEST, osg::StateAttribute::OFF );
+	//geostate->setMode( GL_BLEND, osg::StateAttribute::ON );
+	//scene_->detach( hud_ );
+	//view_->getCamera()->addChild( hud_.osg_node() );
+	//updateHudPos();
 }
 
 void QOsgViewer::updateHudPos()
 {
-	if ( hud_ )
-	{
-		double fovy, aspect, nearplane, farplane;
-		view_->getCamera()->getProjectionMatrixAsPerspective( fovy, aspect, nearplane, farplane );
-		//xo::log::info( "aspect ratio = ", aspect );
-		auto hh = tan( xo::deg_to_rad( fovy ) / 2 );
-		auto hw = tan( atan( hh * aspect ) );
-		hud_.pos( xo::vec3f( hw - 0.55f * hud_size, -hh + 0.55f * hud_size, -1 ) );
-	}
+	//if ( hud_ )
+	//{
+	//	double fovy, aspect, nearplane, farplane;
+	//	view_->getCamera()->getProjectionMatrixAsPerspective( fovy, aspect, nearplane, farplane );
+	//	//xo::log::info( "aspect ratio = ", aspect );
+	//	auto hh = tan( xo::deg_to_rad( fovy ) / 2 );
+	//	auto hw = tan( atan( hh * aspect ) );
+	//	hud_.pos( xo::vec3f( hw - 0.55f * hud_size, -hh + 0.55f * hud_size, -1 ) );
+	//}
 }
 
 void QOsgViewer::updateLightPos()
@@ -158,7 +172,8 @@ void QOsgViewer::updateLightPos()
 	auto center = camera_man_->getCenter();
 	auto ori = xo::quat_from_axis_angle( xo::vec3f::unit_y(), camera_man_->getYaw() );
 	auto v = ori * scene_light_offset_;
-	scene_light_.pos( vis::vec3f( vis::from_osg( center ) ) + v );
+	auto p = vis::from_osg( center ) + v;
+	scene_light_->setPosition( osg::Vec4( p.x, p.y, p.z, 1 ) );
 }
 
 void QOsgViewer::setClearColor( const osg::Vec4& col )
