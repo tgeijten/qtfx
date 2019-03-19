@@ -6,6 +6,8 @@
 #include "qevent.h"
 #include "osg/MatrixTransform"
 #include "xo/geometry/quat.h"
+#include "osg/Material"
+#include "osg/PositionAttitudeTransform"
 
 // class for routing GUI events to QOsgViewer
 // This is needed because QOsgViewer can't derive from GUIEventHandler directly
@@ -139,27 +141,65 @@ void QOsgViewer::setScene( osg::Group* s )
 
 void QOsgViewer::setHud( const xo::path& file )
 {
-	//hud_ = vis::plane( *scene_, xo::vec3f( hud_size, 0, 0 ), xo::vec3f( 0, hud_size, 0 ), file, 1.0f, 1.0f );
-	//hud_.osg_trans_node().setReferenceFrame( osg::Transform::ABSOLUTE_RF );
-	//auto geostate = hud_.osg_group().getChild( 0 )->asGeode()->getDrawable( 0 )->getOrCreateStateSet();
-	//geostate->setMode( GL_DEPTH_TEST, osg::StateAttribute::OFF );
-	//geostate->setMode( GL_BLEND, osg::StateAttribute::ON );
-	//scene_->detach( hud_ );
-	//view_->getCamera()->addChild( hud_.osg_node() );
-	//updateHudPos();
+	hud_node_ = new osg::PositionAttitudeTransform;
+
+	osg::ref_ptr<osg::Image> img = osgDB::readImageFile( file.string() );
+	xo_assert( img.valid() );
+	auto width = osg::Vec3f( hud_size, 0, 0 );
+	auto height = osg::Vec3f( 0, hud_size, 0 );
+
+	osg::ref_ptr<osg::Texture2D> texture = new osg::Texture2D;
+	texture->setImage( img );
+	texture->setWrap( osg::Texture::WRAP_S, osg::Texture::REPEAT );
+	texture->setWrap( osg::Texture::WRAP_T, osg::Texture::REPEAT );
+	texture->setMaxAnisotropy( 8.0f );
+
+	osg::ref_ptr<osg::Geometry> geom = osg::createTexturedQuadGeometry(
+		width * -0.5f - height * 0.5f,
+		width,
+		height,
+		0, 0,
+		1.0f, 1.0f );
+
+	geom->getOrCreateStateSet()->setTextureAttributeAndModes( 0, texture.get() );
+	geom->getOrCreateStateSet()->setMode( GL_DEPTH_TEST, osg::StateAttribute::ON );
+	geom->setCullingActive( true );
+
+	osg::ref_ptr<osg::Geode> geode = new osg::Geode();
+	geode->getOrCreateStateSet()->setMode( GL_CULL_FACE, osg::StateAttribute::ON );
+	//vis::set_shadow_mask( geode, true, false );
+
+	geode->addDrawable( geom );
+
+	osg::Material* mat = new osg::Material;
+	mat->setColorMode( osg::Material::EMISSION );
+	mat->setSpecular( osg::Material::FRONT_AND_BACK, osg::Vec4( 0, 0, 0, 0 ) );
+	mat->setDiffuse( osg::Material::FRONT_AND_BACK, osg::Vec4( 1.0, 1.0, 1.0, 1.0 ) );
+	mat->setAmbient( osg::Material::FRONT_AND_BACK, osg::Vec4( 1.0, 1.0, 1.0, 1.0 ) );
+	geode->getOrCreateStateSet()->setAttribute( mat );
+
+	hud_node_->addChild( geode );
+
+	hud_node_->setReferenceFrame( osg::Transform::ABSOLUTE_RF );
+	auto geostate = hud_node_->getChild( 0 )->asGeode()->getDrawable( 0 )->getOrCreateStateSet();
+	geostate->setMode( GL_DEPTH_TEST, osg::StateAttribute::OFF );
+	geostate->setMode( GL_BLEND, osg::StateAttribute::ON );
+	view_->getCamera()->addChild( hud_node_ );
+	updateHudPos();
 }
 
 void QOsgViewer::updateHudPos()
 {
-	//if ( hud_ )
-	//{
-	//	double fovy, aspect, nearplane, farplane;
-	//	view_->getCamera()->getProjectionMatrixAsPerspective( fovy, aspect, nearplane, farplane );
-	//	//xo::log::info( "aspect ratio = ", aspect );
-	//	auto hh = tan( xo::deg_to_rad( fovy ) / 2 );
-	//	auto hw = tan( atan( hh * aspect ) );
-	//	hud_.pos( xo::vec3f( hw - 0.55f * hud_size, -hh + 0.55f * hud_size, -1 ) );
-	//}
+	if ( hud_node_ )
+	{
+		double fovy, aspect, nearplane, farplane;
+		view_->getCamera()->getProjectionMatrixAsPerspective( fovy, aspect, nearplane, farplane );
+		//xo::log::info( "aspect ratio = ", aspect );
+		auto hh = tan( xo::deg_to_rad( fovy ) / 2 );
+		auto hw = tan( atan( hh * aspect ) );
+		//hud_.pos( xo::vec3f( hw - 0.55f * hud_size, -hh + 0.55f * hud_size, -1 ) );
+		hud_node_->setPosition( osg::Vec3( hw - 0.55f * hud_size, -hh + 0.55f * hud_size, -1 ) );
+	}
 }
 
 void QOsgViewer::updateLightPos()
