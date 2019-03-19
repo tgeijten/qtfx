@@ -4,13 +4,8 @@
 #include <osgViewer/ViewerEventHandlers>
 #include "xo/system/log.h"
 #include "qevent.h"
-#include "vis/node.h"
-#include "vis/scene.h"
 #include "osg/MatrixTransform"
 #include "xo/geometry/quat.h"
-
-#include "vis-osg/osg_camera_man.h"
-#include "vis-osg/osg_tools.h"
 
 // class for routing GUI events to QOsgViewer
 // This is needed because QOsgViewer can't derive from GUIEventHandler directly
@@ -127,7 +122,7 @@ void QOsgViewer::setScene( osg::Group* s )
 	scene_light_ = new osg::Light;
 	scene_light_->setLightNum( 0 );
 	scene_light_->setPosition( osg::Vec4f( scene_light_offset_.x, scene_light_offset_.y, scene_light_offset_.z, 1 ) );
-	scene_light_->setDiffuse( to_osg( vis::color::white() ) );
+	scene_light_->setDiffuse( osg::Vec4( 1, 1, 1, 1 ) );
 	scene_light_->setSpecular( osg::Vec4( 1, 1, 1, 1 ) );
 	scene_light_->setAmbient( osg::Vec4( 1, 1, 1, 1 ) );
 
@@ -172,8 +167,8 @@ void QOsgViewer::updateLightPos()
 	auto center = camera_man_->getCenter();
 	auto ori = xo::quat_from_axis_angle( xo::vec3f::unit_y(), camera_man_->getYaw() );
 	auto v = ori * scene_light_offset_;
-	auto p = vis::from_osg( center ) + v;
-	scene_light_->setPosition( osg::Vec4( p.x, p.y, p.z, 1 ) );
+	auto p = center + osg::Vec3d( v.x, v.y, v.z );
+	scene_light_->setPosition( osg::Vec4( p, 1 ) );
 }
 
 void QOsgViewer::setClearColor( const osg::Vec4& col )

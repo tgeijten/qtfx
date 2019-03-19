@@ -10,12 +10,10 @@
 #include <osgQt/GraphicsWindowQt>
 #include <osg/MatrixTransform>
 
-#include "vis/plane.h"
-#include "vis/light.h"
-
-#include "vis-osg/osg_camera_man.h"
+#include "osg_camera_man.h"
 
 #include "xo/filesystem/path.h"
+#include "xo/geometry/vec3_type.h"
 
 class QOsgViewer : public QWidget, public osgViewer::CompositeViewer
 {
@@ -58,6 +56,7 @@ protected:
 	//osg::ref_ptr< osg::MatrixTransform > hud_trans_;
 	//float hud_size = 0.075f;
 	//vis::plane hud_;
+
 	double current_frame_time_;
 	double last_drawn_frame_time_;
 
