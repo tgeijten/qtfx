@@ -25,7 +25,7 @@ public:
 	virtual void paintEvent( QPaintEvent* event ) override;
 
 	void setScene( osg::Group* s );
-	void setHud( const xo::path& file );
+	void createHud( const xo::path& file );
 	void setClearColor( const osg::Vec4& col );
 	void moveCamera( const osg::Vec3d& delta_pos );
 	void startCapture( const std::string& filename );
@@ -58,5 +58,5 @@ protected:
 
 	double current_frame_time_;
 	double last_drawn_frame_time_;
-
+	virtual void viewerInit() override;
 };
