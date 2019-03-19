@@ -2,7 +2,7 @@
 #include "QAction"
 #include "QHeaderView"
 #include <algorithm>
-#include "vis/color.h"
+#include "xo/utility/color.h"
 #include "xo/system/log.h"
 #include "xo/utility/types.h"
 #include "qtfx.h"
@@ -11,6 +11,7 @@
 #include "xo/container/sorted_vector.h"
 #include "xo/numerical/constants.h"
 #include "qt_convert.h"
+#include "xo/numerical/compare.h"
 
 QDataAnalysisView::QDataAnalysisView( QDataAnalysisModel* m, QWidget* parent ) :
 	QWidget( parent ),
@@ -190,7 +191,7 @@ void QDataAnalysisView::setSelectionState( int state )
 
 QColor QDataAnalysisView::getStandardColor( int idx )
 {
-	return to_qt( vis::make_unique_color( size_t( idx ) ) );
+	return to_qt( xo::make_unique_color( size_t( idx ) ) );
 }
 
 void QDataAnalysisView::reset()
