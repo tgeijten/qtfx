@@ -1,7 +1,7 @@
 #pragma once
 
 #include <QSyntaxHighlighter>
-#include <QtCore/qregularexpression.h>
+#include <QtCore/QRegularExpression>
 
 class QCodeHighlighter : public QSyntaxHighlighter
 {

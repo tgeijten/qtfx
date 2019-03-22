@@ -12,6 +12,7 @@
 #include "xo/system/log.h"
 #include "xo/serialization/serialize.h"
 #include "xo/numerical/math.h"
+#include "xo/container/prop_node.h"
 
 QCodeEditor::QCodeEditor( QWidget* parent ) :
 QWidget( parent ),

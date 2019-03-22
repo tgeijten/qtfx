@@ -12,6 +12,8 @@
 #include "xo/numerical/constants.h"
 #include "qt_convert.h"
 #include "xo/numerical/compare.h"
+#include "xo/numerical/math.h"
+#include "xo/container/container_tools.h"
 
 QDataAnalysisView::QDataAnalysisView( QDataAnalysisModel* m, QWidget* parent ) :
 	QWidget( parent ),
