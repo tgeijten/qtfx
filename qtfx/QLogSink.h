@@ -5,7 +5,7 @@
 #include <QTimer>
 
 #include "xo/system/log_sink.h"
-#include "xo/utility/types.h"
+#include "xo/xo_types.h"
 
 class QLogSink : public QPlainTextEdit, public xo::log::sink
 {

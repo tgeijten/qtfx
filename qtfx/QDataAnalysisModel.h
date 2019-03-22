@@ -5,7 +5,7 @@
 
 #include "QString"
 #include "xo/container/storage_tools.h"
-#include "xo/utility/types.h"
+#include "xo/xo_types.h"
 
 class QDataAnalysisModel
 {

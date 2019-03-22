@@ -4,7 +4,7 @@
 #include <algorithm>
 #include "xo/utility/color.h"
 #include "xo/system/log.h"
-#include "xo/utility/types.h"
+#include "xo/xo_types.h"
 #include "qtfx.h"
 #include <array>
 #include "xo/system/log.h"

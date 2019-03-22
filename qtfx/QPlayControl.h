@@ -7,7 +7,7 @@
 #include <QTimer>
 #include "xo/time/timer.h"
 #include "xo/numerical/delta.h"
-#include "xo/utility/types.h"
+#include "xo/xo_types.h"
 
 class QAbstractSlider;
 class QToolButton;
