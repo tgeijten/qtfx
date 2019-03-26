@@ -5,7 +5,7 @@
 #include <QLabel>
 #include <QLCDNumber>
 #include <QTimer>
-#include "xo/time/timer.h"
+#include "xo/time/timer_v1.h"
 #include "xo/numerical/delta.h"
 #include "xo/xo_types.h"
 
@@ -85,6 +85,6 @@ private:
 	bool autoExtendRange_;
 
 	QTimer qtimer;
-	xo::timer timer;
+	xo::timer_v1 timer;
 	xo::delta< xo::seconds_t > timer_delta;
 };
