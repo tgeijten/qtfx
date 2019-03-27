@@ -86,5 +86,5 @@ private:
 
 	QTimer qtimer;
 	xo::timer timer;
-	xo::delta< xo::seconds_t > timer_delta;
+	xo::delta< double > timer_delta;
 };
