@@ -119,7 +119,7 @@ void QCodeEditor::textEditChanged()
 
 std::string QCodeEditor::getFileFormat( const QString& filename ) const
 {
-	return xo::path( filename.toStdString() ).extension().string();
+	return xo::path( filename.toStdString() ).extension().str();
 }
 
 //

@@ -143,7 +143,7 @@ void QOsgViewer::createHud( const xo::path& file )
 {
 	hud_node_ = new osg::PositionAttitudeTransform;
 
-	osg::ref_ptr<osg::Image> img = osgDB::readImageFile( file.string() );
+	osg::ref_ptr<osg::Image> img = osgDB::readImageFile( file.str() );
 	xo_assert( img.valid() );
 	auto width = osg::Vec3f( hud_size, 0, 0 );
 	auto height = osg::Vec3f( 0, hud_size, 0 );
