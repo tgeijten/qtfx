@@ -20,6 +20,7 @@ public:
 	QString getPlainText() const;
 	bool isEmpty() const { return fileName.isEmpty(); }
 	QString getTitle();
+	QCodeHighlighter::Language language() { return syntaxHighlighter->language; }
 
 public slots:
 	void open( const QString& filename );
@@ -41,7 +42,7 @@ public:
 
 private:
 	std::string getFileFormat( const QString& filename ) const;
-	class QCodeSyntaxHighlighter* xmlSyntaxHighlighter;
+	class QCodeHighlighter* syntaxHighlighter;
     class QCodeTextEdit *textEdit;
 };
 
@@ -50,18 +51,7 @@ class QCodeTextEdit : public QPlainTextEdit
 	Q_OBJECT
 
 public:
-	class LineNumberArea : public QWidget
-	{
-	public:
-		LineNumberArea( QCodeTextEdit *editor ) : QWidget( editor ) { codeEditor = editor; }
-		QSize sizeHint() const Q_DECL_OVERRIDE { return QSize( codeEditor->lineNumberAreaWidth(), 0 ); }
-	protected:
-		void paintEvent( QPaintEvent *event ) Q_DECL_OVERRIDE { codeEditor->lineNumberAreaPaintEvent( event ); }
-	private:
-		QCodeTextEdit *codeEditor;
-	};
-
-	QCodeTextEdit( QWidget* parent = 0 );
+	QCodeTextEdit( QCodeEditor* parent = 0 );
 	void lineNumberAreaPaintEvent( QPaintEvent *event );
 	int lineNumberAreaWidth();
 
@@ -75,6 +65,18 @@ protected:
 	virtual void keyPressEvent( QKeyEvent *e ) Q_DECL_OVERRIDE;
 
 private:
+	class LineNumberArea : public QWidget
+	{
+	public:
+		LineNumberArea( QCodeTextEdit *editor ) : QWidget( editor ) { codeEditor = editor; }
+		QSize sizeHint() const Q_DECL_OVERRIDE { return QSize( codeEditor->lineNumberAreaWidth(), 0 ); }
+	protected:
+		void paintEvent( QPaintEvent *event ) Q_DECL_OVERRIDE { codeEditor->lineNumberAreaPaintEvent( event ); }
+	private:
+		QCodeTextEdit *codeEditor;
+	};
+
+	QCodeEditor* codeEditor;
 	QWidget *lineNumberArea;
 	QRect previousRect;
 };

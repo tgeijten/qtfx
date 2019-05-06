@@ -3,6 +3,8 @@
 #include "xo/system/assert.h"
 #include "xo/filesystem/path.h"
 #include "xo/numerical/math.h"
+#include "xo/string/string_tools.h"
+#include "xo/utility/hash.h"
 
 QCodeHighlighter::QCodeHighlighter( QObject* parent, Language l ) : QSyntaxHighlighter( parent )
 {
@@ -20,21 +22,24 @@ void QCodeHighlighter::highlightBlock( const QString &text )
 		applyRule( text, r );
 
 	// apply multi-line comments
-	setCurrentBlockState( 0 );
-	int startIndex = previousBlockState() != 1 ? match( commentStartRegex, text, 0 ).capturedStart() : 0;
-	while ( startIndex >= 0 )
+	if ( !commentStartRegex.pattern().isEmpty() )
 	{
-		QRegularExpressionMatch mend = match( commentEndRegex, text, startIndex );
-		if ( !mend.hasMatch() )
+		setCurrentBlockState( 0 );
+		int startIndex = previousBlockState() != 1 ? match( commentStartRegex, text, 0 ).capturedStart() : 0;
+		while ( startIndex >= 0 )
 		{
-			setCurrentBlockState( 1 );
-			setFormat( startIndex, text.length() - startIndex, commentFormat );
-			break;
-		}
-		else
-		{
-			setFormat( startIndex, mend.capturedEnd() - startIndex, commentFormat );
-			startIndex = match( commentStartRegex, text, mend.capturedEnd() ).capturedStart();
+			QRegularExpressionMatch mend = match( commentEndRegex, text, startIndex );
+			if ( !mend.hasMatch() )
+			{
+				setCurrentBlockState( 1 );
+				setFormat( startIndex, text.length() - startIndex, commentFormat );
+				break;
+			}
+			else
+			{
+				setFormat( startIndex, mend.capturedEnd() - startIndex, commentFormat );
+				startIndex = match( commentStartRegex, text, mend.capturedEnd() ).capturedStart();
+			}
 		}
 	}
 }
@@ -63,9 +68,13 @@ void QCodeHighlighter::applyRule( const QString& text, const HighlightRule& r )
 
 void QCodeHighlighter::setRegexes()
 {
+	rules.clear();
+	commentStartRegex.setPattern( "" );
+	commentEndRegex.setPattern( "" );
+
 	switch ( language )
 	{
-	case XML:
+	case Language::xml:
 		rules.emplace_back( "<[\\s]*[/]?[\\s]*([^\\n]\\w*)(?=[\\s/>])", elementFormat );
 		rules.emplace_back( "\\w+(?=\\=)", attributeFormat );
 		rules.emplace_back( "\"[^\\n\"]+\"(?=[\\s/>])", valueFormat );
@@ -76,7 +85,7 @@ void QCodeHighlighter::setRegexes()
 		commentEndRegex.setPattern( "-->" );
 		break;
 
-	case ZML:
+	case Language::zml:
 		rules.emplace_back( "\\w+\\s*\\=?\\s*[\\{\\[]", elementFormat );
 		rules.emplace_back( "\\w+\\s*(\\=)", attributeFormat ); // key = value
 		rules.emplace_back( "\\w+(:\\s+)", attributeFormat ); // key: value
@@ -91,8 +100,16 @@ void QCodeHighlighter::setRegexes()
 		commentEndRegex.setPattern( "\\*/" );
 		break;
 
+	case Language::lua:
+		rules.emplace_back( "\\b(and|break|do|else|elseif|end|false|for|function|goto|if|in|local|nil|not|or|repeat|return|then|true|until|while)\\b", elementFormat );
+		rules.emplace_back( "\"[^\\n\"]*\"", valueFormat );
+		rules.emplace_back( "\\b([-+]?[\\.\\d]+)", numberFormat );
+		rules.emplace_back( "[\\+\\-\\*\\/\\%\\\\#\\&\\~\\|\\<\\>\\(\\)\\{\\}\\[\\]\\=\\;\\:\\,\\.]", operatorFormat );
+		rules.emplace_back( "--[^\\n]*", commentFormat );
+		commentStartRegex.setPattern( "--\\[\\[" );
+		commentEndRegex.setPattern( "\\]\\]" );
 	default:
-		xo_error( "Unsupported language" );
+		break;
 	}
 }
 
@@ -123,10 +140,13 @@ void QCodeHighlighter::setLanguage( Language l )
 
 QCodeHighlighter::Language QCodeHighlighter::detectLanguage( const QString& filename )
 {
-	auto ext = xo::path( filename.toStdString() ).extension();
-	if ( ext == "xml" )
-		return XML;
-	else if ( ext == "zml" )
-		return ZML;
-	else return ZML;
+	auto ext = xo::to_lower( xo::path( filename.toStdString() ).extension().str() );
+	switch ( xo::hash( ext.c_str() ) )
+	{
+	case "xml"_hash: return Language::xml;
+	case "zml"_hash: return Language::zml;
+	case "scone"_hash: return Language::zml;
+	case "lua"_hash: return Language::lua;
+	default: return Language::unknown;
+	}
 }

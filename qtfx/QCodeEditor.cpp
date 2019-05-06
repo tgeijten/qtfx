@@ -45,7 +45,7 @@ QString QCodeEditor::getPlainText() const
 
 void QCodeEditor::open( const QString& filename )
 {
-	QCodeHighlighter* xmlSyntaxHighlighter = new QCodeHighlighter( textEdit->document(), QCodeHighlighter::detectLanguage( filename ) );
+	syntaxHighlighter = new QCodeHighlighter( textEdit->document(), QCodeHighlighter::detectLanguage( filename ) );
 
 	QFile f( filename );
 	if ( f.open( QFile::ReadOnly | QFile::Text ) )
@@ -95,7 +95,7 @@ void QCodeEditor::saveAs( const QString& fn )
 		std::stringstream stro;
 		stro << *xo::make_serializer( getFileFormat( fn ), pn );
 
-		QCodeHighlighter* xmlSyntaxHighlighter = new QCodeHighlighter( textEdit->document(), QCodeHighlighter::detectLanguage( fn ) );
+		syntaxHighlighter = new QCodeHighlighter( textEdit->document(), QCodeHighlighter::detectLanguage( fn ) );
 		textEdit->setPlainText( QString( stro.str().c_str() ) );
 	}
 
@@ -126,7 +126,9 @@ std::string QCodeEditor::getFileFormat( const QString& filename ) const
 // QCodeTextEdit
 //
 
-QCodeTextEdit::QCodeTextEdit( QWidget* parent ) : QPlainTextEdit( parent )
+QCodeTextEdit::QCodeTextEdit( QCodeEditor* parent ) :
+	QPlainTextEdit( parent ),
+	codeEditor( parent )
 {
 	setFrameStyle( QFrame::NoFrame );
 	lineNumberArea = new LineNumberArea( this );
@@ -243,10 +245,14 @@ void QCodeTextEdit::resizeEvent( QResizeEvent *event )
 
 void QCodeTextEdit::keyPressEvent( QKeyEvent *e )
 {
-	if ( e->key() == Qt::Key_Return || e->key() == Qt::Key_Enter || e->key() == '{' || e->key() == '}' )
+	QPlainTextEdit::keyPressEvent( e );
+
+	switch ( codeEditor->language() )
 	{
-		QPlainTextEdit::keyPressEvent( e );
-		formatDocument();
+	case QCodeHighlighter::Language::zml:
+		if ( e->key() == Qt::Key_Return || e->key() == Qt::Key_Enter || e->key() == '{' || e->key() == '}' )
+			formatDocument();
+	default:
+		break;
 	}
-	else QPlainTextEdit::keyPressEvent( e );
 }

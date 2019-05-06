@@ -7,14 +7,15 @@ class QCodeHighlighter : public QSyntaxHighlighter
 {
 	Q_OBJECT
 public:
-	enum Language { XML, ZML };
+	enum class Language { unknown, xml, zml, lua };
 
 	QCodeHighlighter( QObject* parent, Language f );
 	QCodeHighlighter( QTextDocument* parent, Language f );
+	virtual ~QCodeHighlighter() {}
 
 	void setLanguage( Language l );
 	static Language detectLanguage( const QString& filename );
-	virtual ~QCodeHighlighter() {}
+	Language language;
 
 protected:
 	virtual void highlightBlock( const QString& text );
@@ -32,7 +33,6 @@ private:
 	void setRegexes();
 	void setFormats();
 
-	Language language;
 	std::vector< HighlightRule > rules;
 
 	QTextCharFormat operatorFormat;
