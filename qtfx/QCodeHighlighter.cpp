@@ -5,6 +5,8 @@
 #include "xo/numerical/math.h"
 #include "xo/string/string_tools.h"
 #include "xo/utility/hash.h"
+#include "xo/container/flat_map.h"
+#include <string>
 
 QCodeHighlighter::QCodeHighlighter( QObject* parent, Language l ) : QSyntaxHighlighter( parent )
 {
@@ -138,15 +140,22 @@ void QCodeHighlighter::setLanguage( Language l )
 	setRegexes();
 }
 
+xo::flat_map< std::string, QCodeHighlighter::Language > g_languages{
+	{ "xml", QCodeHighlighter::Language::xml },
+	{ "zml", QCodeHighlighter::Language::zml },
+	{ "lua", QCodeHighlighter::Language::lua },
+	{ "scone", QCodeHighlighter::Language::zml }
+};
+
 QCodeHighlighter::Language QCodeHighlighter::detectLanguage( const QString& filename )
 {
 	auto ext = xo::to_lower( xo::path( filename.toStdString() ).extension().str() );
-	switch ( xo::hash( ext.c_str() ) )
-	{
-	case "xml"_hash: return Language::xml;
-	case "zml"_hash: return Language::zml;
-	case "scone"_hash: return Language::zml;
-	case "lua"_hash: return Language::lua;
-	default: return Language::unknown;
-	}
+	if ( auto l = g_languages.find( ext ); l != g_languages.end() )
+		return l->second;
+	else return Language::unknown;
+}
+
+void QCodeHighlighter::registerLanguage( const QString& ext, Language lang )
+{
+	g_languages[ xo::to_lower( ext.toStdString() ) ] = lang;
 }

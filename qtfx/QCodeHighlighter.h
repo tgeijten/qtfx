@@ -15,6 +15,7 @@ public:
 
 	void setLanguage( Language l );
 	static Language detectLanguage( const QString& filename );
+	static void registerLanguage( const QString& extension, Language l );
 	Language language;
 
 protected:
