@@ -26,23 +26,42 @@ void QCodeHighlighter::highlightBlock( const QString &text )
 	// apply multi-line comments
 	if ( !commentStartRegex.pattern().isEmpty() )
 	{
-		setCurrentBlockState( 0 );
-		int startIndex = previousBlockState() != 1 ? match( commentStartRegex, text, 0 ).capturedStart() : 0;
-		while ( startIndex >= 0 )
+		int commentStart = 0, searchIndex = 0;
+		bool isComment = previousBlockState() == 1;
+
+		while ( searchIndex >= 0 )
 		{
-			QRegularExpressionMatch mend = match( commentEndRegex, text, startIndex );
-			if ( !mend.hasMatch() )
+			if ( isComment )
 			{
-				setCurrentBlockState( 1 );
-				setFormat( startIndex, text.length() - startIndex, commentFormat );
-				break;
+				auto matchEnd = match( commentEndRegex, text, searchIndex );
+				if ( !matchEnd.hasMatch() )
+				{
+					// multiline comment goes beyond this line
+					setFormat( commentStart, text.length() - commentStart, commentFormat );
+					break;
+				}
+				else
+				{
+					// multiline comment ends here
+					setFormat( commentStart, matchEnd.capturedEnd() - commentStart, commentFormat );
+					searchIndex = matchEnd.capturedEnd();
+					isComment = false;
+				}
 			}
-			else
+			if ( !isComment )
 			{
-				setFormat( startIndex, mend.capturedEnd() - startIndex, commentFormat );
-				startIndex = match( commentStartRegex, text, mend.capturedEnd() ).capturedStart();
+				auto matchStart = match( commentStartRegex, text, searchIndex );
+				if ( matchStart.hasMatch() )
+				{
+					// multiline comment starts here
+					commentStart = matchStart.capturedStart();
+					searchIndex = matchStart.capturedEnd();
+					isComment = true;
+				}
+				else break; // no more comments in this line
 			}
 		}
+		setCurrentBlockState( isComment ? 1 : 0 );
 	}
 }
 
@@ -92,14 +111,14 @@ void QCodeHighlighter::setRegexes()
 		rules.emplace_back( "\\w+\\s*(\\=)", attributeFormat ); // key = value
 		rules.emplace_back( "\\w+(:\\s+)", attributeFormat ); // key: value
 		rules.emplace_back( "\"[^\\n\"]*\"", valueFormat );
-		rules.emplace_back( "#\\w+", specialFormat );
+		//rules.emplace_back( "#\\w+", specialFormat );
 		rules.emplace_back( "<<\\s.*\\s>>", specialFormat );
 		rules.emplace_back( "([\\{\\}\\[\\]\\=]|:\\s)", operatorFormat );
 		rules.emplace_back( "\\b([-+]?[\\.\\d]+)", numberFormat );
 		rules.emplace_back( "\\@\\w+", macroFormat );
-		rules.emplace_back( "(;|//|#\\s)[^\\n]*", commentFormat ); // ; // #
-		commentStartRegex.setPattern( "/\\*" );
-		commentEndRegex.setPattern( "\\*/" );
+		rules.emplace_back( "#[^\\n]*", commentFormat ); // #
+		commentStartRegex.setPattern( "#{3,}" );
+		commentEndRegex.setPattern( "#{3,}" );
 		break;
 
 	case Language::lua:
