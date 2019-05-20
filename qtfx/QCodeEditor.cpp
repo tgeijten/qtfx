@@ -13,48 +13,48 @@
 #include "xo/serialization/serialize.h"
 #include "xo/numerical/math.h"
 #include "xo/container/prop_node.h"
+#include "QInputDialog"
 
 QCodeEditor::QCodeEditor( QWidget* parent ) :
-QWidget( parent ),
-textChangedFlag( false )
+QPlainTextEdit( parent )
 {
 	QVBoxLayout* verticalLayout = new QVBoxLayout( this );
 	verticalLayout->setContentsMargins( 0, 0, 0, 0 );
 	setLayout( verticalLayout );
-	textEdit = new QCodeTextEdit( this );
 
 	QFont font;
 	font.setFamily( QStringLiteral( "Consolas" ) );
 	font.setPointSize( 9 );
-	textEdit->setFont( font );
-	textEdit->setLineWrapMode( QPlainTextEdit::NoWrap );
-	textEdit->setTabStopWidth( 16 );
-	textEdit->setWordWrapMode( QTextOption::NoWrap );
-	verticalLayout->addWidget( textEdit );
+	setFont( font );
+	setLineWrapMode( QPlainTextEdit::NoWrap );
+	setTabStopWidth( 16 );
+	setWordWrapMode( QTextOption::NoWrap );
+	//verticalLayout->addWidget( textEdit );
 
-	connect( textEdit, SIGNAL( textChanged() ), this, SLOT( textEditChanged() ) );
+	setFrameStyle( QFrame::NoFrame );
+	lineNumberArea = new LineNumberArea( this );
+
+	connect( this, SIGNAL( blockCountChanged( int ) ), this, SLOT( updateLineNumberAreaWidth( int ) ) );
+	connect( this, SIGNAL( updateRequest( QRect, int ) ), this, SLOT( updateLineNumberArea( QRect, int ) ) );
+
+	updateLineNumberAreaWidth( 0 );
+
 }
 
 QCodeEditor::~QCodeEditor()
 {}
 
-QString QCodeEditor::getPlainText() const
-{
-	return textEdit->toPlainText();
-}
-
 void QCodeEditor::open( const QString& filename )
 {
-	syntaxHighlighter = new QCodeHighlighter( textEdit->document(), QCodeHighlighter::detectLanguage( filename ) );
+	syntaxHighlighter = new QCodeHighlighter( document(), QCodeHighlighter::detectLanguage( filename ) );
 
 	QFile f( filename );
 	if ( f.open( QFile::ReadOnly | QFile::Text ) )
 	{
 		QTextStream str( &f );
 		QString data = str.readAll();
-		textEdit->setPlainText( data );
+		setPlainText( data );
 		fileName = filename;
-		textChangedFlag = false;
 	}
 	else xo_error( "Could not open " + filename.toStdString() );
 }
@@ -77,10 +77,10 @@ void QCodeEditor::save()
 	else
 	{
 		QTextStream stream( &file );
-		stream << textEdit->toPlainText();
+		stream << toPlainText();
 		stream.flush();
 		file.close();
-		textChangedFlag = false;
+		document()->setModified( false );
 	}
 }
 
@@ -88,33 +88,44 @@ void QCodeEditor::saveAs( const QString& fn )
 {
 	if ( getFileFormat( fn ) != getFileFormat( fileName ) )
 	{
-		std::stringstream stri( textEdit->toPlainText().toStdString() );
+		std::stringstream stri( toPlainText().toStdString() );
 		xo::prop_node pn;
 		stri >> *xo::make_serializer( getFileFormat( fileName ), pn );
 
 		std::stringstream stro;
 		stro << *xo::make_serializer( getFileFormat( fn ), pn );
 
-		syntaxHighlighter = new QCodeHighlighter( textEdit->document(), QCodeHighlighter::detectLanguage( fn ) );
-		textEdit->setPlainText( QString( stro.str().c_str() ) );
+		syntaxHighlighter = new QCodeHighlighter( document(), QCodeHighlighter::detectLanguage( fn ) );
+		setPlainText( QString( stro.str().c_str() ) );
 	}
 
 	fileName = fn;
 	save();
 }
 
-QString QCodeEditor::getTitle()
+void QCodeEditor::findDialog()
 {
-	return QFileInfo( fileName ).fileName() + ( hasTextChanged() ? "*" : "" );
+	QString text = QInputDialog::getText( this, "Find Text", "Text to find:", QLineEdit::Normal, findText );
+	if ( !text.isNull() )
+	{
+		findText = text;
+		moveCursor( QTextCursor::Start );
+		if ( !findNext() )
+			QMessageBox::warning( this, "Could not find text", "Could not find '" + findText + "'" );
+	}
 }
 
-void QCodeEditor::textEditChanged()
+bool QCodeEditor::findNext( bool backwards )
 {
-	if ( !textChangedFlag )
-	{
-		textChangedFlag = true;
-		emit textChanged();
-	}
+	auto cursor = document()->find( findText, textCursor(), backwards ? QTextDocument::FindBackward : QTextDocument::FindFlags() );
+	if ( !cursor.isNull() )
+		setTextCursor( cursor );
+	return !cursor.isNull();
+}
+
+QString QCodeEditor::getTitle()
+{
+	return QFileInfo( fileName ).fileName() + ( document()->isModified() ? "*" : "" );
 }
 
 std::string QCodeEditor::getFileFormat( const QString& filename ) const
@@ -122,24 +133,7 @@ std::string QCodeEditor::getFileFormat( const QString& filename ) const
 	return xo::path( filename.toStdString() ).extension().str();
 }
 
-//
-// QCodeTextEdit
-//
-
-QCodeTextEdit::QCodeTextEdit( QCodeEditor* parent ) :
-	QPlainTextEdit( parent ),
-	codeEditor( parent )
-{
-	setFrameStyle( QFrame::NoFrame );
-	lineNumberArea = new LineNumberArea( this );
-
-	connect( this, SIGNAL( blockCountChanged( int ) ), this, SLOT( updateLineNumberAreaWidth( int ) ) );
-	connect( this, SIGNAL( updateRequest( QRect, int ) ), this, SLOT( updateLineNumberArea( QRect, int ) ) );
-
-	updateLineNumberAreaWidth( 0 );
-}
-
-void QCodeTextEdit::lineNumberAreaPaintEvent( QPaintEvent *event )
+void QCodeEditor::lineNumberAreaPaintEvent( QPaintEvent *event )
 {
 	QPainter painter( lineNumberArea );
 	QColor c = palette().color( QWidget::backgroundRole() );
@@ -165,7 +159,7 @@ void QCodeTextEdit::lineNumberAreaPaintEvent( QPaintEvent *event )
 	}
 }
 
-int QCodeTextEdit::lineNumberAreaWidth()
+int QCodeEditor::lineNumberAreaWidth()
 {
 	int digits = 1;
 	int max = qMax( 1, blockCount() );
@@ -179,7 +173,7 @@ int QCodeTextEdit::lineNumberAreaWidth()
 	return space;
 }
 
-void QCodeTextEdit::formatDocument()
+void QCodeEditor::formatDocument()
 {
 	auto cursor = textCursor();
 	cursor.beginEditBlock();
@@ -218,12 +212,12 @@ void QCodeTextEdit::formatDocument()
 	cursor.endEditBlock();
 }
 
-void QCodeTextEdit::updateLineNumberAreaWidth( int newBlockCount )
+void QCodeEditor::updateLineNumberAreaWidth( int newBlockCount )
 {
 	setViewportMargins( lineNumberAreaWidth(), 0, 0, 0 );
 }
 
-void QCodeTextEdit::updateLineNumberArea( const QRect& rect, int dy )
+void QCodeEditor::updateLineNumberArea( const QRect& rect, int dy )
 {
 	if ( dy )
 		lineNumberArea->scroll( 0, dy );
@@ -234,7 +228,7 @@ void QCodeTextEdit::updateLineNumberArea( const QRect& rect, int dy )
 		updateLineNumberAreaWidth( 0 );
 }
 
-void QCodeTextEdit::resizeEvent( QResizeEvent *event )
+void QCodeEditor::resizeEvent( QResizeEvent *event )
 {
 	QRect cr = contentsRect();
 	if ( cr != previousRect ) // this is a hack to prevent a Qt bug causing infinite QResizeEvents
@@ -245,11 +239,11 @@ void QCodeTextEdit::resizeEvent( QResizeEvent *event )
 	}
 }
 
-void QCodeTextEdit::keyPressEvent( QKeyEvent *e )
+void QCodeEditor::keyPressEvent( QKeyEvent *e )
 {
 	QPlainTextEdit::keyPressEvent( e );
 
-	switch ( codeEditor->language() )
+	switch ( language() )
 	{
 	case QCodeHighlighter::Language::zml:
 		if ( e->key() == Qt::Key_Return || e->key() == Qt::Key_Enter || e->key() == '{' || e->key() == '}' )
