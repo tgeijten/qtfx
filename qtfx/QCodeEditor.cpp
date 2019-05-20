@@ -182,6 +182,7 @@ int QCodeTextEdit::lineNumberAreaWidth()
 void QCodeTextEdit::formatDocument()
 {
 	auto cursor = textCursor();
+	cursor.beginEditBlock();
 	cursor.movePosition( QTextCursor::Start );
 
 	auto indents = 0;
@@ -214,6 +215,7 @@ void QCodeTextEdit::formatDocument()
 		if ( !cursor.movePosition( QTextCursor::NextBlock ) )
 			break; // prevent infinite loop if this fails
 	}
+	cursor.endEditBlock();
 }
 
 void QCodeTextEdit::updateLineNumberAreaWidth( int newBlockCount )
