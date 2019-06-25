@@ -39,7 +39,6 @@ QPlainTextEdit( parent )
 	connect( this, SIGNAL( updateRequest( QRect, int ) ), this, SLOT( updateLineNumberArea( QRect, int ) ) );
 
 	updateLineNumberAreaWidth( 0 );
-
 }
 
 QCodeEditor::~QCodeEditor()
