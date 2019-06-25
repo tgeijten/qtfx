@@ -14,6 +14,7 @@
 #include "xo/numerical/math.h"
 #include "xo/container/prop_node.h"
 #include "QInputDialog"
+#include "qt_convert.h"
 
 QCodeEditor::QCodeEditor( QWidget* parent ) :
 QPlainTextEdit( parent )
@@ -86,14 +87,16 @@ void QCodeEditor::save()
 
 void QCodeEditor::saveAs( const QString& fn )
 {
-	if ( getFileFormat( fn ) != getFileFormat( fileName ) )
+	auto new_fmt = path_from_qt( fn ).extension_no_dot().str();
+	auto old_fmt = path_from_qt( fileName ).extension_no_dot().str();
+	if ( new_fmt != old_fmt )
 	{
 		std::stringstream stri( toPlainText().toStdString() );
 		xo::prop_node pn;
-		stri >> *xo::make_serializer( getFileFormat( fileName ), pn );
+		stri >> *xo::make_serializer( old_fmt, pn );
 
 		std::stringstream stro;
-		stro << *xo::make_serializer( getFileFormat( fn ), pn );
+		stro << *xo::make_serializer( new_fmt, pn );
 
 		syntaxHighlighter = new QCodeHighlighter( document(), QCodeHighlighter::detectLanguage( fn ) );
 		setPlainText( QString( stro.str().c_str() ) );
@@ -126,11 +129,6 @@ bool QCodeEditor::findNext( bool backwards )
 QString QCodeEditor::getTitle()
 {
 	return QFileInfo( fileName ).fileName() + ( document()->isModified() ? "*" : "" );
-}
-
-std::string QCodeEditor::getFileFormat( const QString& filename ) const
-{
-	return xo::path( filename.toStdString() ).extension().str();
 }
 
 void QCodeEditor::lineNumberAreaPaintEvent( QPaintEvent *event )

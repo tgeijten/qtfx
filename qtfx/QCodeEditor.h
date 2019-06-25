@@ -39,7 +39,6 @@ public:
 	QString findText;
 
 private:
-	std::string getFileFormat( const QString& filename ) const;
 	class QCodeHighlighter* syntaxHighlighter;
 
 	void lineNumberAreaPaintEvent( QPaintEvent *event );

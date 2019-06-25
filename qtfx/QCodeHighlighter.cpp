@@ -168,7 +168,7 @@ xo::flat_map< std::string, QCodeHighlighter::Language > g_languages{
 
 QCodeHighlighter::Language QCodeHighlighter::detectLanguage( const QString& filename )
 {
-	auto ext = xo::to_lower( xo::path( filename.toStdString() ).extension().str() );
+	auto ext = xo::to_lower( xo::path( filename.toStdString() ).extension_no_dot().str() );
 	if ( auto l = g_languages.find( ext ); l != g_languages.end() )
 		return l->second;
 	else return Language::unknown;
