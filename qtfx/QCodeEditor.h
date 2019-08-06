@@ -7,6 +7,8 @@
 #include <QPlainTextEdit>
 
 #include "xo/serialization/serialize.h"
+#include "xo/filesystem/path.h"
+#include "qt_convert.h"
 
 class QCodeEditor : public QPlainTextEdit
 {
@@ -32,6 +34,8 @@ public slots:
 
 	void updateLineNumberAreaWidth( int newBlockCount );
 	void updateLineNumberArea( const QRect& rect, int dy );
+
+	xo::path filePath() const { return path_from_qt( fileName ); }
 
 public:
 	QString defaultFolder;
