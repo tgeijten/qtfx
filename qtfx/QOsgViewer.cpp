@@ -177,7 +177,7 @@ void QOsgViewer::updateHudPos()
 	{
 		double fovy, aspect, nearplane, farplane;
 		view_->getCamera()->getProjectionMatrixAsPerspective( fovy, aspect, nearplane, farplane );
-		auto hh = tan( xo::deg_to_rad( fovy ) / 2 );
+		auto hh = tan( xo::degreed( fovy / 2 ) );
 		auto hw = tan( atan( hh * aspect ) );
 		//xo::log::info( "Updating HUD position to ", hw - 0.55f * hud_size, ", ", -hh + 0.55f * hud_size, "; aspect ratio = ", aspect );
 		hud_node_->setPosition( osg::Vec3( hw - 0.55f * hud_size, -hh + 0.55f * hud_size, -1 ) );
