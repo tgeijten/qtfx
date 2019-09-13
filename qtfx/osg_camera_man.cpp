@@ -12,6 +12,14 @@ namespace vis
 	camera_state xy_cam_pos{ 0_degf, 90_degf, 1.0, 4.5 };
 	camera_state xz_cam_pos{ -90_degf, 90_degf, 1.0, 4.5 };
 
+	constexpr double pitch_scale = 100;
+	constexpr double yaw_scale = 100;
+	constexpr double pan_scale = 0.3;
+	constexpr double zoom_scale = 1.0;
+	constexpr degree key_orbit = 5_degf;
+	constexpr double key_pan = 0.1;
+	constexpr double key_zoom = 0.05;
+
 	osg_camera_man::osg_camera_man() :
 	osgGA::OrbitManipulator()
 	{
@@ -52,17 +60,33 @@ namespace vis
 
 	bool osg_camera_man::handleKeyDown( const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& us )
 	{
-		switch ( ea.getKey() )
+		bool shift = ea.getModKeyMask() & osgGA::GUIEventAdapter::MODKEY_SHIFT;
+		if ( shift )
 		{
-		case 'r': setCameraState( default_cam_pos ); return true;
-		case 'x': setCameraState( yz_cam_pos ); return true;
-		case 'y': setCameraState( xz_cam_pos ); return true;
-		case 'z': setCameraState( xy_cam_pos ); return true;
-		default:
-			// filter out space key because we don't want it to reset the camera
-			if ( ea.getKey() != osgGA::GUIEventAdapter::KEY_Space )
-				return osgGA::OrbitManipulator::handleKeyDown( ea, us );
-			else return false;
+			switch ( ea.getKey() )
+			{
+			case osgGA::GUIEventAdapter::KEY_Left: panModel( -key_pan, 0 ); return true;
+			case osgGA::GUIEventAdapter::KEY_Right:panModel( key_pan, 0 ); return true;
+			case osgGA::GUIEventAdapter::KEY_Up:panModel( 0, key_pan ); return true;
+			case osgGA::GUIEventAdapter::KEY_Down:panModel( 0, -key_pan ); return true;
+			default: return osgGA::OrbitManipulator::handleKeyDown( ea, us );
+			}
+		} else {
+			switch ( ea.getKey() )
+			{
+			case 'r': setCameraState( default_cam_pos ); return true;
+			case 'x': setCameraState( yz_cam_pos ); return true;
+			case 'y': setCameraState( xz_cam_pos ); return true;
+			case 'z': setCameraState( xy_cam_pos ); return true;
+			case osgGA::GUIEventAdapter::KEY_Space: return false; // filter out space key because we don't want it to reset the camera
+			case osgGA::GUIEventAdapter::KEY_Left: orbitModel( -key_orbit, 0_degf ); return true;
+			case osgGA::GUIEventAdapter::KEY_Right: orbitModel( key_orbit, 0_degf ); return true;
+			case osgGA::GUIEventAdapter::KEY_Up: zoomModel( -key_zoom ); return true;
+			case osgGA::GUIEventAdapter::KEY_Down: zoomModel( key_zoom ); return true;
+			case osgGA::GUIEventAdapter::KEY_Page_Up: orbitModel( 0_degf, -key_orbit ); return true;
+			case osgGA::GUIEventAdapter::KEY_Page_Down: orbitModel( 0_degf, key_orbit ); return true;
+			default: return osgGA::OrbitManipulator::handleKeyDown( ea, us );
+			}
 		}
 	}
 

@@ -34,9 +34,9 @@ scene_light_offset_( -2, 8, 3 )
 	setKeyEventSetsDone( 0 );
 
 	// setup viewer grid
-	QWidget* widget1 = addViewWidget( createGraphicsWindow( 0, 0, 100, 100, "", true ) );
+	view_widget_ = addViewWidget( createGraphicsWindow( 0, 0, 100, 100, "", true ) );
 	auto* grid = new QGridLayout;
-	grid->addWidget( widget1 );
+	grid->addWidget( view_widget_ );
 	setLayout( grid );
 	grid->setMargin( 1 );
 
@@ -46,7 +46,7 @@ scene_light_offset_( -2, 8, 3 )
 	timer_.start( 1000 / 120 );
 }
 
-QWidget* QOsgViewer::addViewWidget( osgQt::GraphicsWindowQt* gw )
+osgQt::GLWidget* QOsgViewer::addViewWidget( osgQt::GraphicsWindowQt* gw )
 {
 	view_ = new osgViewer::View;
 	addView( view_ );

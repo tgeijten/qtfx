@@ -17,7 +17,7 @@ class QOsgViewer : public QWidget, public osgViewer::CompositeViewer
 {
 public:
 	QOsgViewer( QWidget* parent = 0, Qt::WindowFlags f = 0, osgViewer::ViewerBase::ThreadingModel threadingModel = osgViewer::CompositeViewer::SingleThreaded );
-	QWidget* addViewWidget( osgQt::GraphicsWindowQt* gw );
+	osgQt::GLWidget* addViewWidget( osgQt::GraphicsWindowQt* gw );
 	osgQt::GraphicsWindowQt* createGraphicsWindow( int x, int y, int w, int h, const std::string& name="", bool windowDecoration=false );
 
 	virtual void paintEvent( QPaintEvent* event ) override;
@@ -35,6 +35,7 @@ public:
 	vis::osg_camera_man& getCameraMan() { return *camera_man_; }
 	void setFrameTime( double t );
 	bool handle( const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa );
+	osgQt::GLWidget* viewWidget() { return view_widget_; }
 
 protected:
 	bool eventFilter( QObject* obj, QEvent* event );
@@ -47,6 +48,7 @@ protected:
 	osg::ref_ptr< osgViewer::ScreenCaptureHandler > capture_handler_;
 	osg::ref_ptr< osgViewer::View > view_;
 	osg::ref_ptr< osg::Group > scene_;
+	osgQt::GLWidget* view_widget_;
 
 	osg::ref_ptr< osg::Light > scene_light_;
 	xo::vec3f scene_light_offset_;
