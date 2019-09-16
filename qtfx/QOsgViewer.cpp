@@ -43,7 +43,7 @@ scene_light_offset_( -2, 8, 3 )
 	// start timer
 	// #todo: remove this -- only update after something has changed
 	connect( &timer_, SIGNAL( timeout() ), this, SLOT( update() ) );
-	timer_.start( 1000 / 120 );
+	startTimer();
 }
 
 osgQt::GLWidget* QOsgViewer::addViewWidget( osgQt::GraphicsWindowQt* gw )
