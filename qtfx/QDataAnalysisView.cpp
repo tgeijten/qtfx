@@ -17,8 +17,8 @@
 
 QDataAnalysisView::QDataAnalysisView( QDataAnalysisModel* m, QWidget* parent ) :
 	QWidget( parent ),
-	model( m ),
-	currentUpdateIdx( 0 )
+	currentUpdateIdx( 0 ),
+	model( m )
 {
 	selectBox = new QCheckBox( this );
 	connect( selectBox, &QCheckBox::stateChanged, this, &QDataAnalysisView::select );

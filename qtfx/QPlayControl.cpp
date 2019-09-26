@@ -17,9 +17,9 @@ pageTime( 0.1 ),
 slomoFactor( 1.0 ),
 minTime( 0.0 ),
 maxTime( 1.0 ),
+decimals_( 2 ),
 autoExtendRange_( false ),
-timer_delta( 0 ),
-decimals_( 2 )
+timer_delta( 0 )
 {
 	playButton = new QToolButton( this );
 	playButton->setIcon( style()->standardIcon( QStyle::SP_MediaPlay ) );

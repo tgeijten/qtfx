@@ -23,8 +23,8 @@ private:
 
 QOsgViewer::QOsgViewer( QWidget* parent /*= 0*/, Qt::WindowFlags f /*= 0*/, osgViewer::ViewerBase::ThreadingModel threadingModel/*=osgViewer::CompositeViewer::SingleThreaded*/ ) :
 QWidget( parent, f ),
-capture_handler_( nullptr ),
 frame_count_( 0 ),
+capture_handler_( nullptr ),
 scene_light_offset_( -2, 8, 3 )
 {
 	QCoreApplication::instance()->installEventFilter( this );
