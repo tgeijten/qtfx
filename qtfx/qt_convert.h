@@ -1,9 +1,11 @@
 #pragma once
 
 #include <QString>
+#include <QColor>
+
 #include <string>
+
 #include "xo/filesystem/path.h"
-#include "QColor"
 #include "xo/utility/color.h"
 
 inline QString to_qt( const std::string& s ) { return QString( s.c_str() ); }

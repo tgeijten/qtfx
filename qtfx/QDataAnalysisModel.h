@@ -3,7 +3,8 @@
 #include <vector>
 #include <utility>
 
-#include "QString"
+#include <QString>
+
 #include "xo/container/storage_tools.h"
 #include "xo/xo_types.h"
 
