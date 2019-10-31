@@ -5,17 +5,19 @@
 QSliderGroup::QSliderGroup( QWidget* parent, int margin, int spacing ) :
 	QWidget( parent )
 {
-	auto l = new QFormLayout( this );
-	l->setMargin( margin );
-	l->setSpacing( spacing );
+	auto lo = new QFormLayout( this );
+	lo->setMargin( margin );
+	lo->setSpacing( spacing );
+	lo->setLabelAlignment( Qt::AlignVCenter );
 }
 
-QSlider* QSliderGroup::addSlider( const QString& name )
+QValueSlider* QSliderGroup::addSlider( const QString& name )
 {
-	auto s = new QSlider( Qt::Horizontal, this );
-	s->setRange( -100, 100 );
-	qobject_cast<QFormLayout*>( layout() )->addRow( name, s );
-
+	auto lo = qobject_cast<QFormLayout*>( layout() );
+	auto s = new QValueSlider( this, 0, 4 );
+	auto label = new QLabel( name, this );
+	label->setSizePolicy( QSizePolicy::Preferred, QSizePolicy::Expanding );
+	lo->addRow( label, s );
 	sliders.push_back( s );
 
 	return s;

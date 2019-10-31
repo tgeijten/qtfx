@@ -9,6 +9,8 @@
 
 #include <math.h>
 
+#pragma warning( disable: 26444 )
+
 QPlayControl::QPlayControl( QWidget *parent ) :
 QWidget( parent ),
 currentTime( 0.0 ),
@@ -23,21 +25,21 @@ timer_delta( 0 )
 {
 	playButton = new QToolButton( this );
 	playButton->setIcon( style()->standardIcon( QStyle::SP_MediaPlay ) );
-	connect( playButton, SIGNAL( clicked() ), this, SLOT( togglePlay() ) );
+	connect( playButton, &QToolButton::clicked, this, &QPlayControl::togglePlay );
 
 	resetButton = new QToolButton( this );
 	resetButton->setIcon( style()->standardIcon( QStyle::SP_MediaSkipBackward ) );
-	connect( resetButton, SIGNAL( clicked() ), this, SLOT( reset() ) );
+	connect( resetButton, &QToolButton::clicked, this, &QPlayControl::reset );
 
 	nextButton = new QToolButton( this );
 	nextButton->setIcon( style()->standardIcon( QStyle::SP_MediaSeekForward) );
 	nextButton->setStyleSheet( "border: 0px" );
-	connect( nextButton, SIGNAL( clicked() ), this, SLOT( stepForward() ) );
+	connect( nextButton, &QToolButton::clicked, this, &QPlayControl::stepForward );
 
 	previousButton = new QToolButton( this );
 	previousButton->setIcon( style()->standardIcon( QStyle::SP_MediaSeekBackward ) );
 	previousButton->setStyleSheet( "border: 0px" );
-	connect( previousButton, SIGNAL( clicked() ), this, SLOT( stepBack() ) );
+	connect( previousButton, &QToolButton::clicked, this, &QPlayControl::stepBack );
 
 	loopButton = new QToolButton( this );
 	loopButton->setCheckable( true );
@@ -53,8 +55,8 @@ timer_delta( 0 )
 	slider = new QSlider( Qt::Horizontal, this );
 	slider->setSingleStep( 10 );
 	slider->setPageStep( 100 );
-	connect( slider, SIGNAL( valueChanged( int ) ), this, SLOT( updateSlider( int ) ) );
-	connect( slider, SIGNAL( sliderReleased() ), this, SIGNAL( sliderReleased() ) );
+	connect( slider, &QSlider::valueChanged, this, &QPlayControl::updateSlider );
+	connect( slider, &QSlider::sliderReleased, this, &QPlayControl::sliderReleased );
 
 	slomoBox = new QComboBox( this );
 	setSlomoRange( 2, -5 );

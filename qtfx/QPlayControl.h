@@ -18,8 +18,7 @@ class QPlayControl : public QWidget
 	Q_OBJECT
 
 public:
-	QPlayControl( QWidget *parent = 0 );
-
+	QPlayControl( QWidget* parent = 0 );
 
 	double slowMotionFactor() const { return slomoFactor; }
 	void setSlomoRange( int max_power_of_2, int min_power_of_2 );
@@ -30,8 +29,19 @@ public:
 	void setPageTime( double t ) { pageTime = t; }
 	void setDigits( int digits, int decimals );
 	bool loop() const;
-	bool autoExtendRange() const { return autoExtendRange_;  }
+	bool autoExtendRange() const { return autoExtendRange_; }
 	bool isPlaying() const;
+
+signals:
+	void playTriggered();
+	void stopTriggered();
+	void resetTriggered();
+	void nextTriggered();
+	void previousTriggered();
+	void slowMotionChanged( int );
+	void timeChanged( double );
+	void sliderChanged( int );
+	void sliderReleased();
 
 public slots:
 	void setLoop( bool b );
@@ -50,30 +60,19 @@ public slots:
 	void faster();
 	void slower();
 
-signals:
-	void playTriggered();
-	void stopTriggered();
-	void resetTriggered();
-	void nextTriggered();
-	void previousTriggered();
-	void slowMotionChanged( int );
-	void timeChanged( double );
-	void sliderChanged( int );
-	void sliderReleased();
-
 private slots:
 	void updateSlider( int );
 	void updateSlowMotion( int );
 	void updateTime();
 
 private:
-	QToolButton *playButton;
-	QToolButton *resetButton;
-	QToolButton *nextButton;
-	QToolButton *previousButton;
-	QToolButton *loopButton;
-	QComboBox *slomoBox;
-	QSlider *slider;
+	QToolButton* playButton;
+	QToolButton* resetButton;
+	QToolButton* nextButton;
+	QToolButton* previousButton;
+	QToolButton* loopButton;
+	QComboBox* slomoBox;
+	QSlider* slider;
 	QLCDNumber* lcdNumber;
 	double currentTime;
 	double stepTime;

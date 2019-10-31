@@ -2,6 +2,7 @@
 
 #include "QWidget"
 #include <vector>
+#include "QValueSlider.h"
 
 class QSliderGroup : public QWidget
 {
@@ -10,8 +11,8 @@ class QSliderGroup : public QWidget
 public:
 	QSliderGroup( QWidget* parent = nullptr, int margin = 4, int spacing = 4 );
 
-	QSlider* addSlider( const QString& name );
+	QValueSlider* addSlider( const QString& name );
 	void clear();
 
-	std::vector< QSlider* > sliders;
+	std::vector< QValueSlider* > sliders;
 };
