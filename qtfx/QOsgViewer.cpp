@@ -27,7 +27,6 @@ frame_count_( 0 ),
 capture_handler_( nullptr ),
 scene_light_offset_( -2, 8, 3 )
 {
-	QCoreApplication::instance()->installEventFilter( this );
 	setThreadingModel( threadingModel );
 
 	// disable the default setting of viewer.done() by pressing Escape.
@@ -40,10 +39,13 @@ scene_light_offset_( -2, 8, 3 )
 	setLayout( grid );
 	grid->setMargin( 1 );
 
-	// start timer
-	// #todo: remove this -- only update after something has changed
-	connect( &timer_, SIGNAL( timeout() ), this, SLOT( update() ) );
+	// start timer that checks for updates in the camera manager
+	connect( &timer_, SIGNAL( timeout() ), this, SLOT( timerUpdate() ) );
 	startTimer();
+
+	// this allows us to detect events, and update the viewer accordingly
+	// overriding mouseMoveEvent, etc. does not work, because they are send directly to GLWidget
+	//QCoreApplication::instance()->installEventFilter( this );
 }
 
 osgQt::GLWidget* QOsgViewer::addViewWidget( osgQt::GraphicsWindowQt* gw )
@@ -107,10 +109,19 @@ void QOsgViewer::paintEvent( QPaintEvent* event )
 	if ( isCapturing() && current_frame_time_ == last_drawn_frame_time_ )
 		return; // this frame was already captured, skip
 
+	++frame_count_;
+
+	// advance and handle camera events
+	advance();
+	eventTraversal();
+
+	// update camera light position
 	updateLightPos();
 
-	++frame_count_;
-	frame();
+	// update and render
+	updateTraversal();
+	renderingTraversals();
+
 	last_drawn_frame_time_ = current_frame_time_;
 }
 
@@ -265,7 +276,22 @@ void QOsgViewer::setFrameTime( double t )
 	}
 }
 
+void QOsgViewer::timerUpdate()
+{
+	// check if update is needed
+	eventTraversal();
+	camera_man_->handleKeyboardAnimation();
+	if ( camera_man_->hasCameraStateChanged() )
+		update();
+}
+
 bool QOsgViewer::eventFilter( QObject* obj, QEvent* event )
 {
+	if ( obj == view_widget_ )
+	{
+		// detect event inside view_widget_
+		if ( event->type() == QEvent::MouseMove )
+			update();
+	}
 	return QObject::eventFilter( obj, event );
 }

@@ -15,6 +15,8 @@
 
 class QOsgViewer : public QWidget, public osgViewer::CompositeViewer
 {
+	Q_OBJECT
+
 public:
 	QOsgViewer( QWidget* parent = 0, Qt::WindowFlags f = 0, osgViewer::ViewerBase::ThreadingModel threadingModel = osgViewer::CompositeViewer::SingleThreaded );
 	osgQt::GLWidget* addViewWidget( osgQt::GraphicsWindowQt* gw );
@@ -37,8 +39,12 @@ public:
 	bool handle( const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa );
 	osgQt::GLWidget* viewWidget() { return view_widget_; }
 
+public slots:
+	void timerUpdate();
+
 protected:
 	bool eventFilter( QObject* obj, QEvent* event );
+
 	void updateHudPos();
 	void updateLightPos();
 	size_t frame_count_;
@@ -59,4 +65,5 @@ protected:
 	double current_frame_time_;
 	double last_drawn_frame_time_;
 	virtual void viewerInit() override;
+
 };
