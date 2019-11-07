@@ -129,8 +129,7 @@ namespace vis
 
 	bool osg_camera_man::handleKeyUp( const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& us )
 	{
-		if ( key_state_.erase( ea.getKey() ) == 0 )
-			xo::log::trace( "Detected KeyUp without KeyDown: ", ea.getKey() );
+		key_state_.erase( ea.getKey() );
 		mod_key_state_ = ea.getModKeyMask();
 
 		return osgGA::OrbitManipulator::handleKeyUp( ea, us );
