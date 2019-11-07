@@ -25,7 +25,8 @@ QOsgViewer::QOsgViewer( QWidget* parent /*= 0*/, Qt::WindowFlags f /*= 0*/, osgV
 QWidget( parent, f ),
 frame_count_( 0 ),
 capture_handler_( nullptr ),
-scene_light_offset_( -2, 8, 3 )
+scene_light_offset_( -2, 8, 3 ),
+current_frame_time_( -1 )
 {
 	setThreadingModel( threadingModel );
 
