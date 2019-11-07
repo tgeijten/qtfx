@@ -119,10 +119,12 @@ void QCompositeMainWindow::createFileMenu( const QString& default_folder, const 
 	fileMenu = menuBar()->addMenu( ( "&File" ) );
 
 	addMenuAction( fileMenu, "&Open...", this, &QCompositeMainWindow::fileOpenTriggered, QKeySequence( "Ctrl+O" ) );
-	recentFilesMenu = addMenuAction( fileMenu, "Open &Recent", this, &QCompositeMainWindow::fileOpenTriggered, QKeySequence(), true );
+	recentFilesMenu = addMenuAction( fileMenu, "Open &Recent", this, &QCompositeMainWindow::fileOpenTriggered, QKeySequence() );
+	fileMenu->addSeparator();
 	addMenuAction( fileMenu, "&Save", this, &QCompositeMainWindow::fileSaveTriggered, QKeySequence( "Ctrl+S" ) );
 	addMenuAction( fileMenu, "Save &As...", this, &QCompositeMainWindow::fileSaveAsTriggered, QKeySequence( "Ctrl+Shift+S" ) );
-	addMenuAction( fileMenu, "&Close", this, &QCompositeMainWindow::fileCloseTriggered, QKeySequence( "Ctrl+W" ), true );
+	addMenuAction( fileMenu, "&Close", this, &QCompositeMainWindow::fileCloseTriggered, QKeySequence( "Ctrl+W" ) );
+	fileMenu->addSeparator();
 	addMenuAction( fileMenu, "E&xit", this, &QCompositeMainWindow::fileExitTriggered, QKeySequence( "Alt+X" ) );
 
 	fileFolder = default_folder;
