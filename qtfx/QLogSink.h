@@ -3,6 +3,7 @@
 #include <QPlainTextEdit>
 #include <QThread>
 #include <QTimer>
+#include <QMutex>
 
 #include "xo/system/log_sink.h"
 #include "xo/xo_types.h"
