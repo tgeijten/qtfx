@@ -52,7 +52,7 @@ protected:
 	void createWindowMenu();
 	void createHelpMenu();
 
-	virtual void restoreCurstomSettings( QSettings& settings ) {}
+	virtual void restoreCustomSettings( QSettings& settings ) {}
 	virtual void saveCustomSettings( QSettings& settings ) {}
 
 	void restoreSettings( const QString& company, const QString& app );

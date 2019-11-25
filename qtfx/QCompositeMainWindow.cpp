@@ -181,13 +181,11 @@ void QCompositeMainWindow::restoreSettings( const QString& company, const QStrin
 		delete settings;
 
 	settings = new QSettings( company, app );
-
 	restoreGeometry( settings->value( "geometry" ).toByteArray() );
 	restoreState( settings->value( "windowState" ).toByteArray() );
 	recentFiles = settings->value( "recentFiles" ).toStringList();
 	updateRecentFilesMenu();
-
-	restoreCurstomSettings( *settings );
+	restoreCustomSettings( *settings );
 }
 
 void QCompositeMainWindow::saveSettings()
