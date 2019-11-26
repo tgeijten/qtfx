@@ -8,6 +8,7 @@
 #include <osgViewer/CompositeViewer>
 #include <osgViewer/ViewerEventHandlers>
 #include <osgQt/GraphicsWindowQt>
+#include <osg/PositionAttitudeTransform>
 #include "osg_camera_man.h"
 
 #include "xo/filesystem/path.h"

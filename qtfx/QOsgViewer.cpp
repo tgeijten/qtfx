@@ -2,6 +2,7 @@
 
 #include <osgGA/TrackballManipulator>
 #include <osgViewer/ViewerEventHandlers>
+#include <osgDB/ReadFile>
 #include "xo/system/log.h"
 #include "qevent.h"
 #include "osg/MatrixTransform"

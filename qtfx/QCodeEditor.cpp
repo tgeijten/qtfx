@@ -15,6 +15,7 @@
 #include "xo/container/prop_node.h"
 #include "QInputDialog"
 #include "qt_convert.h"
+#include <sstream>
 
 QCodeEditor::QCodeEditor( QWidget* parent ) :
 QPlainTextEdit( parent )
