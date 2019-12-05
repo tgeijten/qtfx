@@ -97,7 +97,7 @@ QDataAnalysisView::QDataAnalysisView( QDataAnalysisModel* m, QWidget* parent ) :
 
 int QDataAnalysisView::decimalPoints( double v )
 {
-	if ( v != 0 && xo::less_or_equal( abs( v ), 0.05 ) )
+	if ( v != 0 && xo::less_than_or_equal( abs( v ), 0.05 ) )
 		return 6;
 	else return 3;
 }
