@@ -54,19 +54,19 @@ void QLogSink::append_message( xo::log::level l, const xo::string& msg )
 
 	switch ( l )
 	{
-	case xo::log::trace_level:
-	case xo::log::debug_level:
+	case xo::log::level::trace:
+	case xo::log::level::debug:
 		format.setForeground( QBrush( Qt::gray ) );
 		break;
-	case xo::log::info_level:
+	case xo::log::level::info:
 		format.setForeground( QBrush( Qt::darkBlue ) );
 		break;
-	case xo::log::warning_level:
+	case xo::log::level::warning:
 		format.setFontWeight( QFont::Bold );
 		format.setForeground( QBrush( Qt::darkYellow ) );
 		break;
-	case xo::log::error_level:
-	case xo::log::critical_level:
+	case xo::log::level::error:
+	case xo::log::level::critical:
 		format.setFontWeight( QFont::Bold );
 		format.setForeground( QBrush( Qt::darkRed ) );
 		break;

@@ -13,7 +13,7 @@ class QLogSink : public QPlainTextEdit, public xo::log::sink
 	Q_OBJECT
 
 public:
-	QLogSink( QWidget* parent = 0, xo::log::level level = xo::log::info_level );
+	QLogSink( QWidget* parent = 0, xo::log::level level = xo::log::level::info );
 	virtual ~QLogSink() {}
 
 	virtual void send_log_message( xo::log::level l, const xo::string& msg ) override;
