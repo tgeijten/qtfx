@@ -9,6 +9,7 @@ fileModel( nullptr )
 	setModel( model );
 	setRoot( folder, filter );
 	setNumColumns( num_columns );
+	setEditTriggers( QAbstractItemView::EditKeyPressed );
 
 	connect( this, &QTreeView::activated, this, &QFileBrowser::activateItem );
 	connect( selectionModel(), &QItemSelectionModel::currentChanged, this, &QFileBrowser::selectItem );
