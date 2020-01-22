@@ -8,14 +8,8 @@
 #include "QTreeWidget"
 #include "QDataAnalysisModel.h"
 
-#if !defined QTFX_NO_QCUSTOMPLOT
 #include "qcustomplot/qcustomplot.h"
-#else
-#include "QtCharts/QChart"
-#include "QtCharts/QLineSeries"
-#include "QtCharts/QChartView"
-#include "QtWidgets/QGraphicsLayout"
-#endif
+
 #include "QLineEdit"
 #include "QGroup.h"
 #include "QCheckBox"
@@ -75,7 +69,6 @@ private:
 	QTreeWidget* itemList;
 	QDataAnalysisModel* model;
 
-#if !defined QTFX_NO_QCUSTOMPLOT
 	QCustomPlot* customPlot;
 	QCPItemLine* customPlotLine;
 	xo::sorted_vector< int > freeColors;
@@ -86,12 +79,7 @@ private:
 		QCPGraph* graph;
 	};
 	std::vector< Series > series;
-
 	xo::sorted_vector< QString > persistentSerieNames;
-#else
-	QtCharts::QChart* chart;
-	xo::flat_map< int, QtCharts::QLineSeries* > series;
-	QtCharts::QChartView* chartView;
-#endif
+
 	void updateSeriesStyle();
 };

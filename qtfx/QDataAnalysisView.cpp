@@ -58,7 +58,6 @@ QDataAnalysisView::QDataAnalysisView( QDataAnalysisModel* m, QWidget* parent ) :
 	for ( int i = 0; i < maxSeriesCount; ++i )
 		freeColors.insert( i );
 
-#if !defined QTFX_NO_QCUSTOMPLOT
 	customPlot = new QCustomPlot();
 	customPlot->setInteraction( QCP::iRangeZoom, true );
 	customPlot->setInteraction( QCP::iRangeDrag, true );
@@ -75,21 +74,6 @@ QDataAnalysisView::QDataAnalysisView( QDataAnalysisModel* m, QWidget* parent ) :
 	connect( customPlot, &QCustomPlot::mousePress, this, &QDataAnalysisView::mouseEvent );
 	connect( customPlot, &QCustomPlot::mouseMove, this, &QDataAnalysisView::mouseEvent );
 	connect( customPlot->xAxis, SIGNAL( rangeChanged( const QCPRange&, const QCPRange& ) ), this, SLOT( rangeChanged( const QCPRange&, const QCPRange& ) ) );
-#else
-	chart = new QtCharts::QChart();
-	chart->setBackgroundRoundness( 0 );
-	chart->setMargins( QMargins( 4, 4, 4, 4 ) );
-	chart->layout()->setContentsMargins( 0, 0, 0, 0 );
-	chart->legend()->setAlignment( Qt::AlignRight );
-	chart->createDefaultAxes();
-	chartView = new QtCharts::QChartView( chart, this );
-	chartView->setContentsMargins( 0, 0, 0, 0 );
-	chartView->setRenderHint( QPainter::Antialiasing );
-	chartView->setRubberBand( QtCharts::QChartView::RectangleRubberBand );
-	chartView->setBackgroundBrush( QBrush( Qt::red ) );
-	chartView->resize( 300, 100 );
-	splitter->addWidget( chartView );
-#endif
 
 	splitter->setSizes( QList< int >{ 100, 300 } );
 	reset();
@@ -128,11 +112,8 @@ void QDataAnalysisView::refresh( double time, bool refreshAll )
 
 		// update graph
 		updateIndicator();
-
-#if !QTFX_NO_QCUSTOMPLOT
 		if ( refreshAll )
 			customPlot->replot( QCustomPlot::rpQueued );
-#endif
 	}
 }
 
@@ -150,14 +131,12 @@ void QDataAnalysisView::clearSeries()
 
 void QDataAnalysisView::mouseEvent( QMouseEvent* event )
 {
-#if !defined QTFX_NO_QCUSTOMPLOT
 	if ( event->buttons() & Qt::LeftButton )
 	{
 		double x = customPlot->xAxis->pixelToCoord( event->pos().x() );
 		double t = model->timeValue( model->timeIndex( x ) );
 		emit timeChanged( t );
 	}
-#endif
 }
 
 void QDataAnalysisView::rangeChanged( const QCPRange &newRange, const QCPRange &oldRange )
@@ -218,12 +197,8 @@ void QDataAnalysisView::reset()
 
 void QDataAnalysisView::updateIndicator()
 {
-#if !defined QTFX_NO_QCUSTOMPLOT
 	customPlotLine->start->setCoords( currentTime, customPlot->yAxis->range().lower );
 	customPlotLine->end->setCoords( currentTime, customPlot->yAxis->range().upper );
-#else
-	auto pos = chart->mapToPosition( QPointF( currentTime, 0 ) );
-#endif
 }
 
 void QDataAnalysisView::updateFilter()
@@ -298,7 +273,6 @@ void QDataAnalysisView::updateSeries( int idx )
 
 void QDataAnalysisView::addSeries( int idx )
 {
-#if !defined QTFX_NO_QCUSTOMPLOT
 	QCPGraph* graph = customPlot->addGraph();
 	QString name = model->label( idx );
 	graph->setName( name );
@@ -324,23 +298,10 @@ void QDataAnalysisView::addSeries( int idx )
 	customPlot->xAxis->setRange( range );
 	updateIndicator();
 	customPlot->replot();
-
-#else
-	QtCharts::QLineSeries* ls = new QtCharts::QLineSeries;
-	ls->setName( model->label( idx ) );
-	auto data = model->getSeries( idx, minSeriesInterval );
-	for ( auto& e : data )
-		ls->append( e.first, e.second );
-	chart->addSeries( ls );
-	chart->createDefaultAxes();
-	chart->zoomReset();
-	series[ idx ] = ls;
-#endif
 }
 
 void QDataAnalysisView::removeSeries( int idx )
 {
-#if !defined QTFX_NO_QCUSTOMPLOT
 	auto range = customPlot->xAxis->range();
 	auto it = xo::find_if( series, [&]( auto& p ) { return idx == p.channel; } );
 	auto name = it->graph->name();
@@ -354,11 +315,4 @@ void QDataAnalysisView::removeSeries( int idx )
 	customPlot->xAxis->setRange( range );
 	updateIndicator();
 	customPlot->replot();
-#else
-	auto it = series.find( idx );
-	chart->removeSeries( it->second );
-	chart->zoomReset();
-	chart->createDefaultAxes();
-	series.erase( it );
-#endif
 }
