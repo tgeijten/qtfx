@@ -170,11 +170,6 @@ void QDataAnalysisView::setSelectionState( int state )
 	}
 }
 
-QColor QDataAnalysisView::getStandardColor( int idx )
-{
-	return to_qt( xo::make_unique_color( size_t( idx ) ) );
-}
-
 void QDataAnalysisView::reset()
 {
 	itemList->clear();
@@ -279,8 +274,9 @@ void QDataAnalysisView::addSeries( int idx )
 
 	xo_assert( !freeColors.empty() );
 
+	auto color = to_qt( xo::make_unique_color( freeColors.front() ) );
 	graph->setScatterStyle( QCPScatterStyle( seriesStyle == discStyle ? QCPScatterStyle::ssDisc : QCPScatterStyle::ssNone, 4 ) );
-	graph->setPen( QPen( getStandardColor( freeColors.front() ), lineWidth ) );
+	graph->setPen( QPen( color, lineWidth ) );
 
 	auto data = model->getSeries( idx, minSeriesInterval );
 	for ( auto& e : data )
@@ -304,15 +300,34 @@ void QDataAnalysisView::removeSeries( int idx )
 {
 	auto range = customPlot->xAxis->range();
 	auto it = xo::find_if( series, [&]( auto& p ) { return idx == p.channel; } );
-	auto name = it->graph->name();
 
 	freeColors.insert( it->color );
-
-	customPlot->removeGraph( it->graph );
+	if ( it->graph )
+		customPlot->removeGraph( it->graph );
 	series.erase( it );
 
 	customPlot->rescaleAxes();
 	customPlot->xAxis->setRange( range );
 	updateIndicator();
+	customPlot->replot();
+}
+
+void QDataAnalysisView::holdSeries()
+{
+	// remove existing 
+	for ( auto* g : heldSeries )
+		customPlot->removeGraph( g );
+	heldSeries.clear();
+
+	// copy from series
+	for ( auto& s : series )
+	{
+		auto* graph = customPlot->addGraph();
+		graph->setData( s.graph->data(), true );
+		graph->setName( s.graph->name() );
+		graph->setPen( QPen( s.graph->pen().color().lighter(), lineWidth ) );
+		heldSeries.push_back( graph );
+	}
+
 	customPlot->replot();
 }

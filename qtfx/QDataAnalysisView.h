@@ -40,12 +40,12 @@ public slots:
 	void select( int state ) { setSelectionState( state ); }
 	void selectAll() { setSelectionState( Qt::Checked ); }
 	void selectNone() { setSelectionState( Qt::Unchecked ); }
+	void holdSeries();
 
 signals:
 	void timeChanged( double );
 
 private:
-	QColor getStandardColor( int idx );
 	void addSeries( int idx );
 	void removeSeries( int idx );
 	void updateIndicator();
@@ -79,6 +79,7 @@ private:
 		QCPGraph* graph;
 	};
 	std::vector< Series > series;
+	std::vector< QCPGraph* > heldSeries;
 	xo::sorted_vector< QString > persistentSerieNames;
 
 	void updateSeriesStyle();
