@@ -3,6 +3,13 @@
 #include <QSyntaxHighlighter>
 #include <QtCore/QRegularExpression>
 
+struct QCodeBlockUserData : public QTextBlockUserData
+{
+	QCodeBlockUserData( int start = -1, int end = -1 ) : commentStart( start ), commentEnd( end ) {}
+	int commentStart;
+	int commentEnd;
+};
+
 class QCodeHighlighter : public QSyntaxHighlighter
 {
 	Q_OBJECT
@@ -17,6 +24,8 @@ public:
 	static Language detectLanguage( const QString& filename );
 	static void registerLanguage( const QString& extension, Language l );
 	Language language;
+	QRegularExpression increaseIndentRegex;
+	QRegularExpression decreaseIndentRegex;
 
 protected:
 	virtual void highlightBlock( const QString& text );

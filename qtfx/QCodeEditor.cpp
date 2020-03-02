@@ -187,22 +187,25 @@ void QCodeEditor::formatDocument()
 		while ( tab_count < line.size() && line[ tab_count ] == '\t' )
 			++tab_count;
 
-		auto leading_whitespace = tab_count;
-		while ( leading_whitespace < line.size() && line[ leading_whitespace ].isSpace() )
-			++leading_whitespace;
+		auto leadingWhitespace = tab_count;
+		while ( leadingWhitespace < line.size() && line[ leadingWhitespace ].isSpace() )
+			++leadingWhitespace;
 
-		QChar first_char = tab_count < line.size() ? line[ tab_count ] : QChar();
-		auto desired_tabs = xo::max( 0, indents - int( first_char == '}' || first_char == ']' ) );
+		auto decStart = line.indexOf( syntaxHighlighter->decreaseIndentRegex );
+		bool startsWithDecrease = decStart >= 0 && decStart <= leadingWhitespace;
+		auto desired_tabs = indents > 0 && startsWithDecrease ? indents - 1 : indents;
 
-		if ( leading_whitespace != desired_tabs )
+		if ( leadingWhitespace != desired_tabs )
 		{
-			cursor.movePosition( QTextCursor::Right, QTextCursor::KeepAnchor, leading_whitespace );
+			cursor.movePosition( QTextCursor::Right, QTextCursor::KeepAnchor, leadingWhitespace );
 			cursor.removeSelectedText();
 			cursor.insertText( QString().fill( '\t', desired_tabs ) );
 		}
 
 		// update indents
-		indents += line.count( '{' ) + line.count( '[' ) - line.count( '}' ) - line.count( ']' );
+		auto incIndent = line.count( syntaxHighlighter->increaseIndentRegex );
+		auto decIndent = line.count( syntaxHighlighter->decreaseIndentRegex );
+		indents += incIndent - decIndent;
 
 		if ( !cursor.movePosition( QTextCursor::NextBlock ) )
 			break; // prevent infinite loop if this fails
@@ -246,7 +249,10 @@ void QCodeEditor::keyPressEvent( QKeyEvent *e )
 	case QCodeHighlighter::Language::zml:
 		if ( e->key() == Qt::Key_Return || e->key() == Qt::Key_Enter || e->key() == '{' || e->key() == '}' )
 			formatDocument();
+		break;
 	default:
+		if ( e->key() == Qt::Key_Return )
+			formatDocument();
 		break;
 	}
 }
