@@ -148,6 +148,12 @@ bool QPlayControl::isPlaying() const
 	return qtimer.isActive();
 }
 
+void QPlayControl::setTimeStop( double time )
+{
+	stop();
+	setTime( time );
+}
+
 void QPlayControl::setLoop( bool b )
 {
 	loopButton->setChecked( b );
@@ -245,7 +251,7 @@ void QPlayControl::updateSlowMotion( int idx )
 
 void QPlayControl::updateSlider( int value )
 {
-	setTime( value / 1000.0 );
+	setTimeStop( value / 1000.0 );
 	emit sliderChanged( value );
 }
 
