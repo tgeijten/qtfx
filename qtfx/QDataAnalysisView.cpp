@@ -129,11 +129,11 @@ void QDataAnalysisView::clearSeries()
 		removeSeries( series.rbegin()->channel );
 }
 
-void QDataAnalysisView::mouseEvent( QMouseEvent* event )
+void QDataAnalysisView::mouseEvent( QMouseEvent* e )
 {
-	if ( event->buttons() & Qt::LeftButton )
+	if ( model->hasData() && ( e->buttons() & Qt::LeftButton ) != 0 )
 	{
-		double x = customPlot->xAxis->pixelToCoord( event->pos().x() );
+		double x = customPlot->xAxis->pixelToCoord( e->pos().x() );
 		double t = model->timeValue( model->timeIndex( x ) );
 		emit timeChanged( t );
 	}
@@ -141,15 +141,17 @@ void QDataAnalysisView::mouseEvent( QMouseEvent* event )
 
 void QDataAnalysisView::rangeChanged( const QCPRange &newRange, const QCPRange &oldRange )
 {
-	QCPRange fixedRange = QCPRange( xo::max( newRange.lower, model->timeStart() ), xo::min( newRange.upper, model->timeFinish() ) );
-	if ( fixedRange != newRange )
+	if ( model->hasData() )
 	{
-		customPlot->xAxis->blockSignals( true );
-		customPlot->xAxis->setRange( fixedRange );
-		customPlot->xAxis->blockSignals( false );
+		QCPRange fixedRange = QCPRange( xo::max( newRange.lower, model->timeStart() ), xo::min( newRange.upper, model->timeFinish() ) );
+		if ( fixedRange != newRange )
+		{
+			customPlot->xAxis->blockSignals( true );
+			customPlot->xAxis->setRange( fixedRange );
+			customPlot->xAxis->blockSignals( false );
+		}
+		updateSeriesStyle();
 	}
-
-	updateSeriesStyle();
 }
 
 void QDataAnalysisView::filterChanged( const QString& filter )

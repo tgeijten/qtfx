@@ -25,6 +25,8 @@ public:
 	virtual double timeFinish() const { return 0.0; }
 	virtual xo::index_t timeIndex( double time ) const = 0;
 	virtual double timeValue( xo::index_t idx ) const = 0;
+
+	bool hasData() const { return seriesCount() > 0; }
 };
 
 template< typename T >
