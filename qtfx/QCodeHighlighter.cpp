@@ -131,7 +131,7 @@ void QCodeHighlighter::setRegexes()
 		rules.emplace_back( "--[^\\n]*", commentFormat );
 		commentStartRegex.setPattern( "--\\[\\[" );
 		commentEndRegex.setPattern( "\\]\\]" );
-		increaseIndentRegex.setPattern( "^\\s*(do|if|elseif|else|function|repeat)\\b" );
+		increaseIndentRegex.setPattern( "^\\s*(for|while|repeat|if|elseif|else|function)\\b" );
 		decreaseIndentRegex.setPattern( "^\\s*(end|until|else|elseif)\\b" );
 	default:
 		break;
