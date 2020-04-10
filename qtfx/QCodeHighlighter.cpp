@@ -116,9 +116,9 @@ void QCodeHighlighter::setRegexes()
 		rules.emplace_back( "\\b([-+]?[\\.\\d]+)", numberFormat );
 		rules.emplace_back( "\\@\\w+", macroFormat );
 		rules.emplace_back( "\\$\\w+", macroFormat );
-		rules.emplace_back( "#[^\\n]*", commentFormat ); // #
-		commentStartRegex.setPattern( "#{3,}" );
-		commentEndRegex.setPattern( "#{3,}" );
+		rules.emplace_back( "(#|//)[^\\n]*", commentFormat ); // #
+		commentStartRegex.setPattern( "\\/\\*" );
+		commentEndRegex.setPattern( "\\*\\/" );
 		increaseIndentRegex.setPattern( "[\\{\\[]" );
 		decreaseIndentRegex.setPattern( "[\\}\\]]" );
 		break;
