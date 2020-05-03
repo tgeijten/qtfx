@@ -29,6 +29,7 @@ public slots:
 	void saveAs( const QString& filename );
 	void findDialog();
 	bool findNext( bool backwards = false );
+	void toggleComments();
 
 	void formatDocument();
 

@@ -18,7 +18,7 @@
 #include <sstream>
 
 QCodeEditor::QCodeEditor( QWidget* parent ) :
-QPlainTextEdit( parent )
+	QPlainTextEdit( parent )
 {
 	QVBoxLayout* verticalLayout = new QVBoxLayout( this );
 	verticalLayout->setContentsMargins( 0, 0, 0, 0 );
@@ -126,12 +126,43 @@ bool QCodeEditor::findNext( bool backwards )
 	return !cursor.isNull();
 }
 
+void QCodeEditor::toggleComments()
+{
+	auto cursor = textCursor();
+	if ( !cursor.hasSelection() )
+	{
+		cursor.select( QTextCursor::LineUnderCursor );
+		setTextCursor( cursor );
+	}
+
+	auto s = textCursor().selection().toPlainText().toStdString();
+	auto endsWithNewLine = xo::str_ends_with( s, '\n' );
+	auto lines = xo::split_str( s, "\n" );
+	auto comment = syntaxHighlighter->languageComment.toStdString();
+	s.clear();
+
+	if ( lines.size() > 0 && xo::str_begins_with( lines.front(), comment ) )
+	{
+		// remove comments
+		for ( auto& l : lines )
+			if ( xo::str_begins_with( l, comment ) )
+				s += xo::mid_str( l, comment.size() ) + '\n';
+			else s += l + '\n';
+	} else {
+		for ( auto& l : lines )
+			s += comment + l + '\n';
+	}
+	if ( !endsWithNewLine )
+		s.resize( s.size() - 1 );
+	textCursor().insertText( s.c_str() );
+}
+
 QString QCodeEditor::getTitle()
 {
 	return QFileInfo( fileName ).fileName() + ( document()->isModified() ? "*" : "" );
 }
 
-void QCodeEditor::lineNumberAreaPaintEvent( QPaintEvent *event )
+void QCodeEditor::lineNumberAreaPaintEvent( QPaintEvent* event )
 {
 	QPainter painter( lineNumberArea );
 	QColor c = palette().color( QWidget::backgroundRole() );
@@ -229,7 +260,7 @@ void QCodeEditor::updateLineNumberArea( const QRect& rect, int dy )
 		updateLineNumberAreaWidth( 0 );
 }
 
-void QCodeEditor::resizeEvent( QResizeEvent *event )
+void QCodeEditor::resizeEvent( QResizeEvent* event )
 {
 	QRect cr = contentsRect();
 	if ( cr != previousRect ) // this is a hack to prevent a Qt bug causing infinite QResizeEvents
@@ -240,7 +271,7 @@ void QCodeEditor::resizeEvent( QResizeEvent *event )
 	}
 }
 
-void QCodeEditor::keyPressEvent( QKeyEvent *e )
+void QCodeEditor::keyPressEvent( QKeyEvent* e )
 {
 	QPlainTextEdit::keyPressEvent( e );
 

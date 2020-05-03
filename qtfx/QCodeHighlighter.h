@@ -24,6 +24,7 @@ public:
 	static Language detectLanguage( const QString& filename );
 	static void registerLanguage( const QString& extension, Language l );
 	Language language;
+	QString languageComment;
 	QRegularExpression increaseIndentRegex;
 	QRegularExpression decreaseIndentRegex;
 

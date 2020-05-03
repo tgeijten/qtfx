@@ -121,6 +121,7 @@ void QCodeHighlighter::setRegexes()
 		commentEndRegex.setPattern( "\\*\\/" );
 		increaseIndentRegex.setPattern( "[\\{\\[]" );
 		decreaseIndentRegex.setPattern( "[\\}\\]]" );
+		languageComment = "#";
 		break;
 
 	case Language::lua:
@@ -133,6 +134,7 @@ void QCodeHighlighter::setRegexes()
 		commentEndRegex.setPattern( "\\]\\]" );
 		increaseIndentRegex.setPattern( "^\\s*(for|while|repeat|if|elseif|else|function)\\b" );
 		decreaseIndentRegex.setPattern( "^\\s*(end|until|else|elseif)\\b" );
+		languageComment = "--";
 	default:
 		break;
 	}
