@@ -20,12 +20,12 @@ QDataAnalysisView::QDataAnalysisView( QDataAnalysisModel* m, QWidget* parent ) :
 	currentUpdateIdx( 0 ),
 	model( m )
 {
-	selectBox = new QCheckBox( this );
-	connect( selectBox, &QCheckBox::stateChanged, this, &QDataAnalysisView::select );
-
 	filter = new QLineEdit( this );
 	filter->setPlaceholderText( "Filter channels" );
 	connect( filter, &QLineEdit::textChanged, this, &QDataAnalysisView::filterChanged );
+
+	selectBox = new QCheckBox( this );
+	connect( selectBox, &QCheckBox::stateChanged, this, &QDataAnalysisView::select );
 
 	auto* header = new QHGroup( this, 0, 4 );
 	*header << filter << selectBox;
