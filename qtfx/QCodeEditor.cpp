@@ -5,6 +5,8 @@
 #include <QFileDialog>
 #include <QBoxLayout>
 #include <QPainter>
+#include <QTextDocumentFragment>
+#include <QInputDialog>
 
 #include "xo/system/system_tools.h"
 #include "xo/system/assert.h"
@@ -13,7 +15,6 @@
 #include "xo/serialization/serialize.h"
 #include "xo/numerical/math.h"
 #include "xo/container/prop_node.h"
-#include "QInputDialog"
 #include "qt_convert.h"
 #include <sstream>
 
@@ -144,12 +145,12 @@ void QCodeEditor::toggleComments()
 	if ( lines.size() > 0 && xo::str_begins_with( lines.front(), comment ) )
 	{
 		// remove comments
-		for ( auto& l : lines )
+		for ( const auto& l : lines )
 			if ( xo::str_begins_with( l, comment ) )
 				s += xo::mid_str( l, comment.size() ) + '\n';
 			else s += l + '\n';
 	} else {
-		for ( auto& l : lines )
+		for ( const auto& l : lines )
 			s += comment + l + '\n';
 	}
 	if ( !endsWithNewLine )

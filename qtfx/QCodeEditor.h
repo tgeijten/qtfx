@@ -1,9 +1,8 @@
 #pragma once
 
-#include <QWidget>
-#include <QFileInfo>
-
 #include "QCodeHighlighter.h"
+
+#include <QWidget>
 #include <QPlainTextEdit>
 
 #include "xo/serialization/serialize.h"
