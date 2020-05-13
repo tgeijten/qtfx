@@ -139,23 +139,35 @@ void QCodeEditor::toggleComments()
 	auto s = textCursor().selection().toPlainText().toStdString();
 	auto endsWithNewLine = xo::str_ends_with( s, '\n' );
 	auto lines = xo::split_str( s, "\n" );
-	auto comment = syntaxHighlighter->languageComment.toStdString();
-	s.clear();
-
-	if ( lines.size() > 0 && xo::str_begins_with( lines.front(), comment ) )
+	auto first_line = xo::find_if( lines, []( const auto& s ) { return s.find_first_not_of( "\t " ) != std::string::npos; } );
+	if ( first_line != lines.end() )
 	{
-		// remove comments
-		for ( const auto& l : lines )
-			if ( xo::str_begins_with( l, comment ) )
-				s += xo::mid_str( l, comment.size() ) + '\n';
-			else s += l + '\n';
-	} else {
-		for ( const auto& l : lines )
-			s += comment + l + '\n';
+		s.clear();
+		auto comment = syntaxHighlighter->languageComment.toStdString();
+		if ( xo::str_begins_with( xo::trim_left_str( *first_line ), comment ) )
+		{
+			// remove comments
+			for ( auto& l : lines )
+			{
+				auto pos = l.find_first_not_of( "\t " );
+				if ( pos != std::string::npos && xo::str_begins_with( l, comment, pos ) )
+					s += xo::left_str( l, pos ) + xo::mid_str( l, pos + comment.size() ) + '\n';
+				else s += l + '\n';
+			}
+		}
+		else {
+			// add comments
+			for ( const auto& l : lines )
+			{
+				if ( auto pos = l.find_first_not_of( "\t " ); pos != std::string::npos )
+					s += xo::left_str( l, pos ) + comment + xo::mid_str( l, pos ) + '\n';
+				else s += l + '\n';
+			}
+		}
+		if ( !endsWithNewLine )
+			s.resize( s.size() - 1 );
+		textCursor().insertText( s.c_str() );
 	}
-	if ( !endsWithNewLine )
-		s.resize( s.size() - 1 );
-	textCursor().insertText( s.c_str() );
 }
 
 QString QCodeEditor::getTitle()
