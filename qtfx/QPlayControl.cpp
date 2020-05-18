@@ -166,7 +166,7 @@ void QPlayControl::play()
 		if ( currentTime >= maxTime )
 			reset();
 		qtimer.start( 10 );
-		timer.reset();
+		timer.restart();
 		timer_delta( 0 );
 		playButton->setIcon( style()->standardIcon( QStyle::SP_MediaPause ) );
 		emit playTriggered();
