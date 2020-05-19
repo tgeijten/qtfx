@@ -109,13 +109,16 @@ void QCodeEditor::saveAs( const QString& fn )
 
 void QCodeEditor::findDialog()
 {
-	QString text = QInputDialog::getText( this, "Find Text", "Text to find:", QLineEdit::Normal, findText );
+	QString text = QInputDialog::getText( this, "Enter Text to Find", "Hint: use F3 for Find Next, Shift + F3 for Find Previous", QLineEdit::Normal, findText );
 	if ( !text.isNull() )
 	{
 		findText = text;
-		moveCursor( QTextCursor::Start );
 		if ( !findNext() )
-			QMessageBox::warning( this, "Could not find text", "Could not find '" + findText + "'" );
+		{
+			moveCursor( QTextCursor::Start );
+			if ( !findNext() )
+				QMessageBox::warning( this, "Could not find text", "Could not find '" + findText + "'" );
+		}
 	}
 }
 
