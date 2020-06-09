@@ -55,7 +55,8 @@ protected:
 	virtual void restoreCustomSettings( QSettings& settings ) {}
 	virtual void saveCustomSettings( QSettings& settings ) {}
 
-	void restoreSettings( const QString& company, const QString& app );
+	void createSettings( const QString& company, const QString& app );
+	void restoreSettings();
 	void saveSettings();
 
 	virtual void closeEvent( QCloseEvent *event ) override;

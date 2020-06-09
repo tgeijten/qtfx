@@ -175,25 +175,34 @@ int QCompositeMainWindow::registerDockWidget( QDockWidget* widget, const QString
 	return index;
 }
 
-void QCompositeMainWindow::restoreSettings( const QString& company, const QString& app )
+void QCompositeMainWindow::createSettings( const QString& company, const QString& app )
 {
 	if ( settings )
 		delete settings;
-
 	settings = new QSettings( company, app );
-	restoreGeometry( settings->value( "geometry" ).toByteArray() );
-	restoreState( settings->value( "windowState" ).toByteArray() );
-	recentFiles = settings->value( "recentFiles" ).toStringList();
-	updateRecentFilesMenu();
-	restoreCustomSettings( *settings );
+}
+
+void QCompositeMainWindow::restoreSettings()
+{
+	if ( settings )
+	{
+		restoreGeometry( settings->value( "geometry" ).toByteArray() );
+		restoreState( settings->value( "windowState" ).toByteArray() );
+		recentFiles = settings->value( "recentFiles" ).toStringList();
+		updateRecentFilesMenu();
+		restoreCustomSettings( *settings );
+	}
 }
 
 void QCompositeMainWindow::saveSettings()
 {
-	settings->setValue( "geometry", saveGeometry() );
-	settings->setValue( "windowState", saveState() );
-	settings->setValue( "recentFiles", recentFiles );
-	saveCustomSettings( *settings );
+	if ( settings )
+	{
+		settings->setValue( "geometry", saveGeometry() );
+		settings->setValue( "windowState", saveState() );
+		settings->setValue( "recentFiles", recentFiles );
+		saveCustomSettings( *settings );
+	}
 }
 
 void QCompositeMainWindow::closeEvent( QCloseEvent *event )
