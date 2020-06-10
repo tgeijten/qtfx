@@ -30,7 +30,6 @@ public slots:
 	virtual void fileSaveAsTriggered();
 	virtual void fileExitTriggered();
 	virtual void windowMenuTriggered();
-	virtual void helpAboutTriggered();
 
 	void updateRecentFilesMenu( const QString& filename = "" );
 
@@ -72,7 +71,6 @@ protected:
 	QString activeFile;
 	QAction* recentFilesMenu;
 	QMenu* windowMenu;
-	QMenu* helpMenu;
 	QStatusBar* statusBar;
 	std::vector< QDockWidget* > dockWidgets;
 	QStringList recentFiles;

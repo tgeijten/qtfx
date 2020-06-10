@@ -82,10 +82,6 @@ void QCompositeMainWindow::windowMenuTriggered()
 	}
 }
 
-void QCompositeMainWindow::helpAboutTriggered()
-{
-}
-
 void QCompositeMainWindow::updateRecentFilesMenu( const QString& filename )
 {
 	// add to list (if any)
@@ -134,12 +130,6 @@ void QCompositeMainWindow::createFileMenu( const QString& default_folder, const 
 void QCompositeMainWindow::createWindowMenu()
 {
 	windowMenu = menuBar()->addMenu( ( "&Window" ) );
-}
-
-void QCompositeMainWindow::createHelpMenu()
-{
-	helpMenu = menuBar()->addMenu( ( "&Help" ) );
-	addMenuAction( helpMenu, "About...", this, &QCompositeMainWindow::helpAboutTriggered );
 }
 
 QDockWidget* QCompositeMainWindow::createDockWidget( const QString& title, QWidget* widget, Qt::DockWidgetArea area  )
