@@ -8,13 +8,16 @@
 #include "QTreeWidget"
 #include "QDataAnalysisModel.h"
 
-#include "qcustomplot/qcustomplot.h"
-
 #include "QLineEdit"
 #include "QGroup.h"
 #include "QCheckBox"
 #include "QToolButton"
 #include "xo/container/sorted_vector.h"
+
+class QCPRange;
+class QCustomPlot;
+class QCPItemLine;
+class QCPGraph;
 
 class QDataAnalysisView : public QWidget
 {

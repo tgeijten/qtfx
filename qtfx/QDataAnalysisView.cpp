@@ -1,4 +1,5 @@
 #include "QDataAnalysisView.h"
+
 #include "QAction"
 #include "QHeaderView"
 #include <algorithm>
@@ -14,6 +15,7 @@
 #include "xo/numerical/compare.h"
 #include "xo/numerical/math.h"
 #include "xo/container/container_tools.h"
+#include "qcustomplot/qcustomplot.h"
 
 QDataAnalysisView::QDataAnalysisView( QDataAnalysisModel* m, QWidget* parent ) :
 	QWidget( parent ),
