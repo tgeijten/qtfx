@@ -43,8 +43,8 @@ void QValueSlider::setRange( double min, double max )
 {
 	spin_->setRange( min, max );
 	slider_->setRange( to_int( min ), to_int( max ) );
-	min_->setText( QString().sprintf( "%g", min ) );
-	max_->setText( QString().sprintf( "%g", max ) );
+	min_->setText( QString::asprintf( "%g", min ) );
+	max_->setText( QString::asprintf( "%g", max ) );
 }
 
 void QValueSlider::sliderAction( int i )

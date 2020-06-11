@@ -83,7 +83,7 @@ void QPlayControl::setSlomoRange( int max_power_of_2, int min_power_of_2 )
 	slomoBox->clear();
 	for ( int slomo = max_power_of_2; slomo >= min_power_of_2; --slomo )
 	{
-		QString label = slomo >= 0 ? QString().sprintf( "%d x", (int)pow( 2, slomo ) ) : QString().sprintf( "1/%d x", (int)pow( 2, -slomo ) );
+		QString label = slomo >= 0 ? QString::asprintf( "%d x", (int)pow( 2, slomo ) ) : QString::asprintf( "1/%d x", (int)pow( 2, -slomo ) );
 		slomoBox->addItem( label, QVariant( pow( 2, slomo ) ) );
 	}
 	slomoBox->setCurrentIndex( max_power_of_2 );
@@ -126,7 +126,7 @@ void QPlayControl::setTime( double time )
 	slider->setValue( int( currentTime * 1000 ) );
 	slider->blockSignals( false );
 
-	lcdNumber->display( QString().sprintf( "%.*f", decimals_, currentTime ) );
+	lcdNumber->display( QString::asprintf( "%.*f", decimals_, currentTime ) );
 	
 	emit timeChanged( currentTime );
 }
@@ -135,7 +135,7 @@ void QPlayControl::setDigits( int digits, int decimals )
 {
 	decimals_ = decimals;
 	lcdNumber->setDigitCount( digits );
-	lcdNumber->display( QString().sprintf( "%.*f", decimals_, currentTime ) );
+	lcdNumber->display( QString::asprintf( "%.*f", decimals_, currentTime ) );
 }
 
 bool QPlayControl::loop() const

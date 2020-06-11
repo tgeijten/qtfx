@@ -100,12 +100,12 @@ void QDataAnalysisView::refresh( double time, bool refreshAll )
 	// draw stuff if visible
 	if ( isVisible() )
 	{
-		int itemCount = refreshAll ? model->seriesCount() : std::min<int>( smallRefreshItemCount, model->seriesCount() );
+		int itemCount = refreshAll ? int( model->seriesCount() ) : std::min<int>( smallRefreshItemCount, int( model->seriesCount() ) );
 		itemList->setUpdatesEnabled( false );
 		for ( size_t i = 0; i < itemCount; ++i )
 		{
 			auto y = model->value( currentUpdateIdx, time );
-			itemList->topLevelItem( currentUpdateIdx )->setText( 1, QString().sprintf( "%.*f", decimalPoints( y ), y ) );
+			itemList->topLevelItem( currentUpdateIdx )->setText( 1, QString::asprintf( "%.*f", decimalPoints( y ), y ) );
 			++currentUpdateIdx %= model->seriesCount();
 		}
 		itemList->setUpdatesEnabled( true );
@@ -163,7 +163,7 @@ void QDataAnalysisView::setSelectionState( int state )
 {
 	if ( state != Qt::PartiallyChecked )
 	{
-		for ( size_t i = 0; i < itemList->topLevelItemCount(); ++i )
+		for ( int i = 0; i < itemList->topLevelItemCount(); ++i )
 		{
 			auto* item = itemList->topLevelItem( i );
 			if ( !item->isHidden() && item->checkState( 0 ) != state )
@@ -177,7 +177,7 @@ void QDataAnalysisView::reset()
 	itemList->clear();
 	clearSeries();
 
-	for ( size_t i = 0; i < model->seriesCount(); ++i )
+	for ( int  i = 0; i < model->seriesCount(); ++i )
 	{
 		auto* wdg = new QTreeWidgetItem( itemList, QStringList( model->label( i ) ) );
 		wdg->setTextAlignment( 1, Qt::AlignRight );
@@ -201,7 +201,7 @@ void QDataAnalysisView::updateIndicator()
 void QDataAnalysisView::updateFilter()
 {
 	//selectAllButton->setDisabled( filter->text().isEmpty() );
-	for ( size_t i = 0; i < itemList->topLevelItemCount(); ++i )
+	for ( int i = 0; i < itemList->topLevelItemCount(); ++i )
 	{
 		auto* item = itemList->topLevelItem( i );
 		item->setHidden( !item->text( 0 ).contains( filter->text() ) );
@@ -215,7 +215,7 @@ void QDataAnalysisView::updateSelectBox()
 	size_t checked_count = 0;
 	size_t shown_count = 0;
 
-	for ( size_t i = 0; i < itemList->topLevelItemCount(); ++i )
+	for ( int i = 0; i < itemList->topLevelItemCount(); ++i )
 	{
 		auto* item = itemList->topLevelItem( i );
 		if ( !item->isHidden() )
