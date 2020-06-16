@@ -12,7 +12,7 @@ std::string get_item_id( const QModelIndex& index )
 	return id.toStdString();
 }
 
-std::pair< int, const prop_node* > find_parent_node( const prop_node* pn, const prop_node* child )
+static std::pair< int, const prop_node* > find_parent_node( const prop_node* pn, const prop_node* child )
 {
 	for ( int row = 0; row < pn->size(); ++row )
 	{
@@ -38,7 +38,9 @@ QModelIndex QSettingsItemModel::index( int row, int column, const QModelIndex &p
 		auto* ch = &pn->get_child( pn->has_key( "label" ) ? row + 1 : row );
 		return createIndex( row, column, (void*)ch );
 	}
-	else return createIndex( row, column, (void*)&settings_.schema().get_child( row ) );
+	else if ( row < settings_.schema().size() )
+		return createIndex( row, column, (void*)&settings_.schema().get_child( row ) );
+	else return QModelIndex();
 }
 
 QModelIndex QSettingsItemModel::parent( const QModelIndex &child ) const

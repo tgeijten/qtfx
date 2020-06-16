@@ -4,7 +4,7 @@
 
 using xo::prop_node;
 
-std::pair< int, prop_node* > find_parent_node( prop_node* pn, prop_node* child )
+static std::pair< int, const prop_node* > find_parent_node( const prop_node* pn, const prop_node* child )
 {
 	for ( int row = 0; row < pn->size(); ++row )
 	{
@@ -22,15 +22,30 @@ std::pair< int, prop_node* > find_parent_node( prop_node* pn, prop_node* child )
 	return std::pair< int, prop_node* >( -1, nullptr );
 }
 
+void QPropNodeItemModel::setData( const xo::prop_node& pn )
+{
+	beginResetModel();
+	props_ = pn;
+	endResetModel();
+}
+
 QModelIndex QPropNodeItemModel::index( int row, int column, const QModelIndex &parent ) const
 {
 	if ( parent.isValid() )
 	{
-		auto* pn = ( prop_node* )parent.internalPointer();
+		auto* pn = (prop_node*)parent.internalPointer();
 		auto* ch = &pn->get_child( row );
 		return createIndex( row, column, (void*)ch );
 	}
-	else return createIndex( row, column, ( void* )&props_.get_child( row ) );
+	else if ( row < props_.size() )
+	{
+		return createIndex( row, column, (void*)&props_.get_child( row ) );
+	}
+	else
+	{
+		xo::log::debug( "Invalid model index, row=", row, " column=", column );
+		return QModelIndex();
+	}
 }
 
 QModelIndex QPropNodeItemModel::parent( const QModelIndex &child ) const
@@ -69,6 +84,14 @@ QVariant QPropNodeItemModel::data( const QModelIndex &index, int role ) const
 		}
 		else return QVariant( QString( pn->raw_value().c_str() ) );
 	}
+	else return QVariant();
+}
+
+QVariant QPropNodeItemModel::headerData( int section, Qt::Orientation orientation, int role ) const
+{
+	static const QStringList column_names = { "Property", "Value" };
+	if ( role == Qt::DisplayRole && orientation == Qt::Horizontal )
+		return column_names[ section ];
 	else return QVariant();
 }
 
