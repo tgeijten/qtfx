@@ -227,7 +227,7 @@ bool QOsgViewer::handle( const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapt
 	{
 		width_ = ea.getWindowWidth();
 		height_ = ea.getWindowHeight();
-		xo::log::info( "Viewer resized to ", width_, "x", height_ );
+		xo::log::trace( "Viewer resized to ", width_, "x", height_ );
 		updateHudPos();
 		return true;
 	}
