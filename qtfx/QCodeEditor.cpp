@@ -61,13 +61,6 @@ void QCodeEditor::open( const QString& filename )
 	else xo_error( "Could not open " + filename.toStdString() );
 }
 
-void QCodeEditor::openDialog( const QString& folder, const QString& fileTypes )
-{
-	auto fn = QFileDialog::getOpenFileName( this, "Open File", folder, fileTypes );
-	if ( !fn.isEmpty() )
-		open( fn );
-}
-
 void QCodeEditor::save()
 {
 	QFile file( fileName );
@@ -105,6 +98,22 @@ void QCodeEditor::saveAs( const QString& fn )
 
 	fileName = fn;
 	save();
+}
+
+void QCodeEditor::reload()
+{
+	if ( document()->isModified() )
+	{
+		QString msg = fileName + " contains unsaved changes. These changes will be lost when reloading the document.";
+		if ( QMessageBox::Cancel == QMessageBox::warning( this, "Reload " + fileName, msg, QMessageBox::Discard | QMessageBox::Cancel ) )
+			return;
+	}
+
+	if ( QFile f( fileName ); f.open( QFile::ReadOnly | QFile::Text ) )
+	{
+		setPlainText( QTextStream( &f ).readAll() );
+		document()->setModified( false );
+	}
 }
 
 void QCodeEditor::findDialog()

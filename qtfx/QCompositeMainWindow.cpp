@@ -14,12 +14,9 @@ using std::cout;
 using std::endl;
 
 QCompositeMainWindow::QCompositeMainWindow( QWidget* parent, Qt::WindowFlags flags ) :
-QMainWindow( parent, flags ),
-fileMenu( nullptr ),
-windowMenu( nullptr ),
-settings( nullptr )
-{
-}
+	QMainWindow( parent, flags ),
+	settings( nullptr )
+{}
 
 QCompositeMainWindow::~QCompositeMainWindow()
 {
@@ -110,9 +107,9 @@ QStatusBar* QCompositeMainWindow::createStatusBar()
 	return statusBar;
 }
 
-void QCompositeMainWindow::createFileMenu( const QString& default_folder, const QString& file_types )
+QMenu* QCompositeMainWindow::createFileMenu( const QString& default_folder, const QString& file_types )
 {
-	fileMenu = menuBar()->addMenu( ( "&File" ) );
+	auto fileMenu = menuBar()->addMenu( ( "&File" ) );
 
 	addMenuAction( fileMenu, "&Open...", this, &QCompositeMainWindow::fileOpenTriggered, QKeySequence( "Ctrl+O" ) );
 	recentFilesMenu = addMenuAction( fileMenu, "Open &Recent", this, &QCompositeMainWindow::fileOpenTriggered, QKeySequence() );
@@ -125,14 +122,17 @@ void QCompositeMainWindow::createFileMenu( const QString& default_folder, const 
 
 	fileFolder = default_folder;
 	fileTypes = file_types;
+
+	return fileMenu;
 }
 
-void QCompositeMainWindow::createWindowMenu()
+QMenu* QCompositeMainWindow::createWindowMenu()
 {
 	windowMenu = menuBar()->addMenu( ( "&Window" ) );
+	return windowMenu;
 }
 
-QDockWidget* QCompositeMainWindow::createDockWidget( const QString& title, QWidget* widget, Qt::DockWidgetArea area  )
+QDockWidget* QCompositeMainWindow::createDockWidget( const QString& title, QWidget* widget, Qt::DockWidgetArea area )
 {
 	QWidget* layoutWidget = new QWidget();
 	QVBoxLayout* layout = new QVBoxLayout( layoutWidget );
@@ -195,7 +195,7 @@ void QCompositeMainWindow::saveSettings()
 	}
 }
 
-void QCompositeMainWindow::closeEvent( QCloseEvent *event )
+void QCompositeMainWindow::closeEvent( QCloseEvent* event )
 {
 	if ( tryExit() )
 	{

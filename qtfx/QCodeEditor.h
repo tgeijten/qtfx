@@ -23,9 +23,9 @@ public:
 
 public slots:
 	void open( const QString& filename );
-	void openDialog( const QString& folder, const QString& fileTypes );
 	void save();
 	void saveAs( const QString& filename );
+	void reload();
 	void findDialog();
 	bool findNext( bool backwards = false );
 	void toggleComments();

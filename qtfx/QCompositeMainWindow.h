@@ -47,9 +47,8 @@ protected:
 
 	QStatusBar* createStatusBar();
 
-	void createFileMenu( const QString& default_folder, const QString& file_types );
-	void createWindowMenu();
-	void createHelpMenu();
+	QMenu* createFileMenu( const QString& default_folder, const QString& file_types );
+	QMenu* createWindowMenu();
 
 	virtual void restoreCustomSettings( QSettings& settings ) {}
 	virtual void saveCustomSettings( QSettings& settings ) {}
@@ -65,7 +64,6 @@ protected:
 	bool question( const QString& title, const QString& message );
 	void error( const QString& title, const QString& message );
 
-	QMenu* fileMenu;
 	QString fileFolder;
 	QString fileTypes;
 	QString activeFile;
