@@ -155,7 +155,7 @@ QDockWidget* QCompositeMainWindow::createDockWidget( const QString& title, QWidg
 int QCompositeMainWindow::registerDockWidget( QDockWidget* widget, const QString& menu_text )
 {
 	dockWidgets.push_back( widget );
-	int index = dockWidgets.size() - 1;
+	int index = static_cast<int>( dockWidgets.size() ) - 1;
 	if ( windowMenu )
 	{
 		QAction* a = windowMenu->addAction( menu_text );
