@@ -4,6 +4,7 @@
 #include <QScrollBar>
 #include "xo/string/string_tools.h"
 #include "xo/system/assert.h"
+#include "qtfx.h"
 
 QLogSink::QLogSink( QWidget* parent, xo::log::level level, xo::log::sink_mode mode ) :
 QPlainTextEdit( parent ),
@@ -11,6 +12,7 @@ sink( level, mode ),
 enabled_( true ),
 buffer_mutex_( QMutex::NonRecursive )
 {
+	setFont( getMonospaceFont( 9 ) );
 	creation_thread_id_ = QThread::currentThreadId();
 	connect( &update_timer_, &QTimer::timeout, this, &QLogSink::update );
 	update_timer_.setInterval( 1000 );

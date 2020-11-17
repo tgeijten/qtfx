@@ -16,6 +16,7 @@
 #include "xo/numerical/math.h"
 #include "xo/container/prop_node.h"
 #include "qt_convert.h"
+#include "qtfx.h"
 #include <sstream>
 
 QCodeEditor::QCodeEditor( QWidget* parent ) :
@@ -25,9 +26,7 @@ QCodeEditor::QCodeEditor( QWidget* parent ) :
 	verticalLayout->setContentsMargins( 0, 0, 0, 0 );
 	setLayout( verticalLayout );
 
-	QFont font;
-	font.setFamily( QStringLiteral( "Consolas" ) );
-	font.setPointSize( 9 );
+	auto font = getMonospaceFont( 9 );
 	setFont( font );
 	setLineWrapMode( QPlainTextEdit::NoWrap );
 	setTabStopWidth( 16 );
