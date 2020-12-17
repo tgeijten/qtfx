@@ -44,6 +44,7 @@ public slots:
 	void selectAll() { setSelectionState( Qt::Checked ); }
 	void selectNone() { setSelectionState( Qt::Unchecked ); }
 	void holdSeries();
+	void focusFilterEdit() { show(); filter->setFocus(); }
 
 signals:
 	void timeChanged( double );
