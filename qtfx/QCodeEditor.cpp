@@ -48,6 +48,8 @@ QCodeEditor::~QCodeEditor()
 void QCodeEditor::open( const QString& filename )
 {
 	syntaxHighlighter = new QCodeHighlighter( document(), QCodeHighlighter::detectLanguage( filename ) );
+	triggerFormatKeys = { Qt::Key_Return, Qt::Key_Enter }; // #todo: set based on language
+	autoBrackets = { { '{', '}' }, { '[', ']' }, { '(', ')' }, { '"', '"' } }; // #todo: set based on language
 
 	QFile f( filename );
 	if ( f.open( QFile::ReadOnly | QFile::Text ) )
@@ -299,15 +301,17 @@ void QCodeEditor::keyPressEvent( QKeyEvent* e )
 {
 	QPlainTextEdit::keyPressEvent( e );
 
-	switch ( language() )
+	// insert closing bracket
+	for ( const auto& bp : autoBrackets )
 	{
-	case QCodeHighlighter::Language::zml:
-		if ( e->key() == Qt::Key_Return || e->key() == Qt::Key_Enter || e->key() == '{' || e->key() == '}' )
-			formatDocument();
-		break;
-	default:
-		if ( e->key() == Qt::Key_Return )
-			formatDocument();
-		break;
+		if ( e->key() == bp.first )
+		{
+			textCursor().insertText( QString( bp.second ) );
+			moveCursor( QTextCursor::Left );
+			break;
+		}
 	}
+
+	if ( triggerFormatKeys.contains( e->key() ) )
+		formatDocument();
 }

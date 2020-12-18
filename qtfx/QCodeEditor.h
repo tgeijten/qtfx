@@ -4,6 +4,8 @@
 
 #include <QWidget>
 #include <QPlainTextEdit>
+#include <QVector>
+#include <QPair>
 
 #include "xo/serialization/serialize.h"
 #include "xo/filesystem/path.h"
@@ -66,4 +68,6 @@ private:
 
 	QWidget *lineNumberArea;
 	QRect previousRect;
+	QVector<int> triggerFormatKeys;
+	QVector<QPair<char, char>> autoBrackets;
 };
