@@ -257,5 +257,5 @@ void QPlayControl::updateSlider( int value )
 
 void QPlayControl::updateTime()
 {
-	setTime( currentTime + slomoFactor * timer_delta( timer().seconds() ) );
+	setTime( currentTime + slomoFactor * timer_delta( timer().secondsd() ) );
 }
