@@ -2,7 +2,7 @@
 
 #include <QWidget>
 #include <QLineEdit>
-#include <QPushButton>
+#include <QAbstractButton>
 
 class QFileEdit : public QWidget
 {

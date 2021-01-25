@@ -1,7 +1,8 @@
 #include "QFileEdit.h"
 
 #include <QBoxLayout>
-#include "QFileDialog"
+#include <QFileDialog>
+#include <QToolButton>
 
 QFileEdit::QFileEdit( QWidget* parent, Mode m, const QString& f ) :
 	QWidget( parent ),
