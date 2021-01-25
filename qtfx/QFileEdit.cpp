@@ -23,6 +23,8 @@ QFileEdit::QFileEdit( QWidget* parent, Mode m, const QString& f ) :
 	l->addWidget( browseButton );
 
 	connect( browseButton, &QAbstractButton::released, this, &QFileEdit::browse );
+	connect( lineEdit, &QLineEdit::textChanged, this, &QFileEdit::textChanged );
+	connect( lineEdit, &QLineEdit::editingFinished, this, &QFileEdit::editingFinished );
 }
 
 void QFileEdit::browse()

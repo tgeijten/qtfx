@@ -18,7 +18,6 @@ public:
 
 	QFileEdit( QWidget* parent, Mode mode = OpenFile, const QString& filter = "" );
 
-	void setText( const QString& s );
 	void setText( const QString& s, Mode mode, const QString& filter = "" );
 	QString text() const;
 	void setFilter( const QString& filter );
@@ -26,7 +25,11 @@ public:
 
 public slots:
 	void browse();
+	void setText( const QString& s );
 
+signals:
+	void textChanged( const QString& );
+	void editingFinished();
 private:
 	QLineEdit* lineEdit;
 	QAbstractButton* browseButton;
