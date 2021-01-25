@@ -22,13 +22,12 @@ QFileEdit::QFileEdit( QWidget* parent, Mode m, const QString& f ) :
 	browseButton->setContentsMargins( 0, 0, 0, 0 );
 	l->addWidget( browseButton );
 
-	connect( browseButton, &QPushButton::released, this, &QFileEdit::browse );
+	connect( browseButton, &QAbstractButton::released, this, &QFileEdit::browse );
 }
 
 void QFileEdit::browse()
 {
 	QFileInfo fi = lineEdit->text();
-
 	QString result;
 
 	switch ( mode )
