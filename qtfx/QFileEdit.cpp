@@ -27,21 +27,37 @@ QFileEdit::QFileEdit( QWidget* parent, Mode m, const QString& f ) :
 	connect( lineEdit, &QLineEdit::editingFinished, this, &QFileEdit::editingFinished );
 }
 
+void QFileEdit::init( Mode m, const QString& f, const QString& file, const QString& start_dir )
+{
+	mode = m;
+	filter = f;
+	setText( file );
+	startDir = start_dir;
+}
+
 void QFileEdit::browse()
 {
-	QFileInfo fi = lineEdit->text();
+	QString current = text();
 	QString result;
+
+	// update startdir if not set
+	if ( startDir.isEmpty() && !current.isEmpty())
+	{
+		if ( mode == Directory )
+			startDir = current;
+		else startDir = QFileInfo( current ).path();
+	}
 
 	switch ( mode )
 	{
 	case QFileEdit::OpenFile:
-		result = QFileDialog::getOpenFileName( this, "Open File", fi.path(), filter, nullptr );
+		result = QFileDialog::getOpenFileName( this, "Open File", startDir, filter, nullptr );
 		break;
 	case QFileEdit::SaveFile:
-		result = QFileDialog::getSaveFileName( this, "Save File", fi.path(), filter, nullptr );
+		result = QFileDialog::getSaveFileName( this, "Save File", startDir, filter, nullptr );
 		break;
 	case QFileEdit::Directory:
-		result = QFileDialog::getExistingDirectory( this, "Select Directory", fi.path(), nullptr );
+		result = QFileDialog::getExistingDirectory( this, "Select Directory", startDir, nullptr );
 		break;
 	default:
 		break;
@@ -56,24 +72,7 @@ void QFileEdit::setText( const QString& s )
 	lineEdit->setText( s );
 }
 
-void QFileEdit::setText( const QString& s, Mode m, const QString& f )
-{
-	setText( s );
-	setMode( m );
-	setFilter( f );
-}
-
 QString QFileEdit::text() const
 {
 	return lineEdit->text();
-}
-
-void QFileEdit::setFilter( const QString& f )
-{
-	filter = f;
-}
-
-void QFileEdit::setMode( Mode m )
-{
-	mode = m;
 }
