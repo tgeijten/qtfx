@@ -5,10 +5,11 @@
 #include "xo/string/string_tools.h"
 #include "xo/system/assert.h"
 #include "qtfx.h"
+#include "xo/system/log_format.h"
 
 QLogSink::QLogSink( QWidget* parent, xo::log::level level, xo::log::sink_mode mode ) :
 QPlainTextEdit( parent ),
-sink( level, mode ),
+sink( level, {}, mode ),
 enabled_( true ),
 buffer_mutex_( QMutex::NonRecursive )
 {
