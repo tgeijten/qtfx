@@ -289,7 +289,9 @@ void QDataAnalysisView::addSeries( int idx )
 	series.emplace_back( Series{ idx, freeColors.front(), graph } );
 	freeColors.erase( freeColors.begin() );
 
-	currentSeriesInterval = ( data.back().first - data.front().first ) / data.size();
+	if ( !data.empty() )
+		currentSeriesInterval = ( data.back().first - data.front().first ) / data.size();
+	else currentSeriesInterval = 0.0;
 
 	updateSeriesStyle();
 
