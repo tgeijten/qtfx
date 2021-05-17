@@ -246,7 +246,7 @@ void QOsgViewer::startCapture( const std::string& filename )
 
 void QOsgViewer::stopCapture()
 {
-	last_drawn_frame_time_ = ~size_t ( 0 );
+	last_drawn_frame_time_ = xo::constants<double>::lowest();
 	if ( capture_handler_ )
 	{
 		xo::log::info( "Video capture stopped" );
@@ -260,10 +260,15 @@ void QOsgViewer::captureCurrentFrame( const std::string& filename )
 	stopCapture();
 
 	capture_handler_ = new osgViewer::ScreenCaptureHandler(
-		new osgViewer::ScreenCaptureHandler::WriteToFile( filename, "png", osgViewer::ScreenCaptureHandler::WriteToFile::OVERWRITE ), -1 );
+		new osgViewer::ScreenCaptureHandler::WriteToFile( filename, "png", osgViewer::ScreenCaptureHandler::WriteToFile::OVERWRITE ) );
 	view_->addEventHandler( capture_handler_ );
 	capture_handler_->startCapture();
-	frame();
+
+	// schedule and handle paint event
+	// NOTE: calling frame() directly messes up the event handler
+	repaint();
+	QApplication::processEvents();
+
 	capture_handler_->stopCapture();
 	capture_handler_ = nullptr;
 	xo::log::info( "Written image to ", filename );
