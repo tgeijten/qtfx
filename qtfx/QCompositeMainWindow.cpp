@@ -19,10 +19,7 @@ QCompositeMainWindow::QCompositeMainWindow( QWidget* parent, Qt::WindowFlags fla
 {}
 
 QCompositeMainWindow::~QCompositeMainWindow()
-{
-	if ( settings )
-		delete settings;
-}
+{}
 
 void QCompositeMainWindow::fileOpenTriggered()
 {
