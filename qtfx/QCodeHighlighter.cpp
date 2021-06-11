@@ -172,7 +172,8 @@ xo::flat_map< std::string, QCodeHighlighter::Language > g_languages{
 	{ "osim", QCodeHighlighter::Language::xml },
 	{ "lua", QCodeHighlighter::Language::lua },
 	{ "zml", QCodeHighlighter::Language::zml },
-	{ "hfd", QCodeHighlighter::Language::zml }
+	{ "hfd", QCodeHighlighter::Language::zml },
+	{ "bp", QCodeHighlighter::Language::zml }
 };
 
 QCodeHighlighter::Language QCodeHighlighter::detectLanguage( const QString& filename )
