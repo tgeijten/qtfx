@@ -4,7 +4,7 @@
 #include "xo/system/log.h"
 
 using namespace osg;
-using namespace xo::literals;
+using namespace xo::angle_literals;
 
 namespace vis
 {
