@@ -10,9 +10,9 @@ class QValueSlider : public QWidget
 	Q_OBJECT
 
 public:
-	QValueSlider( QWidget* parent = nullptr, int margin = 0, int spacing = 4 );
+	QValueSlider( QWidget* parent = nullptr, double stepSize = 0.01, int margin = 0, int spacing = 4 );
 	void setRange( double min, double max );
-	void setValue( double v ) { spin_->setValue( v ); }
+	void setValue( double v );
 	double value() { return spin_->value(); }
 
 signals:
@@ -23,11 +23,12 @@ private slots:
 	void sliderAction( int i );
 
 private:
-	int to_int( double d ) { return int( 100.0 * d ); }
-	double to_double( int i ) { return 0.01 * i; }
+	int to_int( double d ) { return int( d / stepSize_ ); }
+	double to_double( int i ) { return stepSize_ * i; }
 
 	QDoubleSpinBox* spin_;
 	QLabel* min_;
 	QLabel* max_;
 	QSlider* slider_;
+	double stepSize_;
 };

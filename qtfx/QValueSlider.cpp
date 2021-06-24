@@ -1,10 +1,11 @@
 #include "QValueSlider.h"
 
 #include "QBoxLayout"
-#include "xo/system/log.h"
+#include "xo/numerical/math.h"
 
-QValueSlider::QValueSlider( QWidget* parent, int margin, int spacing ) :
-	QWidget( parent )
+QValueSlider::QValueSlider( QWidget* parent, double stepSize, int margin, int spacing ) :
+	QWidget( parent ),
+	stepSize_( stepSize )
 {
 	QHBoxLayout* l = new QHBoxLayout;
 	l->setMargin( margin );
@@ -12,8 +13,8 @@ QValueSlider::QValueSlider( QWidget* parent, int margin, int spacing ) :
 	setLayout( l );
 
 	spin_ = new QDoubleSpinBox( this );
-	spin_->setSingleStep( 0.01 );
-	spin_->setDecimals( 2 );
+	spin_->setSingleStep( stepSize_ );
+	spin_->setDecimals( xo::round_cast<int>( log10( 1 / stepSize_ ) ) );
 	connect( spin_, SIGNAL( valueChanged( double ) ), this, SLOT( spinValueChanged( double ) ) );
 	l->addWidget( spin_ );
 
@@ -45,6 +46,14 @@ void QValueSlider::setRange( double min, double max )
 	slider_->setRange( to_int( min ), to_int( max ) );
 	min_->setText( QString::asprintf( "%g", min ) );
 	max_->setText( QString::asprintf( "%g", max ) );
+}
+
+void QValueSlider::setValue( double v )
+{
+	blockSignals( true );
+	spin_->setValue( v );
+	slider_->setValue( to_int( v ) );
+	blockSignals( false );
 }
 
 void QValueSlider::sliderAction( int i )
