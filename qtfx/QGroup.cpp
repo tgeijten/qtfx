@@ -54,7 +54,7 @@ void QFormGroup::addRow( const QString& label, QWidget* w )
 {
 	auto fl = qobject_cast<QFormLayout*>( layout() );
 	QLabel* l = new QLabel( label );
-	l->setSizePolicy( QSizePolicy::Preferred, QSizePolicy::Expanding );
+	l->setSizePolicy( QSizePolicy::Preferred, QSizePolicy::Preferred );
 	fl->addRow( l, w );
 	w->setParent( this );
 }
