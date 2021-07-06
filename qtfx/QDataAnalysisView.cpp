@@ -203,10 +203,13 @@ void QDataAnalysisView::updateIndicator()
 void QDataAnalysisView::updateFilter()
 {
 	//selectAllButton->setDisabled( filter->text().isEmpty() );
+	auto regexp = QRegExp( filter->text(), Qt::CaseSensitive, QRegExp::Wildcard );
 	for ( int i = 0; i < itemList->topLevelItemCount(); ++i )
 	{
 		auto* item = itemList->topLevelItem( i );
-		item->setHidden( !item->text( 0 ).contains( filter->text() ) );
+		const auto& s = item->text( 0 );
+		bool match = s.contains( filter->text() ) || regexp.exactMatch( s );
+		item->setHidden( !match );
 	}
 
 	updateSelectBox();
