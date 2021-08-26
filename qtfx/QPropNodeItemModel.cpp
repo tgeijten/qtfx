@@ -4,6 +4,10 @@
 
 using xo::prop_node;
 
+QPropNodeItemModel::QPropNodeItemModel( QObject* parent ) :
+	QAbstractItemModel( parent ), props_(), default_icon_()
+{}
+
 static std::pair< int, const prop_node* > find_parent_node( const prop_node* pn, const prop_node* child )
 {
 	for ( int row = 0; row < pn->size(); ++row )
@@ -27,6 +31,11 @@ void QPropNodeItemModel::setData( const xo::prop_node& pn )
 	beginResetModel();
 	props_ = pn;
 	endResetModel();
+}
+
+void QPropNodeItemModel::setDefaultIcon( const QIcon& icon )
+{
+	default_icon_ = icon;
 }
 
 QModelIndex QPropNodeItemModel::index( int row, int column, const QModelIndex &parent ) const
@@ -74,15 +83,22 @@ int QPropNodeItemModel::columnCount( const QModelIndex &parent ) const
 
 QVariant QPropNodeItemModel::data( const QModelIndex &index, int role ) const
 {
+	auto* pn = reinterpret_cast<prop_node*>( index.internalPointer() );
 	if ( role == Qt::DisplayRole || role == Qt::EditRole )
 	{
-		auto* pn = reinterpret_cast< prop_node* >( index.internalPointer() );
 		if ( index.column() == 0 )
 		{
 			auto parent = find_parent_node( &props_, pn );
 			return QVariant( parent.second->get_key( parent.first ).c_str() );
 		}
 		else return QVariant( QString( pn->raw_value().c_str() ) );
+	}
+	else if ( role == Qt::DecorationRole )
+	{
+		// show icon if the pn has a value
+		if ( index.column() == 0 && !default_icon_.isNull() && pn && !pn->raw_value().empty() )
+			return default_icon_;
+		else return QVariant();
 	}
 	else return QVariant();
 }
