@@ -12,6 +12,7 @@ public:
 
 	void setData( const xo::prop_node& pn );
 	void setDefaultIcon( const QIcon& icon );
+	void setMaxPreviewChildren( int m ) { max_preview_children_ = m; }
 
 	virtual QModelIndex index( int row, int column, const QModelIndex &parent = QModelIndex() ) const override;
 	virtual QModelIndex parent( const QModelIndex &child ) const override;
@@ -25,4 +26,5 @@ public:
 private:
 	xo::prop_node props_;
 	QIcon default_icon_;
+	int max_preview_children_;
 };

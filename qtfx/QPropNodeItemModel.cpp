@@ -5,7 +5,10 @@
 using xo::prop_node;
 
 QPropNodeItemModel::QPropNodeItemModel( QObject* parent ) :
-	QAbstractItemModel( parent ), props_(), default_icon_()
+	QAbstractItemModel( parent ),
+	props_(),
+	default_icon_(),
+	max_preview_children_()
 {}
 
 static std::pair< int, const prop_node* > find_parent_node( const prop_node* pn, const prop_node* child )
@@ -52,7 +55,7 @@ QModelIndex QPropNodeItemModel::index( int row, int column, const QModelIndex &p
 	}
 	else
 	{
-		xo::log::debug( "Invalid model index, row=", row, " column=", column );
+		xo::log::debug( "Invalid model index, row=", row, " column=", column, " parent=", parent.internalPointer() );
 		return QModelIndex();
 	}
 }
@@ -91,7 +94,14 @@ QVariant QPropNodeItemModel::data( const QModelIndex &index, int role ) const
 			auto parent = find_parent_node( &props_, pn );
 			return QVariant( parent.second->get_key( parent.first ).c_str() );
 		}
-		else return QVariant( QString( pn->raw_value().c_str() ) );
+		else
+		{
+			if ( !pn->raw_value().empty() )
+				return QVariant( QString( pn->raw_value().c_str() ) );
+			else if ( pn->size() > 0 && pn->count_children() <= max_preview_children_ )
+				return QVariant( QString( make_str_from_prop_node( *pn ).c_str() ) );
+			else return QVariant();
+		}
 	}
 	else if ( role == Qt::DecorationRole )
 	{
