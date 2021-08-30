@@ -100,8 +100,7 @@ bool QSettingsItemModel::setData( const QModelIndex &index, const QVariant &valu
 		auto* pn = reinterpret_cast<prop_node*>( index.internalPointer() );
 		auto id = xo::find_query_to_node( &settings_.schema(), pn ).second;
 		auto id_check = get_item_id( index );
-		settings_.set( id, value.toString().toStdString() );
-		return true;
+		return settings_.set( id, value.toString().toStdString() );
 	}
 	else return false;
 }
