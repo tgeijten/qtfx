@@ -31,7 +31,7 @@ public slots:
 	void findDialog();
 	bool findNext( bool backwards = false );
 	void toggleComments();
-
+	void duplicateText();
 	void formatDocument();
 
 	void updateLineNumberAreaWidth( int newBlockCount );

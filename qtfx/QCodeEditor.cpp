@@ -142,8 +142,7 @@ bool QCodeEditor::findNext( bool backwards )
 
 void QCodeEditor::toggleComments()
 {
-	auto cursor = textCursor();
-	if ( !cursor.hasSelection() )
+	if ( auto cursor = textCursor(); !cursor.hasSelection() )
 	{
 		cursor.select( QTextCursor::LineUnderCursor );
 		setTextCursor( cursor );
@@ -181,6 +180,18 @@ void QCodeEditor::toggleComments()
 			s.resize( s.size() - 1 );
 		textCursor().insertText( s.c_str() );
 	}
+}
+
+void QCodeEditor::duplicateText()
+{
+	if ( auto cursor = textCursor(); !cursor.hasSelection() )
+	{
+		cursor.select( QTextCursor::BlockUnderCursor );
+		setTextCursor( cursor );
+	}
+	copy();
+	paste();
+	paste();
 }
 
 QString QCodeEditor::getTitle()
