@@ -45,11 +45,14 @@ QModelIndex QSettingsItemModel::index( int row, int column, const QModelIndex &p
 
 QModelIndex QSettingsItemModel::parent( const QModelIndex &child ) const
 {
-	prop_node* pn = (prop_node*)child.internalPointer();
-	auto parent = find_parent_node( &settings_.schema(), pn );
-	if ( parent.second != &settings_.schema() )
-		return createIndex( parent.first, 0, (void*)parent.second );
-	else return QModelIndex();
+	if ( prop_node* pn = reinterpret_cast<prop_node*>( child.internalPointer() ) )
+	{
+		if ( auto p = settings_.schema().try_find_parent( *pn ); p.first ) {
+			if ( auto pp = settings_.schema().try_find_parent( *p.first ); pp.first )
+				return createIndex( pp.second, 0, (void*)p.first );
+		}
+	}
+	return QModelIndex();
 }
 
 int QSettingsItemModel::rowCount( const QModelIndex &parent ) const
@@ -75,18 +78,17 @@ QVariant QSettingsItemModel::data( const QModelIndex &index, int role ) const
 {
 	if ( role == Qt::DisplayRole || role == Qt::EditRole )
 	{
-		auto* pn = reinterpret_cast<prop_node*>( index.internalPointer() );
-		auto parent = find_parent_node( &settings_.schema(), pn );
-		auto parent_key = parent.second->get_key( parent.first );
-		auto id = xo::find_query_to_node( &settings_.schema(), pn ).second;
+		if ( auto* pn = reinterpret_cast<prop_node*>( index.internalPointer() ) )
+		{
+			auto parent = settings_.schema().try_find_parent( *pn );
+			auto parent_key = parent.first->get_key( parent.second );
+			auto id = xo::find_query_to_node( &settings_.schema(), pn ).second;
 
-		if ( index.column() == 0 )
-		{
-			return QVariant( QString( pn->get< std::string >( "label", parent_key ).c_str() ) );
-		}
-		else if ( index.column() == 1 && pn->has_key( "default" ) )
-		{
-			return QVariant( QString( settings_.get< std::string >( id ).c_str() ) );
+			if ( index.column() == 0 )
+				return QVariant( QString( pn->get< std::string >( "label", parent_key ).c_str() ) );
+			else if ( index.column() == 1 && pn->has_key( "default" ) )
+				return QVariant( QString( settings_.get< std::string >( id ).c_str() ) );
+			else return QVariant();
 		}
 	}
 

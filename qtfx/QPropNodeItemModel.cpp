@@ -11,24 +11,6 @@ QPropNodeItemModel::QPropNodeItemModel( QObject* parent ) :
 	max_preview_children_()
 {}
 
-static std::pair< int, const prop_node* > find_parent_node( const prop_node* pn, const prop_node* child )
-{
-	for ( int row = 0; row < pn->size(); ++row )
-	{
-		if ( &pn->get_child( row ) == child )
-			return std::make_pair( row, pn );
-	}
-
-	for ( auto& child_pair : *pn )
-	{
-		auto result = find_parent_node( &child_pair.second, child );
-		if ( result.second )
-			return result;
-	}
-
-	return std::pair< int, prop_node* >( -1, nullptr );
-}
-
 void QPropNodeItemModel::setData( const xo::prop_node& pn )
 {
 	beginResetModel();
@@ -45,9 +27,9 @@ QModelIndex QPropNodeItemModel::index( int row, int column, const QModelIndex &p
 {
 	if ( parent.isValid() )
 	{
-		auto* pn = (prop_node*)parent.internalPointer();
-		auto* ch = &pn->get_child( row );
-		return createIndex( row, column, (void*)ch );
+		if ( auto* pn = reinterpret_cast<prop_node*>( parent.internalPointer() ) )
+			return createIndex( row, column, reinterpret_cast<void*>( &pn->get_child( row ) ) );
+		else return QModelIndex();
 	}
 	else if ( row < props_.size() )
 	{
@@ -62,11 +44,15 @@ QModelIndex QPropNodeItemModel::index( int row, int column, const QModelIndex &p
 
 QModelIndex QPropNodeItemModel::parent( const QModelIndex &child ) const
 {
-	prop_node* pn = ( prop_node* )child.internalPointer();
-	auto parent = find_parent_node( &props_, pn );
-	if ( parent.second != &props_ )
-		return createIndex( parent.first, 0, ( void* )parent.second );
-	else return QModelIndex();
+	if ( prop_node* pn = reinterpret_cast<prop_node*>( child.internalPointer() ) )
+	{
+		if ( auto p = props_.try_find_parent( *pn ); p.first ) {
+			if ( auto pp = props_.try_find_parent( *p.first ); pp.first )
+				return createIndex( pp.second, 0, (void*)p.first );
+		}
+	}
+
+	return QModelIndex();
 }
 
 int QPropNodeItemModel::rowCount( const QModelIndex &parent ) const
@@ -91,8 +77,9 @@ QVariant QPropNodeItemModel::data( const QModelIndex &index, int role ) const
 	{
 		if ( index.column() == 0 )
 		{
-			auto parent = find_parent_node( &props_, pn );
-			return QVariant( parent.second->get_key( parent.first ).c_str() );
+			if ( auto parent = props_.try_find_parent( *pn ); parent.first )
+				return QVariant( parent.first->get_key( parent.second ).c_str() );
+			else return QVariant();
 		}
 		else
 		{
