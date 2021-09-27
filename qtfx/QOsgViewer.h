@@ -9,6 +9,7 @@
 #include <osgViewer/ViewerEventHandlers>
 #include <osgQt/GraphicsWindowQt>
 #include <osg/PositionAttitudeTransform>
+#include <osgDB/Options>
 #include "osg_camera_man.h"
 
 #include "xo/filesystem/path.h"
@@ -39,12 +40,14 @@ public:
 	void setFrameTime( double t );
 	bool handle( const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa );
 	osgQt::GLWidget* viewWidget() { return view_widget_; }
+	void enableObjectCache( bool enable );
 
 public slots:
 	void timerUpdate();
 
 protected:
 	bool eventFilter( QObject* obj, QEvent* event );
+	osgDB::Options* getOrCreateOptions();
 
 	void updateHudPos();
 	void updateLightPos();

@@ -234,6 +234,11 @@ bool QOsgViewer::handle( const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapt
 	return false;
 }
 
+void QOsgViewer::enableObjectCache( bool enable )
+{
+	getOrCreateOptions()->setObjectCacheHint( enable ? osgDB::Options::CACHE_ALL : osgDB::Options::CACHE_ARCHIVES );
+}
+
 void QOsgViewer::startCapture( const std::string& filename )
 {
 	// create capture handler
@@ -301,4 +306,11 @@ bool QOsgViewer::eventFilter( QObject* obj, QEvent* event )
 			update();
 	}
 	return QObject::eventFilter( obj, event );
+}
+
+osgDB::Options* QOsgViewer::getOrCreateOptions()
+{
+	if ( !osgDB::Registry::instance()->getOptions() )
+		osgDB::Registry::instance()->setOptions( new osgDB::Options() );
+	return osgDB::Registry::instance()->getOptions();
 }
