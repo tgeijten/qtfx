@@ -15,6 +15,9 @@ using std::endl;
 
 QCompositeMainWindow::QCompositeMainWindow( QWidget* parent, Qt::WindowFlags flags ) :
 	QMainWindow( parent, flags ),
+	recentFilesMenu( nullptr ),
+	windowMenu( nullptr ),
+	statusBar( nullptr ),
 	settings( nullptr )
 {}
 
@@ -94,7 +97,8 @@ void QCompositeMainWindow::updateRecentFilesMenu( const QString& filename )
 		QAction* act = recent_menu->addAction( recentFiles[ idx ] );
 		connect( act, SIGNAL( triggered() ), this, SLOT( fileOpenRecentTriggered() ) );
 	}
-	recentFilesMenu->setMenu( recent_menu );
+	if ( recentFilesMenu )
+		recentFilesMenu->setMenu( recent_menu );
 }
 
 QStatusBar* QCompositeMainWindow::createStatusBar()
