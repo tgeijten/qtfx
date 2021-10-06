@@ -16,6 +16,8 @@
 #include "xo/numerical/math.h"
 #include "xo/container/container_tools.h"
 #include "qcustomplot/qcustomplot.h"
+#include "xo/numerical/bounds.h"
+#include "xo/system/debug_timer.h"
 
 QDataAnalysisView::QDataAnalysisView( QDataAnalysisModel* m, QWidget* parent ) :
 	QWidget( parent ),
@@ -90,10 +92,10 @@ int QDataAnalysisView::decimalPoints( double v )
 
 void QDataAnalysisView::refresh( double time, bool refreshAll )
 {
-	if ( itemList->topLevelItemCount() != model->seriesCount() )
+	if ( itemList->topLevelItemCount() != model->channelCount() )
 		return reset();
 
-	if ( model->seriesCount() == 0 )
+	if ( model->channelCount() == 0 )
 		return;
 
 	// update state
@@ -102,13 +104,13 @@ void QDataAnalysisView::refresh( double time, bool refreshAll )
 	// draw stuff if visible
 	if ( isVisible() )
 	{
-		int itemCount = refreshAll ? int( model->seriesCount() ) : std::min<int>( smallRefreshItemCount, int( model->seriesCount() ) );
+		int itemCount = refreshAll ? int( model->channelCount() ) : std::min<int>( smallRefreshItemCount, int( model->channelCount() ) );
 		itemList->setUpdatesEnabled( false );
 		for ( size_t i = 0; i < itemCount; ++i )
 		{
 			auto y = model->value( currentUpdateIdx, time );
 			itemList->topLevelItem( currentUpdateIdx )->setText( 1, QString::asprintf( "%.*f", decimalPoints( y ), y ) );
-			++currentUpdateIdx %= model->seriesCount();
+			++currentUpdateIdx %= model->channelCount();
 		}
 		itemList->setUpdatesEnabled( true );
 
@@ -152,6 +154,8 @@ void QDataAnalysisView::rangeChanged( const QCPRange &newRange, const QCPRange &
 			customPlot->xAxis->setRange( fixedRange );
 			customPlot->xAxis->blockSignals( false );
 		}
+		if ( autoFitVerticalAxis )
+			fitVerticalAxis();
 		updateSeriesStyle();
 	}
 }
@@ -179,7 +183,7 @@ void QDataAnalysisView::reset()
 	itemList->clear();
 	clearSeries();
 
-	for ( int  i = 0; i < model->seriesCount(); ++i )
+	for ( int  i = 0; i < model->channelCount(); ++i )
 	{
 		auto* wdg = new QTreeWidgetItem( itemList, QStringList( model->label( i ) ) );
 		wdg->setTextAlignment( 1, Qt::AlignRight );
@@ -235,9 +239,22 @@ void QDataAnalysisView::updateSelectBox()
 	selectBox->blockSignals( false );
 }
 
+void QDataAnalysisView::fitVerticalAxis()
+{
+	//xo::bounds<double> yrange( xo::num<double>::max, xo::num<double>::lowest );
+	xo::bounds<double> yrange( 0, 0 );
+	auto xrange = customPlot->xAxis->range();
+	int end_frame = model->timeIndex( xrange.upper );
+	for ( int frame = model->timeIndex( xrange.lower ); frame <= end_frame; ++frame )
+		for ( auto& s : series )
+			yrange.extend( model->value( s.channel, frame ) );
+
+	customPlot->yAxis->setRange( yrange.lower, yrange.upper );
+}
+
 void QDataAnalysisView::updateSeriesStyle()
 {
-	auto zoom = currentSeriesInterval * customPlot->xAxis->axisRect()->width() / customPlot->xAxis->range().size();
+	auto zoom = averageFrameDuration * customPlot->xAxis->axisRect()->width() / customPlot->xAxis->range().size();
 	SeriesStyle newstyle = zoom > 8 ? discStyle : lineStyle;
 
 	if ( newstyle != seriesStyle )
@@ -285,16 +302,14 @@ void QDataAnalysisView::addSeries( int idx )
 	graph->setScatterStyle( QCPScatterStyle( seriesStyle == discStyle ? QCPScatterStyle::ssDisc : QCPScatterStyle::ssNone, 4 ) );
 	graph->setPen( QPen( color, lineWidth ) );
 
-	auto data = model->getSeries( idx, minSeriesInterval );
-	for ( auto& e : data )
-		graph->addData( e.first, e.second );
+	for ( int frame = 0; frame < model->frameCount(); ++frame )
+		graph->addData( model->timeValue( frame ), model->value( idx, frame ) );
+	if ( model->frameCount() > 0 )
+		averageFrameDuration = ( model->timeFinish() - model->timeStart() ) / model->frameCount() ;
+	else averageFrameDuration = 0.0f;
 
 	series.emplace_back( Series{ idx, freeColors.front(), graph } );
 	freeColors.erase( freeColors.begin() );
-
-	if ( !data.empty() )
-		currentSeriesInterval = ( data.back().first - data.front().first ) / data.size();
-	else currentSeriesInterval = 0.0;
 
 	updateSeriesStyle();
 

@@ -16,17 +16,20 @@ public:
 	QDataAnalysisModel() {}
 	virtual ~QDataAnalysisModel() {}
 
-	virtual size_t seriesCount() const = 0;
-	virtual QString label( int idx ) const = 0;
-	virtual double value( int idx, double time ) const = 0;
-	virtual Series getSeries( int idx, double min_interval = 0.0 ) const = 0;
+	virtual int channelCount() const = 0;
+	virtual int frameCount() const = 0;
+	virtual QString label( int channel ) const = 0;
+	virtual double value( int channel, double time ) const = 0;
+	virtual double value( int channel, int frame ) const = 0;
+
+	virtual Series getSeries( int channel, double min_interval = 0.0 ) const = 0;
 
 	virtual double timeStart() const { return 0.0; }
 	virtual double timeFinish() const { return 0.0; }
-	virtual xo::index_t timeIndex( double time ) const = 0;
-	virtual double timeValue( xo::index_t idx ) const = 0;
+	virtual int timeIndex( double time ) const = 0;
+	virtual double timeValue( int frame ) const = 0;
 
-	bool hasData() const { return seriesCount() > 0; }
+	bool hasData() const { return channelCount() > 0; }
 };
 
 template< typename T >
@@ -36,15 +39,16 @@ public:
 	StorageDataAnalysisModel( const xo::storage< T >* s = nullptr ) : sto_( s ) {}
 	void setStorage( const xo::storage< T >* s ) { sto_ = s; }
 
-	virtual size_t seriesCount() const override { return sto_->empty() ? 0 : sto_->channel_size(); }
+	virtual int channelCount() const override { return sto_->empty() ? 0 : sto_->channel_size(); }
 	virtual QString label( int idx ) const override { return QString( sto_->get_label( idx ).c_str() ); }
 	virtual double value( int channel, double time ) const override { return ( *sto_ )( timeIndex( time ), channel ); }
+	virtual double value( int channel, int frame ) const override { return ( *sto_ )( frameIdx, channel ); }
 	virtual Series getSeries( int idx, double min_interval = 0.0 ) const override;
 
 	virtual double timeStart() const override { return sto_->empty() ? 0.0 : sto_->front()[ 0 ]; }
 	virtual double timeFinish() const override { return sto_->empty() ? 0.0 : sto_->back()[ 0 ]; }
-	virtual xo::index_t timeIndex( double time ) const override { return xo::find_frame_index( *sto_, float( time ), 0 ); }
-	virtual double timeValue( xo::index_t idx ) const override { return ( *sto_ )( idx, 0 ); }
+	virtual int timeIndex( double time ) const override { return xo::find_frame_index( *sto_, float( time ), 0 ); }
+	virtual double timeValue( int idx ) const override { return ( *sto_ )( idx, 0 ); }
 
 private:
 	const xo::storage< T >* sto_;

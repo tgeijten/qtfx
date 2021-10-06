@@ -30,7 +30,7 @@ public:
 	void reset();
 
 	void setLineWidth( float f ) { lineWidth = f; }
-	void setMinSeriesInterval( float f ) { minSeriesInterval = f; }
+	void setAutoFitVerticalAxis( bool b ) { autoFitVerticalAxis = b; }
 
 public slots:
 	void itemChanged( QTreeWidgetItem* item, int column );
@@ -55,15 +55,16 @@ private:
 	void updateIndicator();
 	void updateFilter();
 	void updateSelectBox();
+	void fitVerticalAxis();
 	int decimalPoints( double v );
 
 	enum SeriesStyle { noStyle, lineStyle, discStyle };
 	SeriesStyle seriesStyle = noStyle;
 	size_t maxSeriesCount = 20;
 	int smallRefreshItemCount = 100;
-	float minSeriesInterval = 0.01f;
-	float currentSeriesInterval = 0;
+	float averageFrameDuration = 0.0f;
 	float lineWidth = 1.5f;
+	bool autoFitVerticalAxis = false;
 	int currentUpdateIdx;
 	double currentTime;
 	QCheckBox* selectBox;
