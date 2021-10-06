@@ -42,7 +42,7 @@ public:
 	virtual int channelCount() const override { return sto_->empty() ? 0 : sto_->channel_size(); }
 	virtual QString label( int idx ) const override { return QString( sto_->get_label( idx ).c_str() ); }
 	virtual double value( int channel, double time ) const override { return ( *sto_ )( timeIndex( time ), channel ); }
-	virtual double value( int channel, int frame ) const override { return ( *sto_ )( frameIdx, channel ); }
+	virtual double value( int channel, int frame ) const override { return ( *sto_ )( frame, channel ); }
 	virtual Series getSeries( int idx, double min_interval = 0.0 ) const override;
 
 	virtual double timeStart() const override { return sto_->empty() ? 0.0 : sto_->front()[ 0 ]; }
