@@ -1,12 +1,14 @@
 #pragma once
 
 #include <QApplication>
-#include "QMessageBox"
+#include <QString>
+#include <QMessageBox>
+#include <exception>
 
 class QSafeApplication : public QApplication
 {
 public:
-	QSafeApplication::QSafeApplication( int& argc, char** argv ) :
+	QSafeApplication( int& argc, char** argv ) :
 		QApplication( argc, argv )
 	{}
 
