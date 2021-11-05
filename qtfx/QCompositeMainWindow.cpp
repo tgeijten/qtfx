@@ -173,12 +173,15 @@ void QCompositeMainWindow::createSettings( const QString& company, const QString
 	settings = new QSettings( company, app );
 }
 
-void QCompositeMainWindow::restoreSettings()
+void QCompositeMainWindow::restoreSettings( bool skipGeometry )
 {
 	if ( settings )
 	{
-		restoreGeometry( settings->value( "geometry" ).toByteArray() );
-		restoreState( settings->value( "windowState" ).toByteArray() );
+		if ( !skipGeometry )
+		{
+			restoreGeometry( settings->value( "geometry" ).toByteArray() );
+			restoreState( settings->value( "windowState" ).toByteArray() );
+		}
 		recentFiles = settings->value( "recentFiles" ).toStringList();
 		updateRecentFilesMenu();
 		restoreCustomSettings( *settings );

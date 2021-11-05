@@ -54,7 +54,7 @@ protected:
 	virtual void saveCustomSettings( QSettings& settings ) {}
 
 	void createSettings( const QString& company, const QString& app );
-	void restoreSettings();
+	void restoreSettings( bool skipGeometry = false );
 	void saveSettings();
 
 	virtual void closeEvent( QCloseEvent *event ) override;
