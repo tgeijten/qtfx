@@ -18,6 +18,13 @@ void QPropNodeItemModel::setData( const xo::prop_node& pn )
 	endResetModel();
 }
 
+void QPropNodeItemModel::setData( xo::prop_node&& pn )
+{
+	beginResetModel();
+	props_ = std::move( pn );
+	endResetModel();
+}
+
 void QPropNodeItemModel::setDefaultIcon( const QIcon& icon )
 {
 	default_icon_ = icon;

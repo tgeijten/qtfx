@@ -11,6 +11,7 @@ public:
 	virtual ~QPropNodeItemModel() = default;
 
 	void setData( const xo::prop_node& pn );
+	void setData( xo::prop_node&& pn );
 	void setDefaultIcon( const QIcon& icon );
 	void setMaxPreviewChildren( int m ) { max_preview_children_ = m; }
 
