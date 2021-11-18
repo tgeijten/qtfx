@@ -90,8 +90,8 @@ QVariant QPropNodeItemModel::data( const QModelIndex &index, int role ) const
 		}
 		else
 		{
-			if ( !pn->raw_value().empty() )
-				return QVariant( QString( pn->raw_value().c_str() ) );
+			if ( !pn->get_str().empty() )
+				return QVariant( QString( pn->get_str().c_str() ) );
 			else if ( pn->size() > 0 && pn->count_children() <= max_preview_children_ )
 				return QVariant( QString( make_str_from_prop_node( *pn ).c_str() ) );
 			else return QVariant();
@@ -100,7 +100,7 @@ QVariant QPropNodeItemModel::data( const QModelIndex &index, int role ) const
 	else if ( role == Qt::DecorationRole )
 	{
 		// show icon if the pn has a value
-		if ( index.column() == 0 && !default_icon_.isNull() && pn && !pn->raw_value().empty() )
+		if ( index.column() == 0 && !default_icon_.isNull() && pn && !pn->get_str().empty() )
 			return default_icon_;
 		else return QVariant();
 	}
