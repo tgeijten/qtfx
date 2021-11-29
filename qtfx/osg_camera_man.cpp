@@ -163,4 +163,22 @@ namespace vis
 		}
 		else return false;
 	}
+
+	bool osg_camera_man::handleMousePush( const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& us )
+	{
+		if ( auto* view = dynamic_cast<osgViewer::View*>( &us ) ) {
+			//osgUtil::LineSegmentIntersector::Intersections intersections;
+			//view->computeIntersections( ea, intersections );
+			//for ( const auto& in : intersections )
+			//	if ( auto* geom = in.drawable->asGeometry() )
+			//		xo::log::info( geom );
+		}
+
+		return osgGA::OrbitManipulator::handleMousePush( ea, us );
+	}
+
+	bool osg_camera_man::handleMouseRelease( const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& us )
+	{
+		return osgGA::OrbitManipulator::handleMouseRelease( ea, us );
+	}
 }

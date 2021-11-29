@@ -35,6 +35,8 @@ namespace vis
 		virtual bool handleKeyDown( const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& us ) override;
 		virtual bool handleKeyUp( const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& us ) override;
 		bool handleKeyCommand( int key, int mod_keys, double factor = 1.0 );
+		bool handleMousePush( const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& us ) override;
+		bool handleMouseRelease( const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& us ) override;
 
 	private:
 		camera_state prev_camera_state_;
