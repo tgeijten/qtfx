@@ -15,6 +15,7 @@
 
 #include "xo/filesystem/path.h"
 #include "xo/geometry/vec3_type.h"
+#include "osgGA/GUIEventAdapter"
 
 class QOsgViewer : public QWidget, public osgViewer::CompositeViewer
 {
@@ -26,6 +27,7 @@ public:
 	osgQt::GraphicsWindowQt* createGraphicsWindow( int x, int y, int w, int h, const std::string& name="", bool windowDecoration=false );
 
 	virtual void paintEvent( QPaintEvent* event ) override;
+	virtual bool event( QEvent* event ) override;
 
 	void setScene( osg::Group* s );
 	void createHud( const xo::path& file );
@@ -40,11 +42,17 @@ public:
 	vis::osg_camera_man& getCameraMan() { return *camera_man_; }
 	void setFrameTime( double t );
 	bool handle( const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa );
-	void updateIntersections( const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa );
-	osgUtil::LineSegmentIntersector::Intersections& getIntersections() { return intersections_; }
+	void updateIntersections( const osgGA::GUIEventAdapter& ea );
+	const osgUtil::LineSegmentIntersector::Intersections& getIntersections() const { return intersections_; }
+	const osgUtil::LineSegmentIntersector::Intersection* getIntersection() const { return !intersections_.empty() ? &( *intersections_.begin() ) : nullptr; }
 	osgQt::GLWidget* viewWidget() { return view_widget_; }
 	void enableObjectCache( bool enable );
 	osgViewer::View& getMainView() { return *view_; }
+
+signals:
+	void clicked();
+	void hover();
+	void tooltip();
 
 public slots:
 	void timerUpdate();
@@ -75,5 +83,7 @@ protected:
 	double current_frame_time_;
 	double last_drawn_frame_time_;
 
+	bool mouse_drag_;
+	size_t mouse_hover_frames_;
 	osgUtil::LineSegmentIntersector::Intersections intersections_;
 };

@@ -14,15 +14,11 @@
 // class for routing GUI events to QOsgViewer
 // This is needed because QOsgViewer can't derive from GUIEventHandler directly
 // because both are derived from osg::Object (basically, because of bad design)
-class QOsgEventHandler : public osgGA::GUIEventHandler 
-{ 
+class QOsgEventHandler : public osgGA::GUIEventHandler
+{
 public:
 	QOsgEventHandler( QOsgViewer& viewer ) : viewer_( viewer ) {}
 	virtual bool handle( const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa ) {
-		if ( ea.getEventType() == osgGA::GUIEventAdapter::PUSH ) {
-			viewer_.updateIntersections( ea, aa );
-		}
-
 		return viewer_.handle( ea, aa );
 	}
 private:
@@ -30,11 +26,13 @@ private:
 };
 
 QOsgViewer::QOsgViewer( QWidget* parent /*= 0*/, Qt::WindowFlags f /*= 0*/, osgViewer::ViewerBase::ThreadingModel threadingModel/*=osgViewer::CompositeViewer::SingleThreaded*/ ) :
-QWidget( parent, f ),
-frame_count_( 0 ),
-capture_handler_( nullptr ),
-scene_light_offset_( -2, 8, 3 ),
-current_frame_time_( -1 )
+	QWidget( parent, f ),
+	frame_count_( 0 ),
+	capture_handler_( nullptr ),
+	scene_light_offset_( -2, 8, 3 ),
+	current_frame_time_( -1 ),
+	mouse_drag_( false ),
+	mouse_hover_frames_( 0 )
 {
 	setThreadingModel( threadingModel );
 
@@ -134,6 +132,13 @@ void QOsgViewer::paintEvent( QPaintEvent* event )
 	last_drawn_frame_time_ = current_frame_time_;
 }
 
+bool QOsgViewer::event( QEvent* e )
+{
+	if ( e->type() == QEvent::ToolTip )
+		emit tooltip();
+	return QWidget::event( e );
+}
+
 void QOsgViewer::setScene( osg::Group* s )
 {
 	scene_ = s;
@@ -230,18 +235,44 @@ void QOsgViewer::moveCamera( const osg::Vec3d& delta_pos )
 
 bool QOsgViewer::handle( const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa )
 {
-	if ( ea.getEventType() == osgGA::GUIEventAdapter::RESIZE )
+	switch ( ea.getEventType() )
 	{
+	case osgGA::GUIEventAdapter::RESIZE:
 		width_ = ea.getWindowWidth();
 		height_ = ea.getWindowHeight();
 		xo::log::trace( "Viewer resized to ", width_, "x", height_ );
 		updateHudPos();
 		return true;
+	case osgGA::GUIEventAdapter::PUSH:
+		mouse_drag_ = false;
+		break;
+	case osgGA::GUIEventAdapter::MOVE:
+		mouse_hover_frames_ = 0;
+		break;
+	case osgGA::GUIEventAdapter::DRAG:
+		mouse_hover_frames_ = 0;
+		mouse_drag_ = true;
+		break;
+	case osgGA::GUIEventAdapter::RELEASE:
+		if ( !mouse_drag_ ) {
+			updateIntersections( ea );
+			emit clicked();
+			return true;
+		}
+		break;
+	default:
+		break;
 	}
+
+	if ( ++mouse_hover_frames_ == 10 ) {
+		updateIntersections( ea );
+		emit hover();
+	}
+
 	return false;
 }
 
-void QOsgViewer::updateIntersections( const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa )
+void QOsgViewer::updateIntersections( const osgGA::GUIEventAdapter& ea )
 {
 	view_->computeIntersections( ea, intersections_ );
 }
@@ -255,7 +286,7 @@ void QOsgViewer::startCapture( const std::string& filename )
 {
 	// create capture handler
 	xo::log::info( "Started capturing video to ", filename );
-	capture_handler_ = new osgViewer::ScreenCaptureHandler( 
+	capture_handler_ = new osgViewer::ScreenCaptureHandler(
 		new osgViewer::ScreenCaptureHandler::WriteToFile( filename, "png", osgViewer::ScreenCaptureHandler::WriteToFile::SEQUENTIAL_NUMBER ), -1 );
 	view_->addEventHandler( capture_handler_ );
 	capture_handler_->startCapture();
