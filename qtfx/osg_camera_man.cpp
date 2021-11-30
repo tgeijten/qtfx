@@ -1,7 +1,5 @@
 #include "osg_camera_man.h"
-#include "xo/system/log_sink.h"
 #include <functional>
-#include "xo/system/log.h"
 
 using namespace osg;
 using namespace xo::angle_literals;
@@ -166,14 +164,6 @@ namespace vis
 
 	bool osg_camera_man::handleMousePush( const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& us )
 	{
-		if ( auto* view = dynamic_cast<osgViewer::View*>( &us ) ) {
-			//osgUtil::LineSegmentIntersector::Intersections intersections;
-			//view->computeIntersections( ea, intersections );
-			//for ( const auto& in : intersections )
-			//	if ( auto* geom = in.drawable->asGeometry() )
-			//		xo::log::info( geom );
-		}
-
 		return osgGA::OrbitManipulator::handleMousePush( ea, us );
 	}
 

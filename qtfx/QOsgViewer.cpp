@@ -9,6 +9,7 @@
 #include "xo/geometry/quat.h"
 #include "osg/Material"
 #include "osg/PositionAttitudeTransform"
+#include "osgUtil/LineSegmentIntersector"
 
 // class for routing GUI events to QOsgViewer
 // This is needed because QOsgViewer can't derive from GUIEventHandler directly
@@ -17,7 +18,13 @@ class QOsgEventHandler : public osgGA::GUIEventHandler
 { 
 public:
 	QOsgEventHandler( QOsgViewer& viewer ) : viewer_( viewer ) {}
-	virtual bool handle( const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa ) { return viewer_.handle( ea, aa ); }
+	virtual bool handle( const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa ) {
+		if ( ea.getEventType() == osgGA::GUIEventAdapter::PUSH ) {
+			viewer_.updateIntersections( ea, aa );
+		}
+
+		return viewer_.handle( ea, aa );
+	}
 private:
 	QOsgViewer& viewer_;
 };
@@ -232,6 +239,11 @@ bool QOsgViewer::handle( const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapt
 		return true;
 	}
 	return false;
+}
+
+void QOsgViewer::updateIntersections( const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa )
+{
+	view_->computeIntersections( ea, intersections_ );
 }
 
 void QOsgViewer::enableObjectCache( bool enable )

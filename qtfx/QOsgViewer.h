@@ -9,6 +9,7 @@
 #include <osgViewer/ViewerEventHandlers>
 #include <osgQt/GraphicsWindowQt>
 #include <osg/PositionAttitudeTransform>
+#include <osgUtil/LineSegmentIntersector>
 #include <osgDB/Options>
 #include "osg_camera_man.h"
 
@@ -39,8 +40,11 @@ public:
 	vis::osg_camera_man& getCameraMan() { return *camera_man_; }
 	void setFrameTime( double t );
 	bool handle( const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa );
+	void updateIntersections( const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa );
+	osgUtil::LineSegmentIntersector::Intersections& getIntersections() { return intersections_; }
 	osgQt::GLWidget* viewWidget() { return view_widget_; }
 	void enableObjectCache( bool enable );
+	osgViewer::View& getMainView() { return *view_; }
 
 public slots:
 	void timerUpdate();
@@ -51,6 +55,8 @@ protected:
 
 	void updateHudPos();
 	void updateLightPos();
+	virtual void viewerInit() override;
+
 	size_t frame_count_;
 	QTimer timer_;
 	int width_, height_;
@@ -68,6 +74,6 @@ protected:
 
 	double current_frame_time_;
 	double last_drawn_frame_time_;
-	virtual void viewerInit() override;
 
+	osgUtil::LineSegmentIntersector::Intersections intersections_;
 };
