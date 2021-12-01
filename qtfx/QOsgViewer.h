@@ -16,6 +16,9 @@
 #include "xo/filesystem/path.h"
 #include "xo/geometry/vec3_type.h"
 #include "osgGA/GUIEventAdapter"
+#include "xo/time/timer.h"
+
+#include <string>
 
 class QOsgViewer : public QWidget, public osgViewer::CompositeViewer
 {
@@ -44,12 +47,14 @@ public:
 	bool handle( const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa );
 	void updateIntersections( const osgGA::GUIEventAdapter& ea );
 	const osgUtil::LineSegmentIntersector::Intersections& getIntersections() const { return intersections_; }
-	const osgUtil::LineSegmentIntersector::Intersection* getIntersection() const { return !intersections_.empty() ? &( *intersections_.begin() ) : nullptr; }
+	size_t getIntersectionCount() const { return intersections_.size(); }
+	osg::Node* getTopNamedIntersectionNode( const std::string& skipName = "!" ) const;
 	osgQt::GLWidget* viewWidget() { return view_widget_; }
 	void enableObjectCache( bool enable );
 	osgViewer::View& getMainView() { return *view_; }
 
 signals:
+	void pressed();
 	void clicked();
 	void hover();
 	void tooltip();
@@ -83,7 +88,10 @@ protected:
 	double current_frame_time_;
 	double last_drawn_frame_time_;
 
-	bool mouse_drag_;
-	size_t mouse_hover_frames_;
+	size_t mouse_drag_count_;
+	bool mouse_hover_allowed_;
+	xo::timer mouse_hover_timer_;
+	xo::time mouse_hover_duration_;
+
 	osgUtil::LineSegmentIntersector::Intersections intersections_;
 };

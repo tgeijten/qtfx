@@ -31,8 +31,9 @@ QOsgViewer::QOsgViewer( QWidget* parent /*= 0*/, Qt::WindowFlags f /*= 0*/, osgV
 	capture_handler_( nullptr ),
 	scene_light_offset_( -2, 8, 3 ),
 	current_frame_time_( -1 ),
-	mouse_drag_( false ),
-	mouse_hover_frames_( 0 )
+	mouse_drag_count_( 0 ),
+	mouse_hover_allowed_( false ),
+	mouse_hover_duration_( xo::time_from_milliseconds( 100 ) )
 {
 	setThreadingModel( threadingModel );
 
@@ -244,17 +245,23 @@ bool QOsgViewer::handle( const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapt
 		updateHudPos();
 		return true;
 	case osgGA::GUIEventAdapter::PUSH:
-		mouse_drag_ = false;
+		if ( ea.getButton() == osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON ) {
+			updateIntersections( ea );
+			emit pressed();
+		}
+		mouse_drag_count_ = 0;
+		mouse_hover_allowed_ = false;
 		break;
 	case osgGA::GUIEventAdapter::MOVE:
-		mouse_hover_frames_ = 0;
+		mouse_hover_timer_.restart();
+		mouse_hover_allowed_ = true;
 		break;
 	case osgGA::GUIEventAdapter::DRAG:
-		mouse_hover_frames_ = 0;
-		mouse_drag_ = true;
+		++mouse_drag_count_;
+		mouse_hover_allowed_ = false;
 		break;
 	case osgGA::GUIEventAdapter::RELEASE:
-		if ( !mouse_drag_ ) {
+		if ( mouse_drag_count_ <= 2 && ea.getButton() == osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON ) {
 			updateIntersections( ea );
 			emit clicked();
 			return true;
@@ -264,7 +271,8 @@ bool QOsgViewer::handle( const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapt
 		break;
 	}
 
-	if ( ++mouse_hover_frames_ == 10 ) {
+	if ( mouse_hover_allowed_ && mouse_hover_timer_() >= mouse_hover_duration_ ) {
+		mouse_hover_allowed_ = false;
 		updateIntersections( ea );
 		emit hover();
 	}
@@ -275,6 +283,22 @@ bool QOsgViewer::handle( const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapt
 void QOsgViewer::updateIntersections( const osgGA::GUIEventAdapter& ea )
 {
 	view_->computeIntersections( ea, intersections_ );
+}
+
+osg::Node* QOsgViewer::getTopNamedIntersectionNode( const std::string& skipName ) const
+{
+	for ( auto& is : intersections_ )
+	{
+		for ( auto it = is.nodePath.rbegin(); it != is.nodePath.rend(); it++ ) {
+			const auto& name = ( *it )->getName();
+			if ( name.empty() )
+				continue;
+			else if ( name != skipName )
+				return *it;
+			else break;
+		}
+	}
+	return nullptr;
 }
 
 void QOsgViewer::enableObjectCache( bool enable )
