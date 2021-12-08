@@ -34,3 +34,14 @@ QFont getMonospaceFont( int pointSize, int weight )
 	return QFont( "Consolas", pointSize, weight );
 #endif
 }
+
+void cycleTabWidget( QTabWidget* wdg, int ofs )
+{
+	if ( wdg->count() > 1 )
+	{
+		int newIdx = ( wdg->currentIndex() + ofs ) % wdg->count();
+		if ( newIdx < 0 )
+			newIdx += wdg->count();
+		wdg->setCurrentIndex( newIdx );
+	}
+}
