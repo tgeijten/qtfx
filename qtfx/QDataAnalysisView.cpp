@@ -17,7 +17,6 @@
 #include "xo/container/container_tools.h"
 #include "qcustomplot/qcustomplot.h"
 #include "xo/numerical/bounds.h"
-#include "xo/system/debug_timer.h"
 
 QDataAnalysisView::QDataAnalysisView( QDataAnalysisModel* m, QWidget* parent ) :
 	QWidget( parent ),
