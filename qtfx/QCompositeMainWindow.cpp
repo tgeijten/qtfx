@@ -8,7 +8,8 @@
 #include <iostream>
 #include <QFileDialog>
 #include <QSettings>
-#include "qevent.h"
+#include <qevent.h>
+#include <QMimeData>
 
 using std::cout;
 using std::endl;
