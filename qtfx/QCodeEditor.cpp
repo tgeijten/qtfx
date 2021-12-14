@@ -40,6 +40,7 @@ QCodeEditor::QCodeEditor( QWidget* parent ) :
 	connect( this, SIGNAL( updateRequest( QRect, int ) ), this, SLOT( updateLineNumberArea( QRect, int ) ) );
 
 	updateLineNumberAreaWidth( 0 );
+	setAcceptDrops( false );
 }
 
 QCodeEditor::~QCodeEditor()

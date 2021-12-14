@@ -57,7 +57,9 @@ protected:
 	void restoreSettings( bool skipGeometry = false );
 	void saveSettings();
 
-	virtual void closeEvent( QCloseEvent *event ) override;
+	void closeEvent( QCloseEvent *event ) override;
+	void dragEnterEvent( QDragEnterEvent* event ) override;
+	void dropEvent( QDropEvent* event ) override;
 
 	void information( const QString& title, const QString& message );
 	void warning( const QString& title, const QString& message );

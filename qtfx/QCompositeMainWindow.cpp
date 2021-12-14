@@ -19,7 +19,9 @@ QCompositeMainWindow::QCompositeMainWindow( QWidget* parent, Qt::WindowFlags fla
 	windowMenu( nullptr ),
 	statusBar( nullptr ),
 	settings( nullptr )
-{}
+{
+	setAcceptDrops( true );
+}
 
 QCompositeMainWindow::~QCompositeMainWindow()
 {}
@@ -208,6 +210,22 @@ void QCompositeMainWindow::closeEvent( QCloseEvent* event )
 		event->accept();
 	}
 	else event->ignore();
+}
+
+void QCompositeMainWindow::dragEnterEvent( QDragEnterEvent* event )
+{
+	if ( event->mimeData()->hasUrls() ) {
+		event->acceptProposedAction();
+	}
+}
+
+void QCompositeMainWindow::dropEvent( QDropEvent* event )
+{
+	for ( const QUrl& url : event->mimeData()->urls() )
+	{
+		QString fileName = url.toLocalFile();
+		openFile( fileName );
+	}
 }
 
 void QCompositeMainWindow::information( const QString& title, const QString& message )
