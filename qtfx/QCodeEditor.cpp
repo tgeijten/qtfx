@@ -65,7 +65,7 @@ void QCodeEditor::open( const QString& filename )
 void QCodeEditor::save()
 {
 	QFile file( fileName );
-	if ( !file.open( QIODevice::WriteOnly ) )
+	if ( !file.open( QIODevice::WriteOnly | QIODevice::Text ) )
 	{
 		QMessageBox::critical( this, "Error writing file", "Could not open file " + fileName );
 		return;
