@@ -197,6 +197,11 @@ void QDataAnalysisView::reset()
 	updateFilter();
 }
 
+void QDataAnalysisView::setRange( double lower, double upper )
+{
+	customPlot->xAxis->setRange( lower, upper );
+}
+
 void QDataAnalysisView::updateIndicator()
 {
 	customPlotLine->start->setCoords( currentTime, customPlot->yAxis->range().lower );
