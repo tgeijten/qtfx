@@ -1,22 +1,22 @@
 #include "QDataAnalysisView.h"
 
+#include <algorithm>
+
+#include "qcustomplot/qcustomplot.h"
 #include "QAction"
 #include "QHeaderView"
-#include <algorithm>
-#include "xo/utility/color.h"
-#include "xo/system/log.h"
-#include "xo/xo_types.h"
 #include "qtfx.h"
-#include <array>
-#include "xo/system/log.h"
-#include "xo/container/sorted_vector.h"
-#include "xo/numerical/constants.h"
 #include "qt_convert.h"
-#include "xo/numerical/compare.h"
-#include "xo/numerical/math.h"
+
 #include "xo/container/container_tools.h"
-#include "qcustomplot/qcustomplot.h"
+#include "xo/container/sorted_vector.h"
 #include "xo/numerical/bounds.h"
+#include "xo/numerical/compare.h"
+#include "xo/numerical/constants.h"
+#include "xo/numerical/math.h"
+#include "xo/system/log.h"
+#include "xo/utility/color.h"
+#include "xo/xo_types.h"
 
 QDataAnalysisView::QDataAnalysisView( QDataAnalysisModel* m, QWidget* parent ) :
 	QWidget( parent ),
@@ -200,6 +200,7 @@ void QDataAnalysisView::reset()
 void QDataAnalysisView::setRange( double lower, double upper )
 {
 	customPlot->xAxis->setRange( lower, upper );
+	customPlot->replot();
 }
 
 void QDataAnalysisView::updateIndicator()
