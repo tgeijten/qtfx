@@ -19,8 +19,8 @@ public:
 	virtual void saveFileAs( const QString& filename ) { }
 	virtual bool tryExit() { return true; }
 
-	QDockWidget* createDockWidget( const QString& title, QWidget* widget, Qt::DockWidgetArea area );
-	int registerDockWidget( QDockWidget* widget, const QString& menu_text );
+	QDockWidget* createDockWidget( const QString& title, QWidget* widget, Qt::DockWidgetArea area, const QKeySequence& shortcut = 0 );
+	int registerDockWidget( QDockWidget* widget, const QString& menu_text, const QKeySequence& shortcut = 0 );
 
 public slots:
 	virtual void fileOpenTriggered();
