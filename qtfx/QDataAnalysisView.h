@@ -32,6 +32,7 @@ public:
 	void setRange( double lower, double upper );
 	void setLineWidth( float f ) { lineWidth = f; }
 	void setAutoFitVerticalAxis( bool b ) { autoFitVerticalAxis = b; }
+	void setFilterText( const QString& str  ) { filter->setText( str ); }
 
 public slots:
 	void itemChanged( QTreeWidgetItem* item, int column );
