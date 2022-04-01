@@ -33,6 +33,7 @@ public:
 	void setLineWidth( float f ) { lineWidth = f; }
 	void setAutoFitVerticalAxis( bool b ) { autoFitVerticalAxis = b; }
 	void setFilterText( const QString& str  ) { filter->setText( str ); }
+	QLineEdit* filterWidget() { return filter; }
 
 public slots:
 	void itemChanged( QTreeWidgetItem* item, int column );

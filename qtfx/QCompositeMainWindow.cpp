@@ -76,8 +76,10 @@ void QCompositeMainWindow::windowMenuTriggered()
 
 	if ( index >= 0 && index < dockWidgets.size() )
 	{
-		dockWidgets[ index ]->show();
-		dockWidgets[ index ]->raise();
+		dockWidgets[ index ].first->show();
+		dockWidgets[ index ].first->raise();
+		if ( dockWidgets[ index ].second )
+			dockWidgets[ index ].second->setFocus();
 	}
 }
 
@@ -135,7 +137,7 @@ QMenu* QCompositeMainWindow::createWindowMenu()
 	return windowMenu;
 }
 
-QDockWidget* QCompositeMainWindow::createDockWidget( const QString& title, QWidget* widget, Qt::DockWidgetArea area, const QKeySequence& shortcut )
+QDockWidget* QCompositeMainWindow::createDockWidget( const QString& title, QWidget* widget, Qt::DockWidgetArea area, QWidget* focusWidget, const QKeySequence& shortcut )
 {
 	QWidget* layoutWidget = new QWidget();
 	QVBoxLayout* layout = new QVBoxLayout( layoutWidget );
@@ -150,14 +152,14 @@ QDockWidget* QCompositeMainWindow::createDockWidget( const QString& title, QWidg
 	d->setWidget( layoutWidget );
 
 	addDockWidget( area, d );
-	registerDockWidget( d, title, shortcut );
+	registerDockWidget( d, title, focusWidget, shortcut );
 
 	return d;
 }
 
-int QCompositeMainWindow::registerDockWidget( QDockWidget* widget, const QString& menu_text, const QKeySequence& shortcut )
+int QCompositeMainWindow::registerDockWidget( QDockWidget* widget, const QString& menu_text, QWidget* focusWidget, const QKeySequence& shortcut )
 {
-	dockWidgets.push_back( widget );
+	dockWidgets.push_back( { widget, focusWidget } );
 	int index = static_cast<int>( dockWidgets.size() ) - 1;
 	if ( windowMenu )
 	{
