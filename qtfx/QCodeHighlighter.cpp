@@ -18,7 +18,7 @@ QCodeHighlighter::QCodeHighlighter( QTextDocument* parent, Language l ) : QSynta
 	setLanguage( l );
 }
 
-void QCodeHighlighter::highlightBlock( const QString &text )
+void QCodeHighlighter::highlightBlock( const QString& text )
 {
 	for ( auto& r : rules )
 		applyRule( text, r );
@@ -65,7 +65,7 @@ void QCodeHighlighter::highlightBlock( const QString &text )
 	}
 }
 
-bool QCodeHighlighter::isBetweenQuotes( const QString & text, int index )
+bool QCodeHighlighter::isBetweenQuotes( const QString& text, int index )
 {
 	int quotes_before = 0;
 	for ( int i = 0; i < index; ++i )
@@ -73,7 +73,7 @@ bool QCodeHighlighter::isBetweenQuotes( const QString & text, int index )
 	return xo::is_odd( quotes_before );
 }
 
-QRegularExpressionMatch QCodeHighlighter::match( const QRegularExpression & regex, const QString & text, int index )
+QRegularExpressionMatch QCodeHighlighter::match( const QRegularExpression& regex, const QString& text, int index )
 {
 	auto m = regex.match( text, index );
 	while ( m.hasMatch() && isBetweenQuotes( text, m.capturedStart() ) )
