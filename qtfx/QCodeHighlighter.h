@@ -23,10 +23,15 @@ public:
 	void setLanguage( Language l );
 	static Language detectLanguage( const QString& filename );
 	static void registerLanguage( const QString& extension, Language l );
+
 	Language language;
-	QString languageComment;
+	QString lineCommentString;
+
+	QRegularExpression commentLine;
 	QRegularExpression increaseIndentRegex;
 	QRegularExpression decreaseIndentRegex;
+	QRegularExpression commentStartRegex;
+	QRegularExpression commentEndRegex;
 
 protected:
 	virtual void highlightBlock( const QString& text );
@@ -35,6 +40,7 @@ protected:
 private:
 	struct HighlightRule {
 		HighlightRule( const char* e, QTextCharFormat f ) : regExp( e ), format( f ) {}
+		HighlightRule( const QRegularExpression& e, QTextCharFormat f ) : regExp( e ), format( f ) {}
 		QRegularExpression regExp;
 		QTextCharFormat format;
 	};
@@ -54,7 +60,4 @@ private:
 	QTextCharFormat numberFormat;
 	QTextCharFormat specialFormat;
 	QTextCharFormat macroFormat;
-
-	QRegularExpression commentStartRegex;
-	QRegularExpression commentEndRegex;
 };

@@ -116,12 +116,14 @@ void QCodeHighlighter::setRegexes()
 		rules.emplace_back( "\\b([-+]?[\\.\\d]+)", numberFormat );
 		rules.emplace_back( "\\@\\w+", macroFormat );
 		rules.emplace_back( "\\$\\w+", macroFormat );
-		rules.emplace_back( "(#|//)[^\\n]*", commentFormat ); // #
+
+		commentLine.setPattern( "(#|//)[^\\n]*" );
+		rules.emplace_back( commentLine, commentFormat );
 		commentStartRegex.setPattern( "\\/\\*" );
 		commentEndRegex.setPattern( "\\*\\/" );
 		increaseIndentRegex.setPattern( "[\\{\\[]" );
 		decreaseIndentRegex.setPattern( "[\\}\\]]" );
-		languageComment = "#";
+		lineCommentString = "#";
 		break;
 
 	case Language::lua:
@@ -129,12 +131,16 @@ void QCodeHighlighter::setRegexes()
 		rules.emplace_back( "\"[^\\n\"]*\"", valueFormat );
 		rules.emplace_back( "\\b([-+]?[\\.\\d]+)", numberFormat );
 		rules.emplace_back( "[\\+\\-\\*\\/\\%\\\\#\\&\\~\\|\\<\\>\\(\\)\\{\\}\\[\\]\\=\\;\\:\\,\\.]", operatorFormat );
-		rules.emplace_back( "--[^\\n]*", commentFormat );
+
+		commentLine.setPattern( "--[^\\n]*" );
+		rules.emplace_back( commentLine, commentFormat );
 		commentStartRegex.setPattern( "--\\[\\[" );
 		commentEndRegex.setPattern( "\\]\\]" );
 		increaseIndentRegex.setPattern( "^\\s*(for|while|repeat|if|elseif|else|function)\\b" );
 		decreaseIndentRegex.setPattern( "^\\s*(end|until|else|elseif)\\b" );
-		languageComment = "--";
+		lineCommentString = "--";
+		break;
+
 	default:
 		break;
 	}

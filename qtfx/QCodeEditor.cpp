@@ -156,7 +156,7 @@ void QCodeEditor::toggleComments()
 	if ( first_line != lines.end() )
 	{
 		s.clear();
-		auto comment = syntaxHighlighter->languageComment.toStdString();
+		auto comment = syntaxHighlighter->lineCommentString.toStdString();
 		if ( xo::str_begins_with( xo::trim_left_str( *first_line ), comment ) )
 		{
 			// remove comments
@@ -242,11 +242,14 @@ int QCodeEditor::lineNumberAreaWidth()
 
 void QCodeEditor::formatDocument()
 {
+	const auto& incRegex = syntaxHighlighter->increaseIndentRegex;
+	const auto& decRegex = syntaxHighlighter->decreaseIndentRegex;
+
 	auto cursor = textCursor();
 	cursor.beginEditBlock();
 	cursor.movePosition( QTextCursor::Start );
 
-	auto indents = 0;
+	int indents = 0;
 	while ( !cursor.atEnd() )
 	{
 		QString line = cursor.block().text();
@@ -260,7 +263,7 @@ void QCodeEditor::formatDocument()
 		while ( leadingWhitespace < line.size() && line[ leadingWhitespace ].isSpace() )
 			++leadingWhitespace;
 
-		auto decStart = line.indexOf( syntaxHighlighter->decreaseIndentRegex );
+		auto decStart = line.indexOf( decRegex );
 		bool startsWithDecrease = decStart >= 0 && decStart <= leadingWhitespace;
 		auto desired_tabs = indents > 0 && startsWithDecrease ? indents - 1 : indents;
 
@@ -272,9 +275,11 @@ void QCodeEditor::formatDocument()
 		}
 
 		// update indents
-		auto incIndent = line.count( syntaxHighlighter->increaseIndentRegex );
-		auto decIndent = line.count( syntaxHighlighter->decreaseIndentRegex );
-		indents += incIndent - decIndent;
+		auto commentStart = line.indexOf( syntaxHighlighter->commentLine );
+		for ( int idx = line.indexOf( incRegex ); idx != -1; idx = line.indexOf( incRegex, idx + 1 ) )
+			indents += int( commentStart == -1 || commentStart > idx );
+		for ( int idx = line.indexOf( decRegex ); idx != -1; idx = line.indexOf( decRegex, idx + 1 ) )
+			indents -= int( commentStart == -1 || commentStart > idx );
 
 		if ( !cursor.movePosition( QTextCursor::NextBlock ) )
 			break; // prevent infinite loop if this fails
