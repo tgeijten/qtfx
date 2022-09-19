@@ -231,7 +231,8 @@ void QOsgViewer::setClearColor( const osg::Vec4& col )
 
 void QOsgViewer::moveCamera( const osg::Vec3d& delta_pos )
 {
-	camera_man_->setCenter( camera_man_->getCenter() + delta_pos );
+	if ( !delta_pos.isNaN() )
+		camera_man_->setCenter( camera_man_->getCenter() + delta_pos );
 }
 
 bool QOsgViewer::handle( const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa )
