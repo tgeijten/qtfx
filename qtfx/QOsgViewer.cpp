@@ -10,6 +10,7 @@
 #include "osg/Material"
 #include "osg/PositionAttitudeTransform"
 #include "osgUtil/LineSegmentIntersector"
+#include "xo/system/assert.h"
 
 // class for routing GUI events to QOsgViewer
 // This is needed because QOsgViewer can't derive from GUIEventHandler directly
@@ -170,7 +171,7 @@ void QOsgViewer::createHud( const xo::path& file )
 	hud_node_ = new osg::PositionAttitudeTransform;
 
 	osg::ref_ptr<osg::Image> img = osgDB::readImageFile( file.str() );
-	xo_assert( img.valid() );
+	xo_error_if( !img.valid(), "Could not open " + file.str() );
 	auto width = osg::Vec3f( hud_size, 0, 0 );
 	auto height = osg::Vec3f( 0, hud_size, 0 );
 
