@@ -11,6 +11,22 @@
 #include "osg/PositionAttitudeTransform"
 #include "osgUtil/LineSegmentIntersector"
 #include "xo/system/assert.h"
+#include "osgDB/FileUtils"
+#include "xo/filesystem/filesystem.h"
+#include "xo/container/container_tools.h"
+
+// fix OSG plugin folder path
+void fix_osg_library_file_path() {
+#if defined( __linux__ )
+	const auto search_path = ( xo::get_application_dir().parent_path() / "lib" ).str();
+	auto path_list = osgDB::getLibraryFilePathList();
+	if ( !xo::contains( path_list, search_path ) ) {
+		path_list.push_back( search_path );
+		osgDB::setLibraryFilePathList( path_list );
+		xo::log::info( "Added path to OSG list: ", search_path );
+	}
+#endif
+}
 
 // class for routing GUI events to QOsgViewer
 // This is needed because QOsgViewer can't derive from GUIEventHandler directly
@@ -36,6 +52,8 @@ QOsgViewer::QOsgViewer( QWidget* parent /*= 0*/, Qt::WindowFlags f /*= 0*/, osgV
 	mouse_hover_allowed_( false ),
 	mouse_hover_duration_( xo::time_from_milliseconds( 100 ) )
 {
+	fix_osg_library_file_path();
+
 	setThreadingModel( threadingModel );
 
 	// disable the default setting of viewer.done() by pressing Escape.
