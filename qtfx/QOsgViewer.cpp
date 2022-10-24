@@ -23,7 +23,7 @@ void fix_osg_library_file_path() {
 	if ( !xo::contains( path_list, search_path ) ) {
 		path_list.push_back( search_path );
 		osgDB::setLibraryFilePathList( path_list );
-		xo::log::info( "Added path to OSG list: ", search_path );
+		xo::log::debug( "Added OSG library path: ", search_path );
 	}
 #endif
 }
