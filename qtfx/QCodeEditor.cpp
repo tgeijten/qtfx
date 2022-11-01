@@ -181,6 +181,9 @@ void QCodeEditor::toggleComments()
 			s.resize( s.size() - 1 );
 		textCursor().insertText( s.c_str() );
 	}
+	auto cursor = textCursor();
+	cursor.movePosition( QTextCursor::StartOfLine );
+	setTextCursor( cursor );
 }
 
 void QCodeEditor::duplicateText()
