@@ -84,7 +84,7 @@ QDataAnalysisView::QDataAnalysisView( QDataAnalysisModel* m, QWidget* parent ) :
 
 int QDataAnalysisView::decimalPoints( double v )
 {
-	if ( v != 0 && abs( v ) < 0.1 ) 
+	if ( v != 0 && abs( v ) < 0.1 )
 		return 6;
 	else return 3;
 }
@@ -142,11 +142,25 @@ void QDataAnalysisView::mouseEvent( QMouseEvent* e )
 	}
 }
 
-void QDataAnalysisView::rangeChanged( const QCPRange &newRange, const QCPRange &oldRange )
+void QDataAnalysisView::rangeChanged( const QCPRange& newRange, const QCPRange& oldRange )
 {
 	if ( model->hasData() )
 	{
-		QCPRange fixedRange = QCPRange( xo::max( newRange.lower, model->timeStart() ), xo::min( newRange.upper, model->timeFinish() ) );
+		const auto modelRange = QCPRange( model->timeStart(), model->timeFinish() + 1e-4 );
+		auto fixedRange = QCPRange( xo::max( newRange.lower, modelRange.lower ), xo::min( newRange.upper, modelRange.upper ) );
+		if ( fixedRange.size() < modelRange.size() && model->frameCount() > minDataPointsVisible ) {
+			auto minZoomRange = averageFrameDuration * minDataPointsVisible;
+			if ( fixedRange.size() < minZoomRange ) {
+				fixedRange.lower = fixedRange.center() - minZoomRange / 2;
+				fixedRange.upper = fixedRange.lower + minZoomRange;
+			}
+			if ( fixedRange.lower < modelRange.lower )
+				fixedRange += modelRange.lower - fixedRange.lower;
+			if ( fixedRange.upper > modelRange.upper )
+				fixedRange += modelRange.upper - fixedRange.upper;
+		}
+		else fixedRange = modelRange;
+
 		if ( fixedRange != newRange )
 		{
 			customPlot->xAxis->blockSignals( true );
@@ -182,7 +196,7 @@ void QDataAnalysisView::reset()
 	itemList->clear();
 	clearSeries();
 
-	for ( int  i = 0; i < model->channelCount(); ++i )
+	for ( int i = 0; i < model->channelCount(); ++i )
 	{
 		auto* wdg = new QTreeWidgetItem( itemList, QStringList( model->label( i ) ) );
 		wdg->setTextAlignment( 1, Qt::AlignRight );
@@ -310,7 +324,7 @@ void QDataAnalysisView::addSeries( int idx )
 	for ( int frame = 0; frame < model->frameCount(); ++frame )
 		graph->addData( model->timeValue( frame ), model->value( idx, frame ) );
 	if ( model->frameCount() > 0 )
-		averageFrameDuration = ( model->timeFinish() - model->timeStart() ) / model->frameCount() ;
+		averageFrameDuration = ( model->timeFinish() - model->timeStart() ) / model->frameCount();
 	else averageFrameDuration = 0.0f;
 
 	series.emplace_back( Series{ idx, freeColors.front(), graph } );

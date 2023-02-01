@@ -66,8 +66,10 @@ private:
 	size_t maxSeriesCount = 20;
 	int smallRefreshItemCount = 100;
 	float averageFrameDuration = 0.0f;
-	float lineWidth = 1.5f;
+	float lineWidth = 1.0f;
 	bool autoFitVerticalAxis = false;
+	float minDataPointsVisible = 8;
+
 	int currentUpdateIdx;
 	double currentTime;
 	QCheckBox* selectBox;
