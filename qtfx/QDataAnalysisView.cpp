@@ -7,6 +7,7 @@
 #include "QHeaderView"
 #include "qtfx.h"
 #include "qt_convert.h"
+#include "gui_profiler.h"
 
 #include "xo/container/container_tools.h"
 #include "xo/container/sorted_vector.h"
@@ -23,6 +24,8 @@ QDataAnalysisView::QDataAnalysisView( QDataAnalysisModel* m, QWidget* parent ) :
 	currentUpdateIdx( 0 ),
 	model( m )
 {
+	GUI_PROFILE_FUNCTION;
+
 	filter = new QLineEdit( this );
 	filter->setPlaceholderText( "Filter channels" );
 	connect( filter, &QLineEdit::textChanged, this, &QDataAnalysisView::filterChanged );
@@ -91,6 +94,8 @@ int QDataAnalysisView::decimalPoints( double v )
 
 void QDataAnalysisView::refresh( double time, bool refreshAll )
 {
+	GUI_PROFILE_FUNCTION;
+
 	if ( itemList->topLevelItemCount() != model->channelCount() )
 		return reset();
 
@@ -193,6 +198,8 @@ void QDataAnalysisView::setSelectionState( int state )
 
 void QDataAnalysisView::reset()
 {
+	GUI_PROFILE_FUNCTION;
+
 	itemList->clear();
 	clearSeries();
 
@@ -311,6 +318,8 @@ void QDataAnalysisView::updateSeries( int idx )
 
 void QDataAnalysisView::addSeries( int idx )
 {
+	GUI_PROFILE_FUNCTION;
+
 	QCPGraph* graph = customPlot->addGraph();
 	QString name = model->label( idx );
 	graph->setName( name );
@@ -341,6 +350,8 @@ void QDataAnalysisView::addSeries( int idx )
 
 void QDataAnalysisView::removeSeries( int idx )
 {
+	GUI_PROFILE_FUNCTION;
+
 	auto range = customPlot->xAxis->range();
 	auto it = xo::find_if( series, [&]( auto& p ) { return idx == p.channel; } );
 
@@ -357,6 +368,8 @@ void QDataAnalysisView::removeSeries( int idx )
 
 void QDataAnalysisView::holdSeries()
 {
+	GUI_PROFILE_FUNCTION;
+
 	// remove existing 
 	for ( auto* g : heldSeries )
 		customPlot->removeGraph( g );
