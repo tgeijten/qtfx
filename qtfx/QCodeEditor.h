@@ -6,6 +6,7 @@
 #include <QPlainTextEdit>
 #include <QVector>
 #include <QPair>
+#include <QDateTime>
 
 #include "xo/serialization/serialize.h"
 #include "xo/filesystem/path.h"
