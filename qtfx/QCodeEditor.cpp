@@ -55,10 +55,9 @@ void QCodeEditor::open( const QString& filename )
 	QFile f( filename );
 	if ( f.open( QFile::ReadOnly | QFile::Text ) )
 	{
-		QTextStream str( &f );
-		QString data = str.readAll();
-		setPlainText( data );
+		setPlainText( QTextStream( &f ).readAll() );
 		fileName = filename;
+		lastModified = QFileInfo( fileName ).lastModified();
 	}
 	else xo_error( "Could not open " + filename.toStdString() );
 }
@@ -78,6 +77,7 @@ void QCodeEditor::save()
 		stream.flush();
 		file.close();
 		document()->setModified( false );
+		lastModified = QFileInfo( fileName ).lastModified();
 	}
 }
 
@@ -102,20 +102,30 @@ void QCodeEditor::saveAs( const QString& fn )
 	save();
 }
 
-void QCodeEditor::reload()
+bool QCodeEditor::reload()
 {
 	if ( document()->isModified() )
 	{
 		QString msg = fileName + " contains unsaved changes. These changes will be lost when reloading the document.";
 		if ( QMessageBox::Cancel == QMessageBox::warning( this, "Reload " + fileName, msg, QMessageBox::Discard | QMessageBox::Cancel ) )
-			return;
+			return false;
+	}
+
+	auto fileModified = QFileInfo( fileName ).lastModified();
+	if ( fileModified == lastModified )
+	{
+		xo::log::debug( "Reload skipped for modified file ", fileName.toStdString() );
+		return false;
 	}
 
 	if ( QFile f( fileName ); f.open( QFile::ReadOnly | QFile::Text ) )
 	{
+		xo::log::debug( "Reloading file ", fileName.toStdString() );
 		setPlainText( QTextStream( &f ).readAll() );
 		document()->setModified( false );
+		return true;
 	}
+	else return false;
 }
 
 void QCodeEditor::findDialog()

@@ -27,7 +27,7 @@ public slots:
 	void open( const QString& filename );
 	void save();
 	void saveAs( const QString& filename );
-	void reload();
+	bool reload();
 	void findDialog();
 	bool findNext( bool backwards = false );
 	void toggleComments();
@@ -43,6 +43,7 @@ public:
 	QString defaultFolder;
 	QString fileName;
 	QString findText;
+	QDateTime lastModified;
 
 private:
 	class QCodeHighlighter* syntaxHighlighter;
