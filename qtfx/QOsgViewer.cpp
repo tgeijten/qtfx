@@ -224,8 +224,10 @@ void QOsgViewer::updateHudPos()
 		view_->getCamera()->getProjectionMatrixAsPerspective( fovy, aspect, nearplane, farplane );
 		auto hh = tan( xo::degreed( fovy / 2 ) );
 		auto hw = tan( atan( hh * aspect ) );
+		auto hp = hw - 0.55f * hud_size;
+		auto vp = hh - 0.55f * hud_size;
 		//xo::log::info( "Updating HUD position to ", hw - 0.55f * hud_size, ", ", -hh + 0.55f * hud_size, "; aspect ratio = ", aspect );
-		hud_node_->setPosition( osg::Vec3( hw - 0.55f * hud_size, -hh + 0.55f * hud_size, -1 ) );
+		hud_node_->setPosition( osg::Vec3( hp, -vp, -1 ) );
 	}
 }
 
