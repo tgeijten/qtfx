@@ -33,8 +33,8 @@ QDataAnalysisView::QDataAnalysisView( QDataAnalysisModel* m, QWidget* parent ) :
 	selectBox = new QCheckBox( this );
 	connect( selectBox, &QCheckBox::stateChanged, this, &QDataAnalysisView::select );
 
-	auto* header = new QHGroup( this, 0, 4 );
-	*header << filter << selectBox;
+	filterGroup = new QHGroup( this, 0, 4 );
+	*filterGroup << filter << selectBox;
 
 	itemList = new QTreeWidget( this );
 	itemList->setRootIsDecorated( false );
@@ -47,7 +47,7 @@ QDataAnalysisView::QDataAnalysisView( QDataAnalysisModel* m, QWidget* parent ) :
 
 	itemGroup = new QVGroup( this, 0, 4 );
 	itemGroup->setContentsMargins( 0, 0, 0, 0 );
-	*itemGroup << header << itemList;
+	*itemGroup << filterGroup << itemList;
 	connect( itemList, &QTreeWidget::itemChanged, this, &QDataAnalysisView::itemChanged );
 
 	splitter = new QSplitter( this );

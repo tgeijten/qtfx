@@ -34,6 +34,7 @@ public:
 	void setAutoFitVerticalAxis( bool b ) { autoFitVerticalAxis = b; }
 	void setFilterText( const QString& str  ) { filter->setText( str ); }
 	QLineEdit* filterWidget() { return filter; }
+	QVGroup* itemGroupWidget() { return itemGroup; }
 
 public slots:
 	void itemChanged( QTreeWidgetItem* item, int column );
@@ -74,8 +75,9 @@ private:
 	double currentTime;
 	QCheckBox* selectBox;
 	QLineEdit* filter;
+	QGroup* filterGroup;
 	QSplitter* splitter;
-	QGroup* itemGroup;
+	QVGroup* itemGroup;
 	QTreeWidget* itemList;
 	QDataAnalysisModel* model;
 
