@@ -2,17 +2,17 @@
 
 #include "xo/container/flat_map.h"
 #include "xo/container/storage.h"
-
-#include "QWidget"
-#include "QSplitter"
-#include "QTreeWidget"
-#include "QDataAnalysisModel.h"
-
-#include "QLineEdit"
-#include "QGroup.h"
-#include "QCheckBox"
-#include "QToolButton"
 #include "xo/container/sorted_vector.h"
+
+#include <QWidget>
+#include <QSplitter>
+#include <QTreeWidget>
+#include <QLineEdit>
+#include <QGroup.h>
+#include <QCheckBox>
+#include <QPushButton>
+
+#include "QDataAnalysisModel.h"
 
 class QCPRange;
 class QCustomPlot;
