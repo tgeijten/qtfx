@@ -45,9 +45,12 @@ QDataAnalysisView::QDataAnalysisView( QDataAnalysisModel& m, QWidget* parent ) :
 	headerLabels << "Variable" << "Value";
 	itemList->setHeaderLabels( headerLabels );
 
+	keepButton = new QPushButton( "&Keep Selected Graphs", this );
+	connect( keepButton, &QPushButton::clicked, this, &QDataAnalysisView::holdSeries );
+
 	itemGroup = new QVGroup( this, 0, 4 );
 	itemGroup->setContentsMargins( 0, 0, 0, 0 );
-	*itemGroup << filterGroup << itemList;
+	*itemGroup << filterGroup << itemList << keepButton;
 	connect( itemList, &QTreeWidget::itemChanged, this, &QDataAnalysisView::itemChanged );
 
 	splitter = new QSplitter( this );

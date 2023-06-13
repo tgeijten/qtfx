@@ -79,7 +79,8 @@ private:
 	QSplitter* splitter;
 	QVGroup* itemGroup;
 	QTreeWidget* itemList;
-	QDataAnalysisModel* model;
+	QPushButton* keepButton;
+	QDataAnalysisModel& model;
 
 	QCustomPlot* customPlot;
 	QCPItemLine* customPlotLine;
