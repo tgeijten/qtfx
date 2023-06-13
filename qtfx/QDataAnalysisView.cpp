@@ -19,7 +19,7 @@
 #include "xo/utility/color.h"
 #include "xo/xo_types.h"
 
-QDataAnalysisView::QDataAnalysisView( QDataAnalysisModel* m, QWidget* parent ) :
+QDataAnalysisView::QDataAnalysisView( QDataAnalysisModel& m, QWidget* parent ) :
 	QWidget( parent ),
 	currentUpdateIdx( 0 ),
 	model( m )
@@ -82,7 +82,7 @@ QDataAnalysisView::QDataAnalysisView( QDataAnalysisModel* m, QWidget* parent ) :
 	connect( customPlot->xAxis, SIGNAL( rangeChanged( const QCPRange&, const QCPRange& ) ), this, SLOT( rangeChanged( const QCPRange&, const QCPRange& ) ) );
 
 	splitter->setSizes( QList< int >{ 100, 300 } );
-	reset();
+	reloadData();
 }
 
 int QDataAnalysisView::decimalPoints( double v )
@@ -92,14 +92,14 @@ int QDataAnalysisView::decimalPoints( double v )
 	else return 3;
 }
 
-void QDataAnalysisView::refresh( double time, bool refreshAll )
+void QDataAnalysisView::setTime( double time, bool refreshAll )
 {
 	GUI_PROFILE_FUNCTION;
 
-	if ( itemList->topLevelItemCount() != model->channelCount() )
-		return reset();
+	if ( itemList->topLevelItemCount() != model.channelCount() )
+		return reloadData();
 
-	if ( model->channelCount() == 0 )
+	if ( model.channelCount() == 0 )
 		return;
 
 	// update state
@@ -108,13 +108,13 @@ void QDataAnalysisView::refresh( double time, bool refreshAll )
 	// draw stuff if visible
 	if ( isVisible() )
 	{
-		int itemCount = refreshAll ? int( model->channelCount() ) : std::min<int>( smallRefreshItemCount, int( model->channelCount() ) );
+		int itemCount = refreshAll ? int( model.channelCount() ) : std::min<int>( smallRefreshItemCount, int( model.channelCount() ) );
 		itemList->setUpdatesEnabled( false );
 		for ( size_t i = 0; i < itemCount; ++i )
 		{
-			auto y = model->value( currentUpdateIdx, time );
+			auto y = model.value( currentUpdateIdx, time );
 			itemList->topLevelItem( currentUpdateIdx )->setText( 1, QString::asprintf( "%.*f", decimalPoints( y ), y ) );
-			++currentUpdateIdx %= model->channelCount();
+			++currentUpdateIdx %= model.channelCount();
 		}
 		itemList->setUpdatesEnabled( true );
 
@@ -139,21 +139,21 @@ void QDataAnalysisView::clearSeries()
 
 void QDataAnalysisView::mouseEvent( QMouseEvent* e )
 {
-	if ( model->hasData() && ( e->buttons() & Qt::LeftButton ) != 0 )
+	if ( model.hasData() && ( e->buttons() & Qt::LeftButton ) != 0 )
 	{
 		double x = customPlot->xAxis->pixelToCoord( e->pos().x() );
-		double t = model->timeValue( model->timeIndex( x ) );
+		double t = model.timeValue( model.timeIndex( x ) );
 		emit timeChanged( t );
 	}
 }
 
 void QDataAnalysisView::rangeChanged( const QCPRange& newRange, const QCPRange& oldRange )
 {
-	if ( model->hasData() )
+	if ( model.hasData() )
 	{
-		const auto modelRange = QCPRange( model->timeStart(), model->timeFinish() + 1e-4 );
+		const auto modelRange = QCPRange( model.timeStart(), model.timeFinish() + 1e-4 );
 		auto fixedRange = QCPRange( xo::max( newRange.lower, modelRange.lower ), xo::min( newRange.upper, modelRange.upper ) );
-		if ( fixedRange.size() < modelRange.size() && model->frameCount() > minDataPointsVisible ) {
+		if ( fixedRange.size() < modelRange.size() && model.frameCount() > minDataPointsVisible ) {
 			auto minZoomRange = averageFrameDuration * minDataPointsVisible;
 			if ( fixedRange.size() < minZoomRange ) {
 				fixedRange.lower = fixedRange.center() - minZoomRange / 2;
@@ -196,19 +196,19 @@ void QDataAnalysisView::setSelectionState( int state )
 	}
 }
 
-void QDataAnalysisView::reset()
+void QDataAnalysisView::reloadData()
 {
 	GUI_PROFILE_FUNCTION;
 
 	itemList->clear();
 	clearSeries();
 
-	for ( int i = 0; i < model->channelCount(); ++i )
+	for ( int i = 0; i < model.channelCount(); ++i )
 	{
-		auto* wdg = new QTreeWidgetItem( itemList, QStringList( model->label( i ) ) );
+		auto* wdg = new QTreeWidgetItem( itemList, QStringList( model.label( i ) ) );
 		wdg->setTextAlignment( 1, Qt::AlignRight );
 		wdg->setFlags( wdg->flags() | Qt::ItemIsUserCheckable );
-		wdg->setCheckState( 0, persistentSerieNames.find( model->label( i ) ) != persistentSerieNames.end() ? Qt::Checked : Qt::Unchecked );
+		wdg->setCheckState( 0, persistentSerieNames.find( model.label( i ) ) != persistentSerieNames.end() ? Qt::Checked : Qt::Unchecked );
 	}
 	itemList->resizeColumnToContents( 0 );
 
@@ -270,10 +270,10 @@ void QDataAnalysisView::fitVerticalAxis()
 	//xo::bounds<double> yrange( xo::num<double>::max, xo::num<double>::lowest );
 	xo::bounds<double> yrange( 0, 0 );
 	auto xrange = customPlot->xAxis->range();
-	int end_frame = model->timeIndex( xrange.upper );
-	for ( int frame = model->timeIndex( xrange.lower ); frame <= end_frame; ++frame )
+	int end_frame = model.timeIndex( xrange.upper );
+	for ( int frame = model.timeIndex( xrange.lower ); frame <= end_frame; ++frame )
 		for ( auto& s : series )
-			yrange.extend( model->value( s.channel, frame ) );
+			yrange.extend( model.value( s.channel, frame ) );
 
 	customPlot->yAxis->setRange( yrange.lower, yrange.upper );
 }
@@ -304,14 +304,14 @@ void QDataAnalysisView::updateSeries( int idx )
 		if ( series.size() < maxSeriesCount )
 		{
 			addSeries( idx );
-			persistentSerieNames.insert( model->label( idx ) );
+			persistentSerieNames.insert( model.label( idx ) );
 		}
 		else item->setCheckState( 0, Qt::Unchecked );
 	}
 	else if ( series_it != series.end() && item->checkState( 0 ) == Qt::Unchecked )
 	{
 		removeSeries( idx );
-		persistentSerieNames.remove( model->label( idx ) );
+		persistentSerieNames.remove( model.label( idx ) );
 	}
 	updateSelectBox();
 }
@@ -321,7 +321,7 @@ void QDataAnalysisView::addSeries( int idx )
 	GUI_PROFILE_FUNCTION;
 
 	QCPGraph* graph = customPlot->addGraph();
-	QString name = model->label( idx );
+	QString name = model.label( idx );
 	graph->setName( name );
 
 	xo_assert( !freeColors.empty() );
@@ -330,10 +330,10 @@ void QDataAnalysisView::addSeries( int idx )
 	graph->setScatterStyle( QCPScatterStyle( seriesStyle == discStyle ? QCPScatterStyle::ssDisc : QCPScatterStyle::ssNone, 4 ) );
 	graph->setPen( QPen( color, lineWidth ) );
 
-	for ( int frame = 0; frame < model->frameCount(); ++frame )
-		graph->addData( model->timeValue( frame ), model->value( idx, frame ) );
-	if ( model->frameCount() > 0 )
-		averageFrameDuration = ( model->timeFinish() - model->timeStart() ) / model->frameCount();
+	for ( int frame = 0; frame < model.frameCount(); ++frame )
+		graph->addData( model.timeValue( frame ), model.value( idx, frame ) );
+	if ( model.frameCount() > 0 )
+		averageFrameDuration = ( model.timeFinish() - model.timeStart() ) / model.frameCount();
 	else averageFrameDuration = 0.0f;
 
 	series.emplace_back( Series{ idx, freeColors.front(), graph } );

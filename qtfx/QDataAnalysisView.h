@@ -24,11 +24,11 @@ class QDataAnalysisView : public QWidget
 	Q_OBJECT
 
 public:
-	QDataAnalysisView( QDataAnalysisModel* m, QWidget* parent = 0 );
+	QDataAnalysisView( QDataAnalysisModel& m, QWidget* parent = 0 );
 	virtual ~QDataAnalysisView() {}
 
-	void refresh( double time, bool refreshAll = true );
-	void reset();
+	void setTime( double time, bool refreshAll = true );
+	void reloadData();
 	void setRange( double lower, double upper );
 	void setLineWidth( float f ) { lineWidth = f; }
 	void setAutoFitVerticalAxis( bool b ) { autoFitVerticalAxis = b; }
