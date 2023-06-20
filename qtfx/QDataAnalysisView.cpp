@@ -83,6 +83,7 @@ QDataAnalysisView::QDataAnalysisView( QDataAnalysisModel& m, QWidget* parent ) :
 	connect( customPlot, &QCustomPlot::mousePress, this, &QDataAnalysisView::mouseEvent );
 	connect( customPlot, &QCustomPlot::mouseMove, this, &QDataAnalysisView::mouseEvent );
 	connect( customPlot->xAxis, SIGNAL( rangeChanged( const QCPRange&, const QCPRange& ) ), this, SLOT( rangeChanged( const QCPRange&, const QCPRange& ) ) );
+	connect( customPlot, &QCustomPlot::legendClick, this, &QDataAnalysisView::legendClick );
 
 	splitter->setSizes( QList< int >{ 100, 300 } );
 	reloadData();
@@ -390,3 +391,14 @@ void QDataAnalysisView::holdSeries()
 
 	customPlot->replot();
 }
+
+void QDataAnalysisView::legendClick()
+{
+	auto cur_align = customPlot->axisRect()->insetLayout()->insetAlignment( 0 );
+	auto v_align = cur_align & Qt::AlignBottom ? Qt::AlignTop : Qt::AlignBottom;
+	auto h_align = Qt::AlignRight;
+
+	customPlot->axisRect()->insetLayout()->setInsetAlignment( 0, Qt::AlignRight | v_align );
+	customPlot->replot();
+}
+
