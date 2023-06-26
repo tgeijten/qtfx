@@ -38,13 +38,23 @@ namespace vis
 
 	void osg_camera_man::setCameraState( const camera_state& s )
 	{
-		std::tie( orbit_pitch, orbit_yaw, _center, _distance ) = s;
+		orbit_pitch = s.pitch;
+		orbit_yaw = s.yaw;
+		_center = focus_point_ + s.center_offset;
+		_distance = s.distance;
 		updateRotation();
 	}
 
 	camera_state osg_camera_man::getCameraState()
 	{
-		return camera_state( orbit_pitch, orbit_yaw, _center, _distance );
+		return camera_state{ orbit_pitch, orbit_yaw, _center - focus_point_, _distance };
+	}
+
+	void osg_camera_man::setFocusPoint( const osg::Vec3d& p )
+	{
+		auto center_offset = _center - focus_point_;
+		focus_point_ = p;
+		setCenter( focus_point_ + center_offset );
 	}
 
 	bool osg_camera_man::hasCameraStateChanged()

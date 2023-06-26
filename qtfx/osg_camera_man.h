@@ -7,7 +7,14 @@
 namespace vis
 {
 	using degree = xo::degreef;
-	using camera_state = std::tuple< degree, degree, osg::Vec3d, double >;
+	struct camera_state {
+		degree pitch;
+		degree yaw;
+		osg::Vec3d center_offset;
+		double distance;
+		bool operator==( const camera_state& o ) { return pitch == o.pitch && yaw == o.yaw && center_offset == o.center_offset && distance == o.distance; }
+		bool operator!=( const camera_state& o ) { return !( *this == o ); }
+	};
 
 	class osg_camera_man : public osgGA::OrbitManipulator
 	{
@@ -23,6 +30,7 @@ namespace vis
 
 		void setOrbit( degree yaw, degree pitch ) { orbit_yaw = yaw; orbit_pitch = pitch; updateRotation(); }
 		void orbitModel( degree yaw, degree pitch ) { orbit_yaw += yaw; orbit_pitch += pitch; updateRotation(); }
+		void setFocusPoint( const osg::Vec3d& p );
 
 		bool hasCameraStateChanged();
 		void handleKeyboardAnimation();
@@ -45,5 +53,6 @@ namespace vis
 		bool animationMode_;
 		degree orbit_pitch;
 		degree orbit_yaw;
+		osg::Vec3d focus_point_;
 	};
 }

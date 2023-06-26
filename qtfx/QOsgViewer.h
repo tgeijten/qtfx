@@ -36,6 +36,7 @@ public:
 	void createHud( const xo::path& file );
 	void setClearColor( const osg::Vec4& col );
 	void moveCamera( const osg::Vec3d& delta_pos );
+	void setFocusPoint( const osg::Vec3d& p );
 	void startCapture( const std::string& filename );
 	void stopCapture();
 	void captureCurrentFrame( const std::string& filename );

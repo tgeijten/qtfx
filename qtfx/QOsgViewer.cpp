@@ -256,6 +256,12 @@ void QOsgViewer::moveCamera( const osg::Vec3d& delta_pos )
 		camera_man_->setCenter( camera_man_->getCenter() + delta_pos );
 }
 
+void QOsgViewer::setFocusPoint( const osg::Vec3d& p )
+{
+	if ( !p.isNaN() )
+		camera_man_->setFocusPoint( p );
+}
+
 bool QOsgViewer::handle( const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa )
 {
 	switch ( ea.getEventType() )
