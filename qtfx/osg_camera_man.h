@@ -30,6 +30,7 @@ namespace vis
 
 		void setOrbit( degree yaw, degree pitch ) { orbit_yaw = yaw; orbit_pitch = pitch; updateRotation(); }
 		void orbitModel( degree yaw, degree pitch ) { orbit_yaw += yaw; orbit_pitch += pitch; updateRotation(); }
+		void dollyModel( float d ) { _distance += d; updateRotation(); }
 		void setFocusPoint( const osg::Vec3d& p );
 
 		bool hasCameraStateChanged();

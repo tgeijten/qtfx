@@ -45,6 +45,7 @@ public:
 	void stopTimer() { timer_.stop(); }
 	vis::osg_camera_man& getCameraMan() { return *camera_man_; }
 	void setFrameTime( double t );
+	void updateCameraAnimation( double t, float dt );
 	bool handle( const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa );
 	void updateIntersections( const osgGA::GUIEventAdapter& ea );
 	const osgUtil::LineSegmentIntersector::Intersections& getIntersections() const { return intersections_; }
@@ -62,6 +63,12 @@ signals:
 
 public slots:
 	void timerUpdate();
+
+public:
+	// animation parameters
+	vis::degree yawAnimationVelocity;
+	vis::degree pitchAnimationVelocity;
+	float dollyAnimationVelocity = 0.0f;
 
 protected:
 	bool eventFilter( QObject* obj, QEvent* event );
