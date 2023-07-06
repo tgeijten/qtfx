@@ -91,7 +91,7 @@ protected:
 	xo::vec3f scene_light_offset_;
 
 	osg::ref_ptr< osg::PositionAttitudeTransform > hud_node_;
-	float hud_size = 0.08f;
+	float hud_size = 0.1f;
 
 	double current_frame_time_;
 	double last_drawn_frame_time_;
