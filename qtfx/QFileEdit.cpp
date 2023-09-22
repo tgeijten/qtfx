@@ -41,7 +41,7 @@ void QFileEdit::browse()
 	QString result;
 
 	// update startdir if not set
-	if ( startDir.isEmpty() && !current.isEmpty())
+	if ( startDir.isEmpty() && !current.isEmpty() )
 	{
 		if ( mode == Directory )
 			startDir = current;

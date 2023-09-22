@@ -27,7 +27,7 @@ class QOsgViewer : public QWidget, public osgViewer::CompositeViewer
 public:
 	QOsgViewer( QWidget* parent = 0, Qt::WindowFlags f = 0, osgViewer::ViewerBase::ThreadingModel threadingModel = osgViewer::CompositeViewer::SingleThreaded );
 	osgQt::GLWidget* addViewWidget( osgQt::GraphicsWindowQt* gw );
-	osgQt::GraphicsWindowQt* createGraphicsWindow( int x, int y, int w, int h, const std::string& name="", bool windowDecoration=false );
+	osgQt::GraphicsWindowQt* createGraphicsWindow( int x, int y, int w, int h, const std::string& name = "", bool windowDecoration = false );
 
 	virtual void paintEvent( QPaintEvent* event ) override;
 	virtual bool event( QEvent* event ) override;

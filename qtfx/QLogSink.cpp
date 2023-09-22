@@ -8,10 +8,10 @@
 #include "xo/system/log_format.h"
 
 QLogSink::QLogSink( QWidget* parent, xo::log::level level, xo::log::sink_mode mode ) :
-QPlainTextEdit( parent ),
-sink( level, {}, mode ),
-enabled_( true ),
-buffer_mutex_( QMutex::NonRecursive )
+	QPlainTextEdit( parent ),
+	sink( level, {}, mode ),
+	enabled_( true ),
+	buffer_mutex_( QMutex::NonRecursive )
 {
 	setFont( getMonospaceFont( 9 ) );
 	creation_thread_id_ = QThread::currentThreadId();
@@ -28,7 +28,7 @@ void QLogSink::hande_log_message( xo::log::level l, const xo::string& msg )
 		buffer_mutex_.lock();
 		buffer_data_.push_back( std::make_pair( l, msg ) );
 		buffer_mutex_.unlock();
-		
+
 	}
 	else append_message( l, msg );
 }

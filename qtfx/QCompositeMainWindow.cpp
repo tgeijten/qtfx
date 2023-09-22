@@ -76,10 +76,10 @@ void QCompositeMainWindow::windowMenuTriggered()
 
 	if ( index >= 0 && index < dockWidgets.size() )
 	{
-		dockWidgets[ index ].first->show();
-		dockWidgets[ index ].first->raise();
-		if ( dockWidgets[ index ].second )
-			dockWidgets[ index ].second->setFocus();
+		dockWidgets[index].first->show();
+		dockWidgets[index].first->raise();
+		if ( dockWidgets[index].second )
+			dockWidgets[index].second->setFocus();
 	}
 }
 
@@ -98,7 +98,7 @@ void QCompositeMainWindow::updateRecentFilesMenu( const QString& filename )
 	QMenu* recent_menu = new QMenu();
 	for ( int idx = 0; idx < recentFiles.size(); ++idx )
 	{
-		QAction* act = recent_menu->addAction( recentFiles[ idx ] );
+		QAction* act = recent_menu->addAction( recentFiles[idx] );
 		connect( act, SIGNAL( triggered() ), this, SLOT( fileOpenRecentTriggered() ) );
 	}
 	if ( recentFilesMenu )

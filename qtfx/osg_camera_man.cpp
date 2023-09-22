@@ -111,7 +111,7 @@ namespace vis
 	{
 		mod_key_state_ = ea.getModKeyMask();
 		if ( !key_state_.contains( ea.getKey() ) )
-			key_state_[ ea.getKey() ] = ea.getTime();
+			key_state_[ea.getKey()] = ea.getTime();
 
 		// handle 'normal' keys
 		if ( ea.getModKeyMask() == 0 )

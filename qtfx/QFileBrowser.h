@@ -29,5 +29,5 @@ private slots:
 
 protected:
 	QFileSystemModel* fileModel;
-	virtual void resizeEvent( QResizeEvent *event ) override;
+	virtual void resizeEvent( QResizeEvent* event ) override;
 };

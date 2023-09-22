@@ -57,7 +57,7 @@ protected:
 	void restoreSettings( bool skipGeometry = false );
 	void saveSettings();
 
-	void closeEvent( QCloseEvent *event ) override;
+	void closeEvent( QCloseEvent* event ) override;
 	void dragEnterEvent( QDragEnterEvent* event ) override;
 	void dropEvent( QDropEvent* event ) override;
 

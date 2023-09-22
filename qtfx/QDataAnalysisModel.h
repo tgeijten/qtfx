@@ -45,8 +45,8 @@ public:
 	virtual double value( int channel, int frame ) const override { return ( *sto_ )( frame, channel ); }
 	virtual Series getSeries( int idx, double min_interval = 0.0 ) const override;
 
-	virtual double timeStart() const override { return sto_->empty() ? 0.0 : sto_->front()[ 0 ]; }
-	virtual double timeFinish() const override { return sto_->empty() ? 0.0 : sto_->back()[ 0 ]; }
+	virtual double timeStart() const override { return sto_->empty() ? 0.0 : sto_->front()[0]; }
+	virtual double timeFinish() const override { return sto_->empty() ? 0.0 : sto_->back()[0]; }
 	virtual int timeIndex( double time ) const override { return xo::find_frame_index( *sto_, float( time ), 0 ); }
 	virtual double timeValue( int idx ) const override { return ( *sto_ )( idx, 0 ); }
 

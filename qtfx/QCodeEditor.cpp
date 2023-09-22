@@ -269,11 +269,11 @@ void QCodeEditor::formatDocument()
 
 		// count current amount of tabs
 		auto tab_count = 0;
-		while ( tab_count < line.size() && line[ tab_count ] == '\t' )
+		while ( tab_count < line.size() && line[tab_count] == '\t' )
 			++tab_count;
 
 		auto leadingWhitespace = tab_count;
-		while ( leadingWhitespace < line.size() && line[ leadingWhitespace ].isSpace() )
+		while ( leadingWhitespace < line.size() && line[leadingWhitespace].isSpace() )
 			++leadingWhitespace;
 
 		auto decStart = line.indexOf( decRegex );

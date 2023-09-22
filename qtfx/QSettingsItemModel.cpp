@@ -30,7 +30,7 @@ static std::pair< int, const prop_node* > find_parent_node( const prop_node* pn,
 	return std::pair< int, prop_node* >( -1, nullptr );
 }
 
-QModelIndex QSettingsItemModel::index( int row, int column, const QModelIndex &parent ) const
+QModelIndex QSettingsItemModel::index( int row, int column, const QModelIndex& parent ) const
 {
 	if ( parent.isValid() )
 	{
@@ -43,7 +43,7 @@ QModelIndex QSettingsItemModel::index( int row, int column, const QModelIndex &p
 	else return QModelIndex();
 }
 
-QModelIndex QSettingsItemModel::parent( const QModelIndex &child ) const
+QModelIndex QSettingsItemModel::parent( const QModelIndex& child ) const
 {
 	if ( prop_node* pn = reinterpret_cast<prop_node*>( child.internalPointer() ) )
 	{
@@ -55,7 +55,7 @@ QModelIndex QSettingsItemModel::parent( const QModelIndex &child ) const
 	return QModelIndex();
 }
 
-int QSettingsItemModel::rowCount( const QModelIndex &parent ) const
+int QSettingsItemModel::rowCount( const QModelIndex& parent ) const
 {
 	if ( parent.isValid() )
 	{
@@ -69,12 +69,12 @@ int QSettingsItemModel::rowCount( const QModelIndex &parent ) const
 	else return (int)settings_.schema().size();
 }
 
-int QSettingsItemModel::columnCount( const QModelIndex &parent ) const
+int QSettingsItemModel::columnCount( const QModelIndex& parent ) const
 {
 	return 2;
 }
 
-QVariant QSettingsItemModel::data( const QModelIndex &index, int role ) const
+QVariant QSettingsItemModel::data( const QModelIndex& index, int role ) const
 {
 	if ( role == Qt::DisplayRole || role == Qt::EditRole )
 	{
@@ -95,7 +95,7 @@ QVariant QSettingsItemModel::data( const QModelIndex &index, int role ) const
 	return QVariant();
 }
 
-bool QSettingsItemModel::setData( const QModelIndex &index, const QVariant &value, int role )
+bool QSettingsItemModel::setData( const QModelIndex& index, const QVariant& value, int role )
 {
 	if ( role == Qt::EditRole )
 	{
@@ -107,7 +107,7 @@ bool QSettingsItemModel::setData( const QModelIndex &index, const QVariant &valu
 	else return false;
 }
 
-Qt::ItemFlags QSettingsItemModel::flags( const QModelIndex &index ) const
+Qt::ItemFlags QSettingsItemModel::flags( const QModelIndex& index ) const
 {
 	if ( !index.isValid() )
 		return 0;

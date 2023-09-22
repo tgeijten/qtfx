@@ -49,26 +49,26 @@ public:
 private:
 	class QCodeHighlighter* syntaxHighlighter;
 
-	void lineNumberAreaPaintEvent( QPaintEvent *event );
+	void lineNumberAreaPaintEvent( QPaintEvent* event );
 	int lineNumberAreaWidth();
 
 protected:
-	virtual void resizeEvent( QResizeEvent *event ) Q_DECL_OVERRIDE;
-	virtual void keyPressEvent( QKeyEvent *e ) Q_DECL_OVERRIDE;
+	virtual void resizeEvent( QResizeEvent* event ) Q_DECL_OVERRIDE;
+	virtual void keyPressEvent( QKeyEvent* e ) Q_DECL_OVERRIDE;
 
 private:
 	class LineNumberArea : public QWidget
 	{
 	public:
-		LineNumberArea( QCodeEditor *editor ) : QWidget( editor ) { codeEditor = editor; }
+		LineNumberArea( QCodeEditor* editor ) : QWidget( editor ) { codeEditor = editor; }
 		QSize sizeHint() const Q_DECL_OVERRIDE { return QSize( codeEditor->lineNumberAreaWidth(), 0 ); }
 	protected:
-		void paintEvent( QPaintEvent *event ) Q_DECL_OVERRIDE { codeEditor->lineNumberAreaPaintEvent( event ); }
+		void paintEvent( QPaintEvent* event ) Q_DECL_OVERRIDE { codeEditor->lineNumberAreaPaintEvent( event ); }
 	private:
 		QCodeEditor* codeEditor;
 	};
 
-	QWidget *lineNumberArea;
+	QWidget* lineNumberArea;
 	QRect previousRect;
 	QVector<int> triggerFormatKeys;
 	QVector<QPair<char, char>> autoBrackets;

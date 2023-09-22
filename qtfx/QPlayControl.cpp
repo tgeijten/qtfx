@@ -11,17 +11,17 @@
 
 #pragma warning( disable: 26444 )
 
-QPlayControl::QPlayControl( QWidget *parent ) :
-QWidget( parent ),
-currentTime( 0.0 ),
-stepTime( 0.01 ),
-pageTime( 0.1 ),
-slomoFactor( 1.0 ),
-minTime( 0.0 ),
-maxTime( 1.0 ),
-decimals_( 2 ),
-autoExtendRange_( false ),
-timer_delta( 0 )
+QPlayControl::QPlayControl( QWidget* parent ) :
+	QWidget( parent ),
+	currentTime( 0.0 ),
+	stepTime( 0.01 ),
+	pageTime( 0.1 ),
+	slomoFactor( 1.0 ),
+	minTime( 0.0 ),
+	maxTime( 1.0 ),
+	decimals_( 2 ),
+	autoExtendRange_( false ),
+	timer_delta( 0 )
 {
 	playButton = new QToolButton( this );
 	playButton->setIcon( style()->standardIcon( QStyle::SP_MediaPlay ) );
@@ -32,7 +32,7 @@ timer_delta( 0 )
 	connect( resetButton, &QToolButton::clicked, this, &QPlayControl::reset );
 
 	nextButton = new QToolButton( this );
-	nextButton->setIcon( style()->standardIcon( QStyle::SP_MediaSeekForward) );
+	nextButton->setIcon( style()->standardIcon( QStyle::SP_MediaSeekForward ) );
 	nextButton->setStyleSheet( "border: 0px" );
 	connect( nextButton, &QToolButton::clicked, this, &QPlayControl::stepForward );
 
@@ -62,7 +62,7 @@ timer_delta( 0 )
 	setSlomoRange( 2, -5 );
 	connect( slomoBox, SIGNAL( currentIndexChanged( int ) ), this, SLOT( updateSlowMotion( int ) ) );
 
-	QBoxLayout *lo = new QHBoxLayout;
+	QBoxLayout* lo = new QHBoxLayout;
 	lo->setMargin( 0 );
 	lo->setSpacing( 2 );
 	lo->addWidget( playButton );
@@ -93,7 +93,7 @@ void QPlayControl::setRange( double min, double max )
 {
 	minTime = min;
 	maxTime = max;
-	slider->setRange( static_cast< int >( 1000 * minTime + 0.5 ), static_cast< int >( 1000 * maxTime + 0.5 ) );
+	slider->setRange( static_cast<int>( 1000 * minTime + 0.5 ), static_cast<int>( 1000 * maxTime + 0.5 ) );
 }
 
 void QPlayControl::setTime( double time )
@@ -127,7 +127,7 @@ void QPlayControl::setTime( double time )
 	slider->blockSignals( false );
 
 	lcdNumber->display( QString::asprintf( "%.*f", decimals_, currentTime ) );
-	
+
 	emit timeChanged( currentTime );
 }
 

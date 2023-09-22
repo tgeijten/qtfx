@@ -69,7 +69,7 @@ bool QCodeHighlighter::isBetweenQuotes( const QString& text, int index )
 {
 	int quotes_before = 0;
 	for ( int i = 0; i < index; ++i )
-		quotes_before += int( text[ i ] == '\"' );
+		quotes_before += int( text[i] == '\"' );
 	return xo::is_odd( quotes_before );
 }
 
@@ -192,5 +192,5 @@ QCodeHighlighter::Language QCodeHighlighter::detectLanguage( const QString& file
 
 void QCodeHighlighter::registerLanguage( const QString& ext, Language lang )
 {
-	g_languages[ xo::to_lower( ext.toStdString() ) ] = lang;
+	g_languages[xo::to_lower( ext.toStdString() )] = lang;
 }

@@ -32,7 +32,7 @@ public:
 	void setRange( double lower, double upper );
 	void setLineWidth( float f ) { lineWidth = f; }
 	void setAutoFitVerticalAxis( bool b ) { autoFitVerticalAxis = b; }
-	void setFilterText( const QString& str  ) { filter->setText( str ); }
+	void setFilterText( const QString& str ) { filter->setText( str ); }
 	QLineEdit* filterWidget() { return filter; }
 	QVGroup* itemGroupWidget() { return itemGroup; }
 
@@ -41,7 +41,7 @@ public slots:
 	void clearSeries();
 	void updateSeries( int index );
 	void mouseEvent( QMouseEvent* m );
-	void rangeChanged( const QCPRange &newRange, const QCPRange &oldRange );
+	void rangeChanged( const QCPRange& newRange, const QCPRange& oldRange );
 	void filterChanged( const QString& filter );
 	void setSelectionState( int state );
 	void select( int state ) { setSelectionState( state ); }

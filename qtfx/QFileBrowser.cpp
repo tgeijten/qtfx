@@ -2,9 +2,9 @@
 #include "QTreeView"
 #include "QHeaderView"
 
-QFileBrowser::QFileBrowser( QWidget* parent, const QString& folder, const QString& filter, int num_columns, QFileSystemModel* model  ) :
-QTreeView( parent ),
-fileModel( nullptr )
+QFileBrowser::QFileBrowser( QWidget* parent, const QString& folder, const QString& filter, int num_columns, QFileSystemModel* model ) :
+	QTreeView( parent ),
+	fileModel( nullptr )
 {
 	setModel( model );
 	setRoot( folder, filter );
@@ -62,7 +62,7 @@ void QFileBrowser::selectItem( const QModelIndex& a, const QModelIndex& b )
 	emit selectionChanged( fileModel->fileInfo( a ).absoluteFilePath(), fileModel->fileInfo( b ).absoluteFilePath() );
 }
 
-void QFileBrowser::resizeEvent( QResizeEvent *event )
+void QFileBrowser::resizeEvent( QResizeEvent* event )
 {
 	QTreeView::resizeEvent( event );
 }

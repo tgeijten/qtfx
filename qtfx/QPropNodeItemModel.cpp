@@ -30,7 +30,7 @@ void QPropNodeItemModel::setDefaultIcon( const QIcon& icon )
 	default_icon_ = icon;
 }
 
-QModelIndex QPropNodeItemModel::index( int row, int column, const QModelIndex &parent ) const
+QModelIndex QPropNodeItemModel::index( int row, int column, const QModelIndex& parent ) const
 {
 	if ( parent.isValid() )
 	{
@@ -49,7 +49,7 @@ QModelIndex QPropNodeItemModel::index( int row, int column, const QModelIndex &p
 	}
 }
 
-QModelIndex QPropNodeItemModel::parent( const QModelIndex &child ) const
+QModelIndex QPropNodeItemModel::parent( const QModelIndex& child ) const
 {
 	if ( prop_node* pn = reinterpret_cast<prop_node*>( child.internalPointer() ) )
 	{
@@ -62,22 +62,22 @@ QModelIndex QPropNodeItemModel::parent( const QModelIndex &child ) const
 	return QModelIndex();
 }
 
-int QPropNodeItemModel::rowCount( const QModelIndex &parent ) const
+int QPropNodeItemModel::rowCount( const QModelIndex& parent ) const
 {
 	if ( parent.isValid() )
 	{
-		auto* pn = reinterpret_cast< prop_node* >( parent.internalPointer() );
+		auto* pn = reinterpret_cast<prop_node*>( parent.internalPointer() );
 		return pn->size();
 	}
 	else return props_.size();
 }
 
-int QPropNodeItemModel::columnCount( const QModelIndex &parent ) const
+int QPropNodeItemModel::columnCount( const QModelIndex& parent ) const
 {
 	return 2;
 }
 
-QVariant QPropNodeItemModel::data( const QModelIndex &index, int role ) const
+QVariant QPropNodeItemModel::data( const QModelIndex& index, int role ) const
 {
 	auto* pn = reinterpret_cast<prop_node*>( index.internalPointer() );
 	if ( role == Qt::DisplayRole || role == Qt::EditRole )
@@ -111,22 +111,22 @@ QVariant QPropNodeItemModel::headerData( int section, Qt::Orientation orientatio
 {
 	static const QStringList column_names = { "Property", "Value" };
 	if ( role == Qt::DisplayRole && orientation == Qt::Horizontal )
-		return column_names[ section ];
+		return column_names[section];
 	else return QVariant();
 }
 
-bool QPropNodeItemModel::setData( const QModelIndex &index, const QVariant &value, int role )
+bool QPropNodeItemModel::setData( const QModelIndex& index, const QVariant& value, int role )
 {
 	if ( role == Qt::EditRole )
 	{
-		auto* pn = reinterpret_cast< prop_node* >( index.internalPointer() );
+		auto* pn = reinterpret_cast<prop_node*>( index.internalPointer() );
 		pn->set_value( value.toString().toStdString() );
 		return true;
 	}
 	else return false;
 }
 
-Qt::ItemFlags QPropNodeItemModel::flags( const QModelIndex &index ) const
+Qt::ItemFlags QPropNodeItemModel::flags( const QModelIndex& index ) const
 {
 	if ( !index.isValid() )
 		return 0;
