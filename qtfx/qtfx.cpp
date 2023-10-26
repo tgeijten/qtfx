@@ -1,6 +1,7 @@
 #include "qtfx.h"
 
 #include <QBoxLayout>
+#include <QColor>
 
 QWidget* createVBoxWidget( QWidget* parent, int margin, int spacing )
 {
@@ -42,4 +43,14 @@ void cycleTabWidget( QTabWidget* wdg, int ofs )
 			newIdx += wdg->count();
 		wdg->setCurrentIndex( newIdx );
 	}
+}
+
+bool darkMode()
+{
+	return QApplication::palette().background().color().value() < 0.5f;
+}
+
+Qt::GlobalColor textColor( Qt::GlobalColor c )
+{
+	return darkMode() ? c : Qt::GlobalColor( c + 6 );
 }

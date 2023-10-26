@@ -7,6 +7,7 @@
 #include "xo/utility/hash.h"
 #include "xo/container/flat_map.h"
 #include <string>
+#include "qtfx.h"
 
 QCodeHighlighter::QCodeHighlighter( QObject* parent, Language l ) : QSyntaxHighlighter( parent )
 {
@@ -149,18 +150,18 @@ void QCodeHighlighter::setRegexes()
 void QCodeHighlighter::setFormats()
 {
 	operatorFormat.setForeground( Qt::darkGray );
-	elementFormat.setForeground( Qt::darkBlue );
+	elementFormat.setForeground( textColor( Qt::blue ) );
 	elementFormat.setFontWeight( QFont::Bold );
-	attributeFormat.setForeground( Qt::darkBlue );
+	attributeFormat.setForeground( textColor( Qt::blue ) );
 	//attributeFormat.setFontItalic( true );
 	//attributeFormat.setFontWeight( QFont::Bold );
-	valueFormat.setForeground( Qt::darkRed );
+	valueFormat.setForeground( textColor( Qt::red ) );
 	commentFormat.setForeground( Qt::gray );
 	commentFormat.setFontItalic( true );
-	numberFormat.setForeground( Qt::darkCyan );
-	macroFormat.setForeground( Qt::darkMagenta );
+	numberFormat.setForeground( textColor( Qt::cyan ) );
+	macroFormat.setForeground( textColor( Qt::magenta ) );
 	//macroFormat.setFontItalic( true );
-	specialFormat.setForeground( Qt::darkMagenta );
+	specialFormat.setForeground( textColor( Qt::magenta ) );
 	specialFormat.setFontItalic( true );
 	//specialFormat.setFontWeight( QFont::Bold );
 }

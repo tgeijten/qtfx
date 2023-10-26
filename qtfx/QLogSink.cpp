@@ -59,16 +59,16 @@ void QLogSink::append_message( xo::log::level l, const xo::string& msg )
 		format.setForeground( QBrush( Qt::gray ) );
 		break;
 	case xo::log::level::info:
-		format.setForeground( QBrush( Qt::darkBlue ) );
+		format.setForeground( QBrush( textColor( Qt::blue ) ) );
 		break;
 	case xo::log::level::warning:
 		format.setFontWeight( QFont::Bold );
-		format.setForeground( QBrush( Qt::darkYellow ) );
+		format.setForeground( QBrush( textColor( Qt::yellow ) ) );
 		break;
 	case xo::log::level::error:
 	case xo::log::level::critical:
 		format.setFontWeight( QFont::Bold );
-		format.setForeground( QBrush( Qt::darkRed ) );
+		format.setForeground( QBrush( textColor( Qt::red ) ) );
 		break;
 	default:
 		break;
