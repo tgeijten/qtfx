@@ -1,6 +1,7 @@
 #include "qtfx.h"
 
 #include <QBoxLayout>
+#include <QApplication>
 #include <QColor>
 
 QWidget* createVBoxWidget( QWidget* parent, int margin, int spacing )
