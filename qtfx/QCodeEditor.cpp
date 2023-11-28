@@ -110,10 +110,9 @@ bool QCodeEditor::reload()
 		if ( QMessageBox::Cancel == QMessageBox::warning( this, "Reload " + fileName, msg, QMessageBox::Discard | QMessageBox::Cancel ) )
 			return false;
 	}
-
-	auto fileModified = QFileInfo( fileName ).lastModified();
-	if ( fileModified == lastModified )
+	else if ( QFileInfo( fileName ).lastModified() == lastModified )
 	{
+		// only do this check when the document wasn't modified to make 'Discard' work correctly
 		xo::log::debug( "Reload skipped for modified file ", fileName.toStdString() );
 		return false;
 	}
