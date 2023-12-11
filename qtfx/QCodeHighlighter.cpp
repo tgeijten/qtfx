@@ -114,7 +114,7 @@ void QCodeHighlighter::setRegexes()
 		rules.emplace_back( "\"[^\\n\"]*\"", valueFormat );
 		rules.emplace_back( "<<\\s.*\\s>>", specialFormat );
 		rules.emplace_back( "([\\{\\}\\[\\]\\=]|:\\s)", operatorFormat );
-		rules.emplace_back( "\\b([-+]?[\\.\\d]+)", numberFormat );
+		rules.emplace_back( "\\b[-+]?([0-9]*[.])?[0-9]+", numberFormat );
 		rules.emplace_back( "\\@\\w+", macroFormat );
 		rules.emplace_back( "\\$\\w+", macroFormat );
 
