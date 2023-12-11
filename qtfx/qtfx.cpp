@@ -48,10 +48,15 @@ void cycleTabWidget( QTabWidget* wdg, int ofs )
 
 bool darkMode()
 {
-	return QApplication::palette().background().color().value() < 0.5f;
+	return QApplication::palette().background().color().valueF() < 0.5f;
 }
 
 Qt::GlobalColor textColor( Qt::GlobalColor c )
 {
-	return darkMode() ? c : Qt::GlobalColor( c + 6 );
+	if ( darkMode() ) {
+		if ( c == Qt::blue )
+			return Qt::white; // even light blue looks bad on a dark background
+		else return c;
+	}
+	else return Qt::GlobalColor( c + 6 );
 }
