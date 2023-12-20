@@ -1,21 +1,12 @@
 #pragma once
 
 #include <osgGA/OrbitManipulator>
-#include "xo/geometry/angle.h"
 #include "xo/container/flat_map.h"
+#include "camera_state.h"
 
 namespace vis
 {
-	using degree = xo::degreef;
-	struct camera_state {
-		degree pitch;
-		degree yaw;
-		osg::Vec3d center_offset;
-		double distance;
-		bool operator==( const camera_state& o ) { return pitch == o.pitch && yaw == o.yaw && center_offset == o.center_offset && distance == o.distance; }
-		bool operator!=( const camera_state& o ) { return !( *this == o ); }
-	};
-
+	using degree = vis::degreef; // #todo: this should be in vis/types.h
 	class osg_camera_man : public osgGA::OrbitManipulator
 	{
 	public:
@@ -56,5 +47,7 @@ namespace vis
 		degree orbit_pitch;
 		degree orbit_yaw;
 		osg::Vec3d focus_point_;
+		
+		std::vector<camera_state> cameras_;
 	};
 }

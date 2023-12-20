@@ -1,16 +1,11 @@
 #include "osg_camera_man.h"
-#include <functional>
+#include "vis-osg/osg_tools.h"
 
 using namespace osg;
 using namespace xo::angle_literals;
 
 namespace vis
 {
-	camera_state default_cam_pos{ -5.0_degf, 0_degf, Vec3d( 0, 1, 0 ), 4.5 };
-	camera_state yz_cam_pos{ 0_degf, 0_degf, Vec3d( 0, 1, 0 ), 4.5 };
-	camera_state xy_cam_pos{ 0_degf, 90_degf, Vec3d( 0, 1, 0 ), 4.5 };
-	camera_state xz_cam_pos{ -90_degf, 90_degf, Vec3d( 0, 1, 0 ), 4.5 };
-
 	constexpr double pitch_scale = 100;
 	constexpr double yaw_scale = 100;
 	constexpr double pan_scale = 0.3;
@@ -27,7 +22,7 @@ namespace vis
 		setAllowThrow( false );
 		_minimumDistance = 0.001;
 
-		setCameraState( default_cam_pos );
+		setCameraState( camera_state::default_state() );
 
 		osg::Vec3d eye, center, up;
 		getTransformation( eye, center, up );
@@ -40,14 +35,14 @@ namespace vis
 	{
 		orbit_pitch = s.pitch;
 		orbit_yaw = s.yaw;
-		_center = focus_point_ + s.center_offset;
+		_center = focus_point_ + to_osg( s.center_offset );
 		_distance = s.distance;
 		updateRotation();
 	}
 
 	camera_state osg_camera_man::getCameraState()
 	{
-		return camera_state{ orbit_pitch, orbit_yaw, _center - focus_point_, _distance };
+		return camera_state{ orbit_pitch, orbit_yaw, from_osg( _center - focus_point_ ), float( _distance ) };
 	}
 
 	void osg_camera_man::setFocusPoint( const osg::Vec3d& p )
@@ -118,11 +113,22 @@ namespace vis
 		{
 			switch ( ea.getKey() )
 			{
-			case 'r': setCameraState( default_cam_pos ); return true;
-			case 'x': setCameraState( yz_cam_pos ); return true;
-			case 'y': setCameraState( xz_cam_pos ); return true;
-			case 'z': setCameraState( xy_cam_pos ); return true;
+			case 'r': setCameraState( camera_state::default_state() ); return true;
+			case 'x': setCameraState( camera_state::yz() ); return true;
+			case 'y': setCameraState( camera_state::xz() ); return true;
+			case 'z': setCameraState( camera_state::xy() ); return true;
 			case osgGA::GUIEventAdapter::KEY_Space: return false; // filter out space key because we don't want it to reset the camera
+			}
+		}
+
+		// handle camera keys
+		if ( ea.getKey() >= '1' && ea.getKey() <= '9' ) {
+			index_t idx = ea.getKey() - '1';
+			if ( ea.getModKeyMask() == 0 && idx < cameras_.size() )
+				setCameraState( cameras_[idx] );
+			else if ( ea.getModKeyMask() & osgGA::GUIEventAdapter::MODKEY_CTRL ) {
+				cameras_.resize( std::max( idx + 1, cameras_.size() ) );
+				cameras_[idx] = getCameraState();
 			}
 		}
 
