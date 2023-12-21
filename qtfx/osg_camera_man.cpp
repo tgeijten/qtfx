@@ -11,8 +11,8 @@ namespace vis
 	constexpr double pan_scale = 0.3;
 	constexpr double zoom_scale = 1.0;
 	constexpr degree key_orbit = 5_degf;
-	constexpr double key_pan = 0.0873; // 5/360 * 2*pi
-	constexpr double key_zoom = 0.0873;
+	constexpr double key_pan = 0.05;
+	constexpr double key_zoom = 0.05;
 
 	osg_camera_man::osg_camera_man() :
 		osgGA::OrbitManipulator(),
