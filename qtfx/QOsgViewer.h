@@ -50,7 +50,8 @@ public:
 	void updateIntersections( const osgGA::GUIEventAdapter& ea );
 	const osgUtil::LineSegmentIntersector::Intersections& getIntersections() const { return intersections_; }
 	size_t getIntersectionCount() const { return intersections_.size(); }
-	osg::Node* getTopNamedIntersectionNode( const std::string& skipName = "!" ) const;
+	const osgUtil::LineSegmentIntersector::Intersection* getTopNamedIntersection( const std::string& skipName = "!" ) const;
+	const osg::Node* getTopNamedIntersectionNode( const std::string& skipName = "!" ) const;
 	osgQt::GLWidget* viewWidget() { return view_widget_; }
 	void enableObjectCache( bool enable );
 	osgViewer::View& getMainView() { return *view_; }

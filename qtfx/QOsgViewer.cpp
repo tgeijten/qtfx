@@ -320,17 +320,29 @@ void QOsgViewer::updateIntersections( const osgGA::GUIEventAdapter& ea )
 	view_->computeIntersections( ea, intersections_ );
 }
 
-osg::Node* QOsgViewer::getTopNamedIntersectionNode( const std::string& skipName ) const
+const osgUtil::LineSegmentIntersector::Intersection* QOsgViewer::getTopNamedIntersection( const std::string& skipName ) const
 {
-	for ( auto& is : intersections_ )
-	{
+	for ( auto& is : intersections_ ) {
 		for ( auto it = is.nodePath.rbegin(); it != is.nodePath.rend(); it++ ) {
 			const auto& name = ( *it )->getName();
-			if ( name.empty() )
-				continue;
-			else if ( name != skipName )
+			if ( name == skipName )
+				break;
+			else if ( !name.empty() )
+				return &is;
+		}
+	}
+	return nullptr;
+}
+
+const osg::Node* QOsgViewer::getTopNamedIntersectionNode( const std::string& skipName ) const
+{
+	for ( auto& is : intersections_ ) {
+		for ( auto it = is.nodePath.rbegin(); it != is.nodePath.rend(); it++ ) {
+			const auto& name = ( *it )->getName();
+			if ( name == skipName )
+				break;
+			else if ( !name.empty() )
 				return *it;
-			else break;
 		}
 	}
 	return nullptr;
