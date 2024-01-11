@@ -240,14 +240,8 @@ void QCodeEditor::lineNumberAreaPaintEvent( QPaintEvent* event )
 
 int QCodeEditor::lineNumberAreaWidth()
 {
-	int digits = 1;
-	int max = qMax( 1, blockCount() );
-	while ( max >= 10 ) {
-		max /= 10;
-		++digits;
-	}
-
-	int space = 4 + fontMetrics().width( QLatin1Char( '9' ) ) * digits;
+	auto digits = xo::count_digits( size_t( std::max( 10, blockCount() ) ) );
+	int space = 4 + fontMetrics().width( QLatin1Char( '9' ) ) * int( digits );
 
 	return space;
 }
