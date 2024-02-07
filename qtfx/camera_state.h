@@ -28,6 +28,7 @@ namespace xo
 		INIT_PROP_REQUIRED( pn, c.yaw );
 		INIT_PROP_REQUIRED( pn, c.center_offset );
 		INIT_PROP_REQUIRED( pn, c.distance );
+		return true;
 	};
 
 	/// convert to prop_node
