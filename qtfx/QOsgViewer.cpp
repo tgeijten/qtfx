@@ -406,8 +406,10 @@ void QOsgViewer::setFrameTime( double t )
 
 void QOsgViewer::updateCameraAnimation( double t, float dt )
 {
-	camera_man_->orbitModel( dt * yawAnimationVelocity, dt * pitchAnimationVelocity );
-	camera_man_->dollyModel( dt * dollyAnimationVelocity );
+	if ( yawAnimationVelocity.value != 0 || pitchAnimationVelocity.value != 0 )
+		camera_man_->orbitModel( dt * yawAnimationVelocity, dt * pitchAnimationVelocity );
+	if ( dollyAnimationVelocity != 0 )
+		camera_man_->dollyModel( dt * dollyAnimationVelocity );
 }
 
 void QOsgViewer::timerUpdate()
