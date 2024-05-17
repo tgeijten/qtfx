@@ -44,9 +44,6 @@ private:
 
 QOsgViewer::QOsgViewer( QWidget* parent /*= 0*/, Qt::WindowFlags f /*= 0*/, osgViewer::ViewerBase::ThreadingModel threadingModel/*=osgViewer::CompositeViewer::SingleThreaded*/ ) :
 	QWidget( parent, f ),
-	yawAnimationVelocity( 0 ),
-	pitchAnimationVelocity( 0 ),
-	dollyAnimationVelocity( 0 ),
 	frame_count_( 0 ),
 	capture_handler_( nullptr ),
 	scene_light_offset_( -2, 8, 3 ),
@@ -406,10 +403,7 @@ void QOsgViewer::setFrameTime( double t )
 
 void QOsgViewer::updateCameraAnimation( double t, float dt )
 {
-	if ( yawAnimationVelocity.value != 0 || pitchAnimationVelocity.value != 0 )
-		camera_man_->orbitModel( dt * yawAnimationVelocity, dt * pitchAnimationVelocity );
-	if ( dollyAnimationVelocity != 0 )
-		camera_man_->dollyModel( dt * dollyAnimationVelocity );
+	camera_man_->handleOrbitAnimation( t, dt );
 }
 
 void QOsgViewer::timerUpdate()

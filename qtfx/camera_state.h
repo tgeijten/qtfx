@@ -3,6 +3,7 @@
 #include "xo/geometry/angle.h"
 #include "vis/types.h"
 #include "xo/container/prop_node_tools.h"
+#include "xo/numerical/interpolation.h"
 
 namespace vis
 {
@@ -11,6 +12,7 @@ namespace vis
 		degreef yaw = 0_degf;
 		vec3f center_offset = vec3f( 0.0f, 1.0f, 0.0f );
 		float distance = 4.5f;
+
 		bool operator==( const camera_state& o ) { return pitch == o.pitch && yaw == o.yaw && center_offset == o.center_offset && distance == o.distance; }
 		bool operator!=( const camera_state& o ) { return !( *this == o ); }
 
@@ -19,6 +21,15 @@ namespace vis
 		static camera_state xy() { return camera_state{ 0_degf, 90_degf, vec3f( 0, 1, 0 ), 4.5 }; };
 		static camera_state xz() { return camera_state{ -90_degf, 90_degf, vec3f( 0, 1, 0 ), 4.5 }; };
 	};
+
+	inline camera_state lerp( const camera_state& c1, const camera_state& c2, float t ) {
+		return camera_state{
+			xo::lerp( c1.pitch, c2.pitch, t ),
+			xo::lerp( c1.yaw, c2.yaw, t ),
+			xo::lerp( c1.center_offset, c2.center_offset, t ),
+			xo::lerp( c1.distance, c2.distance, t )
+		};
+	}
 }
 
 namespace xo

@@ -24,9 +24,11 @@ namespace vis
 		void dollyModel( float d ) { _distance += d; updateRotation(); }
 		void setFocusPoint( const osg::Vec3d& p );
 		const osg::Vec3d& getFocusPoint() const { return focus_point_; }
+		void setOrbitAnimation( degree yps, degree pps, float dps );
 
 		bool hasCameraStateChanged();
 		void handleKeyboardAnimation();
+		void handleOrbitAnimation( double t, float dt );
 
 	protected:
 		void updateRotation();
@@ -47,7 +49,12 @@ namespace vis
 		degree orbit_pitch;
 		degree orbit_yaw;
 		osg::Vec3d focus_point_;
-		
+
+		// Orbit animation parameters
+		vis::degree yawAnimationVelocity;
+		vis::degree pitchAnimationVelocity;
+		float dollyAnimationVelocity = 0.0f;
+
 		std::vector<camera_state> cameras_;
 	};
 }

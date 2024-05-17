@@ -65,12 +65,6 @@ signals:
 public slots:
 	void timerUpdate();
 
-public:
-	// animation parameters
-	vis::degree yawAnimationVelocity;
-	vis::degree pitchAnimationVelocity;
-	float dollyAnimationVelocity = 0.0f;
-
 protected:
 	bool eventFilter( QObject* obj, QEvent* event );
 	osgDB::Options* getOrCreateOptions();

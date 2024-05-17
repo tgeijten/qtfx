@@ -17,7 +17,10 @@ namespace vis
 	osg_camera_man::osg_camera_man() :
 		osgGA::OrbitManipulator(),
 		prev_camera_state_(),
-		animationMode_( false )
+		animationMode_( false ),
+		yawAnimationVelocity( 0 ),
+		pitchAnimationVelocity( 0 ),
+		dollyAnimationVelocity( 0 )
 	{
 		setAllowThrow( false );
 		_minimumDistance = 0.001;
@@ -52,6 +55,13 @@ namespace vis
 		setCenter( focus_point_ + center_offset );
 	}
 
+	void osg_camera_man::setOrbitAnimation( degree yps, degree pps, float dps )
+	{
+		yawAnimationVelocity = yps;
+		pitchAnimationVelocity = pps;
+		dollyAnimationVelocity = dps;
+	}
+
 	bool osg_camera_man::hasCameraStateChanged()
 	{
 		auto cs = getCameraState();
@@ -71,6 +81,14 @@ namespace vis
 			for ( const auto& [key, time] : key_state_ )
 				handleKeyCommand( key, mod_key_state_, 0.25 );
 		}
+	}
+
+	void osg_camera_man::handleOrbitAnimation( double t, float dt )
+	{
+		if ( yawAnimationVelocity.value != 0 || pitchAnimationVelocity.value != 0 )
+			orbitModel( dt * yawAnimationVelocity, dt * pitchAnimationVelocity );
+		if ( dollyAnimationVelocity != 0 )
+			dollyModel( dt * dollyAnimationVelocity );
 	}
 
 	void osg_camera_man::updateRotation()
