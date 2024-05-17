@@ -2,7 +2,7 @@
 
 #include <osgGA/OrbitManipulator>
 #include "xo/container/flat_map.h"
-#include "camera_state.h"
+#include "vis/camera_state.h"
 
 namespace vis
 {
