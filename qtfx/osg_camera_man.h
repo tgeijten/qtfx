@@ -27,6 +27,7 @@ namespace vis
 		void setFocusPoint( const osg::Vec3d& p );
 		const osg::Vec3d& getFocusPoint() const { return focus_point_; }
 		void setOrbitAnimation( degree yps, degree pps, float dps );
+		void setTransitionDuration( double t ) { transitionDuration_ = t; }
 
 		void setPlaybackMode( bool b ) { playbackMode_ = b; }
 

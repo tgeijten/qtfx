@@ -1,5 +1,6 @@
 #include "osg_camera_man.h"
 #include "vis-osg/osg_tools.h"
+#include "xo/system/log.h"
 
 using namespace osg;
 using namespace xo::angle_literals;
@@ -160,11 +161,14 @@ namespace vis
 		// handle camera keys
 		if ( ea.getKey() >= '1' && ea.getKey() <= '9' ) {
 			index_t idx = ea.getKey() - '1';
-			if ( ea.getModKeyMask() == 0 && idx < cameras_.size() )
+			if ( ea.getModKeyMask() == 0 && idx < cameras_.size() ) {
 				setTransition( cameras_[idx] );
+				xo::log::info( "Loaded camera ", idx + 1 );
+			}
 			else if ( ea.getModKeyMask() & osgGA::GUIEventAdapter::MODKEY_CTRL ) {
 				cameras_.resize( std::max( idx + 1, cameras_.size() ) );
 				cameras_[idx] = getCameraState();
+				xo::log::info( "Saved camera ", idx + 1 );
 			}
 		}
 
