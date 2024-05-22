@@ -68,7 +68,7 @@ QOsgViewer::QOsgViewer( QWidget* parent /*= 0*/, Qt::WindowFlags f /*= 0*/, osgV
 
 	// start timer that checks for updates in the camera manager
 	connect( &timer_, SIGNAL( timeout() ), this, SLOT( timerUpdate() ) );
-	startTimer();
+	stopPlaybackMode();
 
 	// this allows us to detect events, and update the viewer accordingly
 	// overriding mouseMoveEvent, etc. does not work, because they are send directly to GLWidget
@@ -403,7 +403,7 @@ void QOsgViewer::setFrameTime( double t )
 
 void QOsgViewer::updateCameraAnimation( double t, float dt )
 {
-	camera_man_->handleOrbitAnimation( t, dt );
+	camera_man_->handleAnimation( t, dt );
 }
 
 void QOsgViewer::timerUpdate()

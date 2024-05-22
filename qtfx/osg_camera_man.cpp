@@ -18,6 +18,8 @@ namespace vis
 		osgGA::OrbitManipulator(),
 		prev_camera_state_(),
 		animationMode_( false ),
+		playbackMode_( false ),
+		animationTime_( 0.0 ),
 		yawAnimationVelocity( 0 ),
 		pitchAnimationVelocity( 0 ),
 		dollyAnimationVelocity( 0 )
@@ -46,6 +48,16 @@ namespace vis
 	camera_state osg_camera_man::getCameraState()
 	{
 		return camera_state{ orbit_pitch, orbit_yaw, from_osg( _center - focus_point_ ), float( _distance ) };
+	}
+
+	void osg_camera_man::setTransition( const camera_state& s )
+	{
+		if ( playbackMode_ ) {
+			transition_.clear();
+			transition_.insert( animationTime_, getCameraState() );
+			transition_.insert( animationTime_ + transitionDuration_, s );
+		}
+		else setCameraState( s );
 	}
 
 	void osg_camera_man::setFocusPoint( const osg::Vec3d& p )
@@ -83,12 +95,18 @@ namespace vis
 		}
 	}
 
-	void osg_camera_man::handleOrbitAnimation( double t, float dt )
+	void osg_camera_man::handleAnimation( double t, float dt )
 	{
 		if ( yawAnimationVelocity.value != 0 || pitchAnimationVelocity.value != 0 )
 			orbitModel( dt * yawAnimationVelocity, dt * pitchAnimationVelocity );
 		if ( dollyAnimationVelocity != 0 )
 			dollyModel( dt * dollyAnimationVelocity );
+		if ( !transition_.empty() ) {
+			setCameraState( transition_.get( t ) );
+			if ( !transition_.active( t ) )
+				transition_.clear(); // clear transition when finished
+		}
+		animationTime_ = t;
 	}
 
 	void osg_camera_man::updateRotation()
@@ -131,10 +149,10 @@ namespace vis
 		{
 			switch ( ea.getKey() )
 			{
-			case 'r': setCameraState( camera_state::default_state() ); return true;
-			case 'x': setCameraState( camera_state::yz() ); return true;
-			case 'y': setCameraState( camera_state::xz() ); return true;
-			case 'z': setCameraState( camera_state::xy() ); return true;
+			case 'r': setTransition( camera_state::default_state() ); return true;
+			case 'x': setTransition( camera_state::yz() ); return true;
+			case 'y': setTransition( camera_state::xz() ); return true;
+			case 'z': setTransition( camera_state::xy() ); return true;
 			case osgGA::GUIEventAdapter::KEY_Space: return false; // filter out space key because we don't want it to reset the camera
 			}
 		}
@@ -143,7 +161,7 @@ namespace vis
 		if ( ea.getKey() >= '1' && ea.getKey() <= '9' ) {
 			index_t idx = ea.getKey() - '1';
 			if ( ea.getModKeyMask() == 0 && idx < cameras_.size() )
-				setCameraState( cameras_[idx] );
+				setTransition( cameras_[idx] );
 			else if ( ea.getModKeyMask() & osgGA::GUIEventAdapter::MODKEY_CTRL ) {
 				cameras_.resize( std::max( idx + 1, cameras_.size() ) );
 				cameras_[idx] = getCameraState();

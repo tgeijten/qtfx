@@ -3,6 +3,7 @@
 #include <osgGA/OrbitManipulator>
 #include "xo/container/flat_map.h"
 #include "vis/camera_state.h"
+#include "vis/camera_animation.h"
 
 namespace vis
 {
@@ -18,6 +19,7 @@ namespace vis
 
 		void setCameraState( const camera_state& s );
 		camera_state getCameraState();
+		void setTransition( const camera_state& s );
 
 		void setOrbit( degree yaw, degree pitch ) { orbit_yaw = yaw; orbit_pitch = pitch; updateRotation(); }
 		void orbitModel( degree yaw, degree pitch ) { orbit_yaw += yaw; orbit_pitch += pitch; updateRotation(); }
@@ -26,9 +28,11 @@ namespace vis
 		const osg::Vec3d& getFocusPoint() const { return focus_point_; }
 		void setOrbitAnimation( degree yps, degree pps, float dps );
 
+		void setPlaybackMode( bool b ) { playbackMode_ = b; }
+
 		bool hasCameraStateChanged();
 		void handleKeyboardAnimation();
-		void handleOrbitAnimation( double t, float dt );
+		void handleAnimation( double t, float dt );
 
 	protected:
 		void updateRotation();
@@ -46,15 +50,22 @@ namespace vis
 		xo::flat_map< int, double > key_state_;
 		int mod_key_state_;
 		bool animationMode_;
+		bool playbackMode_;
 		degree orbit_pitch;
 		degree orbit_yaw;
 		osg::Vec3d focus_point_;
 
-		// Orbit animation parameters
-		vis::degree yawAnimationVelocity;
-		vis::degree pitchAnimationVelocity;
+		// orbit animation parameters
+		double animationTime_;
+		degree yawAnimationVelocity;
+		degree pitchAnimationVelocity;
 		float dollyAnimationVelocity = 0.0f;
 
+		// camera transition animation
+		double transitionDuration_ = 0.5;
+		camera_animation transition_;
+
+		// camera states for 1-9 shortcuts
 		std::vector<camera_state> cameras_;
 	};
 }
