@@ -43,7 +43,7 @@ public:
 	bool isCapturing() { return capture_handler_ != nullptr; }
 	void stopPlaybackMode() { timer_.start( 10 ); getCameraMan().setPlaybackMode( false ); }
 	void startPlaybackMode() { timer_.stop(); getCameraMan().setPlaybackMode( true ); }
-	bool isPlaybackMode() const { timer_.isActive(); }
+	bool isPlaybackMode() const { return timer_.isActive(); }
 	vis::osg_camera_man& getCameraMan() { return *camera_man_; }
 	void setFrameTime( double t );
 	void updateCameraAnimation( double t, float dt );
