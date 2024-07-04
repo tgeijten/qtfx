@@ -14,6 +14,7 @@
 #include "osgDB/FileUtils"
 #include "xo/filesystem/filesystem.h"
 #include "xo/container/container_tools.h"
+#include "vis-osg/osg_tools.h"
 
 // fix OSG plugin folder path
 void fix_osg_library_file_path() {
@@ -234,13 +235,14 @@ void QOsgViewer::updateHudPos()
 
 void QOsgViewer::updateLightPos()
 {
-	auto ori = xo::quat_from_axis_angle( xo::vec3f::unit_y(), camera_man_->getYaw() );
-	auto v = ori * scene_light_offset_;
-	if ( true )
-		scene_light_->setPosition( osg::Vec4d( v.x, v.y, v.z, 0 ) );
-	else {
-		auto p = camera_man_->getCenter() + osg::Vec3d( v.x, v.y, v.z );
-		scene_light_->setPosition( osg::Vec4( p, 1 ) );
+	if ( scene_light_ ) {
+		auto v = xo::quat_from_axis_angle( xo::vec3f::unit_y(), camera_man_->getYaw() ) * scene_light_offset_;
+		if ( directional_scene_light_ )
+			scene_light_->setPosition( osg::Vec4d( v.x, v.y, v.z, 0 ) );
+		else {
+			auto p = camera_man_->getCenter() + osg::Vec3d( v.x, v.y, v.z );
+			scene_light_->setPosition( osg::Vec4( p, 1 ) );
+		}
 	}
 }
 
@@ -264,6 +266,12 @@ void QOsgViewer::setFocusPoint( const osg::Vec3d& p )
 {
 	if ( !p.isNaN() )
 		camera_man_->setFocusPoint( p );
+}
+
+void QOsgViewer::setLightOffset( const xo::vec3f& l )
+{
+	scene_light_offset_ = l;
+	updateLightPos();
 }
 
 bool QOsgViewer::handle( const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa )

@@ -37,6 +37,7 @@ public:
 	void setClearColor( const osg::Vec4& col );
 	void moveCamera( const osg::Vec3d& delta_pos );
 	void setFocusPoint( const osg::Vec3d& p );
+	void setLightOffset( const xo::vec3f& l );
 	void startCapture( const std::string& filename );
 	void stopCapture();
 	void captureCurrentFrame( const std::string& filename );
@@ -85,6 +86,7 @@ protected:
 
 	osg::ref_ptr< osg::Light > scene_light_;
 	xo::vec3f scene_light_offset_;
+	bool directional_scene_light_ = true;
 
 	osg::ref_ptr< osg::PositionAttitudeTransform > hud_node_;
 	float hud_size = 0.1f;
