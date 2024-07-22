@@ -118,7 +118,8 @@ void QPlayControl::setTime( double time )
 	}
 	else if ( time < minTime )
 	{
-		currentTime = minTime;
+		// interpret as time from maxTime
+		currentTime = std::max( minTime, maxTime + time - minTime );
 	}
 	else currentTime = time;
 
