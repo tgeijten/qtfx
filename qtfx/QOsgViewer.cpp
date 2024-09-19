@@ -299,6 +299,8 @@ bool QOsgViewer::handle( const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapt
 	case osgGA::GUIEventAdapter::DRAG:
 		++mouse_drag_count_;
 		mouse_hover_allowed_ = false;
+		if ( ea.getButtonMask() == osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON )
+			emit dragged();
 		break;
 	case osgGA::GUIEventAdapter::RELEASE:
 		if ( mouse_drag_count_ <= 2 && ea.getButton() == osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON ) {

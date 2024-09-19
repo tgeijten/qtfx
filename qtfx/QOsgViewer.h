@@ -60,6 +60,7 @@ public:
 
 signals:
 	void pressed();
+	void dragged();
 	void clicked();
 	void hover();
 	void tooltip();
