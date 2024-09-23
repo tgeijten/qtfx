@@ -149,6 +149,11 @@ bool QPlayControl::isPlaying() const
 	return qtimer.isActive();
 }
 
+void QPlayControl::setPlayButtonRecordIcon( bool record )
+{
+	playButton->setIcon( style()->standardIcon( record ? QStyle::SP_DialogNoButton : QStyle::SP_MediaPlay ) );
+}
+
 void QPlayControl::setTimeStop( double time )
 {
 	stop();

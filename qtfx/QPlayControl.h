@@ -30,6 +30,7 @@ public:
 	bool loop() const;
 	bool autoExtendRange() const { return autoExtendRange_; }
 	bool isPlaying() const;
+	void setPlayButtonRecordIcon( bool record );
 
 signals:
 	void playTriggered();
