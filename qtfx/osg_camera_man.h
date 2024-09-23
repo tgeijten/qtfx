@@ -30,6 +30,7 @@ namespace vis
 		void setTransitionDuration( double t ) { transitionDuration_ = t; }
 
 		void setPlaybackMode( bool b ) { playbackMode_ = b; }
+		void setEnableCameraManipulation( bool b ) { enableCameraManipulation_ = b; }
 
 		bool hasCameraStateChanged();
 		void handleKeyboardAnimation();
@@ -52,6 +53,7 @@ namespace vis
 		int mod_key_state_;
 		bool animationMode_;
 		bool playbackMode_;
+		bool enableCameraManipulation_;
 		degree orbit_pitch;
 		degree orbit_yaw;
 		osg::Vec3d focus_point_;

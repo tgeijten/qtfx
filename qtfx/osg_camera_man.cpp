@@ -20,6 +20,7 @@ namespace vis
 		prev_camera_state_(),
 		animationMode_( false ),
 		playbackMode_( false ),
+		enableCameraManipulation_( true ),
 		animationTime_( 0.0 ),
 		yawAnimationVelocity( 0 ),
 		pitchAnimationVelocity( 0 ),
@@ -119,23 +120,27 @@ namespace vis
 
 	bool osg_camera_man::performMovementLeftMouseButton( const double eventTimeDelta, const double dx, const double dy )
 	{
-		orbit_pitch += degree( pitch_scale * dy );
-		orbit_yaw -= degree( yaw_scale * dx );
-		updateRotation();
+		if ( enableCameraManipulation_ ) {
+			orbit_pitch += degree( pitch_scale * dy );
+			orbit_yaw -= degree( yaw_scale * dx );
+			updateRotation();
+		}
 		return true;
 	}
 
 	bool osg_camera_man::performMovementMiddleMouseButton( const double eventTimeDelta, const double dx, const double dy )
 	{
-		zoomModel( dy * zoom_scale, false );
+		if ( enableCameraManipulation_ )
+			zoomModel( dy * zoom_scale, false );
 		return true;
 	}
 
 	bool osg_camera_man::performMovementRightMouseButton( const double eventTimeDelta, const double dx, const double dy )
 	{
-		// pan model
-		float scale = -pan_scale * _distance;
-		panModel( dx * scale, dy * scale );
+		if ( enableCameraManipulation_ ) {
+			float scale = -pan_scale * _distance;
+			panModel( dx * scale, dy * scale );
+		}
 		return true;
 	}
 
