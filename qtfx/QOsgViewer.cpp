@@ -246,6 +246,24 @@ void QOsgViewer::updateLightPos()
 	}
 }
 
+void QOsgViewer::updateMouseRay( double x, double y )
+{
+	osg::Camera* camera = view_->getCamera();
+	osg::Matrixd matrix;
+	matrix.postMult( camera->getViewMatrix() );
+	matrix.postMult( camera->getProjectionMatrix() );
+
+	double zNear = 0.0;
+	double zFar = 1.0;
+	osg::Matrixd inverse;
+	inverse.invert( matrix );
+	osg::Vec3d startVertex = osg::Vec3d( x, y, zNear ) * inverse;
+	osg::Vec3d endVertex = osg::Vec3d( x, y, zFar ) * inverse;
+
+	mouse_ray_.pos = vis::from_osg( startVertex );
+	mouse_ray_.dir = normalized( vis::from_osg( endVertex - startVertex ) );
+}
+
 void QOsgViewer::viewerInit()
 {
 	updateHudPos();
@@ -295,17 +313,21 @@ bool QOsgViewer::handle( const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapt
 	case osgGA::GUIEventAdapter::MOVE:
 		mouse_hover_timer_.restart();
 		mouse_hover_allowed_ = true;
+		updateMouseRay( ea.getXnormalized(), ea.getYnormalized() );
 		break;
 	case osgGA::GUIEventAdapter::DRAG:
 		++mouse_drag_count_;
 		mouse_hover_allowed_ = false;
+		updateMouseRay( ea.getXnormalized(), ea.getYnormalized() );
 		if ( ea.getButtonMask() == osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON )
 			emit dragged();
 		break;
 	case osgGA::GUIEventAdapter::RELEASE:
-		if ( mouse_drag_count_ <= 2 && ea.getButton() == osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON ) {
+		if ( ea.getButton() == osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON ) {
 			updateIntersections( ea );
-			emit clicked();
+			emit released();
+			if ( mouse_drag_count_ <= 2 )
+				emit clicked();
 			return true;
 		}
 		break;

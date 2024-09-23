@@ -11,12 +11,13 @@
 #include <osg/PositionAttitudeTransform>
 #include <osgUtil/LineSegmentIntersector>
 #include <osgDB/Options>
+#include "osgGA/GUIEventAdapter"
 #include "osg_camera_man.h"
 
 #include "xo/filesystem/path.h"
 #include "xo/geometry/vec3_type.h"
-#include "osgGA/GUIEventAdapter"
 #include "xo/time/timer.h"
+#include "xo/geometry/line.h"
 
 #include <string>
 
@@ -57,10 +58,12 @@ public:
 	osgQt::GLWidget* viewWidget() { return view_widget_; }
 	void enableObjectCache( bool enable );
 	osgViewer::View& getMainView() { return *view_; }
+	xo::linef getMouseRay() const { return mouse_ray_; }
 
 signals:
 	void pressed();
 	void dragged();
+	void released();
 	void clicked();
 	void hover();
 	void tooltip();
@@ -74,6 +77,7 @@ protected:
 
 	void updateHudPos();
 	void updateLightPos();
+	void updateMouseRay( double x, double y );
 	virtual void viewerInit() override;
 
 	size_t frame_count_;
@@ -101,4 +105,5 @@ protected:
 	xo::time mouse_hover_duration_;
 
 	osgUtil::LineSegmentIntersector::Intersections intersections_;
+	xo::linef mouse_ray_;
 };
