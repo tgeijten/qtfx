@@ -30,7 +30,8 @@ public:
 	bool loop() const;
 	bool autoExtendRange() const { return autoExtendRange_; }
 	bool isPlaying() const;
-	void setPlayButtonRecordIcon( bool record );
+	void setRecordingMode( bool record );
+	void adjustCurrentTime( double time );
 
 signals:
 	void playTriggered();
@@ -68,6 +69,8 @@ private slots:
 	void updateTime();
 
 private:
+	void updateTimeWidgets();
+
 	QToolButton* playButton;
 	QToolButton* resetButton;
 	QToolButton* nextButton;
@@ -84,6 +87,7 @@ private:
 	int decimals_;
 
 	bool autoExtendRange_;
+	bool recordingMode_;
 
 	QTimer qtimer;
 	xo::timer timer;

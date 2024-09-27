@@ -21,6 +21,7 @@ QPlayControl::QPlayControl( QWidget* parent ) :
 	maxTime( 1.0 ),
 	decimals_( 2 ),
 	autoExtendRange_( false ),
+	recordingMode_( false ),
 	timer_delta( 0 )
 {
 	playButton = new QToolButton( this );
@@ -123,11 +124,7 @@ void QPlayControl::setTime( double time )
 	}
 	else currentTime = time;
 
-	slider->blockSignals( true );
-	slider->setValue( int( currentTime * 1000 ) );
-	slider->blockSignals( false );
-
-	lcdNumber->display( QString::asprintf( "%.*f", decimals_, currentTime ) );
+	updateTimeWidgets();
 
 	emit timeChanged( currentTime );
 }
@@ -149,9 +146,17 @@ bool QPlayControl::isPlaying() const
 	return qtimer.isActive();
 }
 
-void QPlayControl::setPlayButtonRecordIcon( bool record )
+void QPlayControl::setRecordingMode( bool record )
 {
-	playButton->setIcon( style()->standardIcon( record ? QStyle::SP_DialogNoButton : QStyle::SP_MediaPlay ) );
+	recordingMode_ = record;
+	playButton->setIcon( style()->standardIcon( recordingMode_ ? QStyle::SP_DialogNoButton : QStyle::SP_MediaPlay ) );
+	lcdNumber->setStyleSheet( recordingMode_ ? "QLCDNumber { color: #b00000; }" : "" );
+}
+
+void QPlayControl::adjustCurrentTime( double time )
+{
+	currentTime = time;
+	updateTimeWidgets();
 }
 
 void QPlayControl::setTimeStop( double time )
@@ -174,7 +179,7 @@ void QPlayControl::play()
 		qtimer.start( 10 );
 		timer.restart();
 		timer_delta( 0 );
-		playButton->setIcon( style()->standardIcon( QStyle::SP_MediaPause ) );
+		playButton->setIcon( style()->standardIcon( recordingMode_ ? QStyle::SP_MediaStop : QStyle::SP_MediaPause ) );
 		emit playTriggered();
 	}
 }
@@ -185,6 +190,7 @@ void QPlayControl::stop()
 	{
 		qtimer.stop();
 		updateTime();
+		setRecordingMode( false );
 		playButton->setIcon( style()->standardIcon( QStyle::SP_MediaPlay ) );
 		emit stopTriggered();
 	}
@@ -264,4 +270,12 @@ void QPlayControl::updateSlider( int value )
 void QPlayControl::updateTime()
 {
 	setTime( currentTime + slomoFactor * timer_delta( timer().secondsd() ) );
+}
+
+void QPlayControl::updateTimeWidgets()
+{
+	slider->blockSignals( true );
+	slider->setValue( int( currentTime * 1000 ) );
+	slider->blockSignals( false );
+	lcdNumber->display( QString::asprintf( "%.*f", decimals_, currentTime ) );
 }
