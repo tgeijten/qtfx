@@ -26,9 +26,9 @@ QWidget* createHBoxWidget( QWidget* parent, int margin, int spacing )
 
 QFont getMonospaceFont( int pointSize, int weight )
 {
-#ifdef _MSC_VER
+#if defined(_MSC_VER)
 	return QFont( "Consolas", pointSize, weight );
-#elif __APPLE__
+#elif defined(__APPLE__)
 	return QFont( "Menlo", 4 * pointSize / 3, weight );
 #else
 	return QFont( "Consolas", pointSize, weight );
