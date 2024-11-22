@@ -150,15 +150,18 @@ namespace vis
 		if ( !key_state_.contains( ea.getKey() ) )
 			key_state_[ea.getKey()] = ea.getTime();
 
-		// handle 'normal' keys
-		if ( ea.getModKeyMask() == 0 )
+		// handle 'normal' keys or when only shift is down
+		if ( ( ea.getModKeyMask() & osgGA::GUIEventAdapter::MODKEY_SHIFT ) == ea.getModKeyMask() )
 		{
 			switch ( ea.getKey() )
 			{
 			case 'r': setTransition( camera_state::default_state() ); return true;
-			case 'x': setTransition( camera_state::yz() ); return true;
-			case 'y': setTransition( camera_state::xz() ); return true;
-			case 'z': setTransition( camera_state::xy() ); return true;
+			case 'x': setTransition( camera_state::front_plane() ); return true;
+			case 'y': setTransition( camera_state::top_plane() ); return true;
+			case 'z': setTransition( camera_state::right_plane() ); return true;
+			case 'X': setTransition( camera_state::back_plane() ); return true;
+			case 'Y': setTransition( camera_state::bottom_plane() ); return true;
+			case 'Z': setTransition( camera_state::left_plane() ); return true;
 			case osgGA::GUIEventAdapter::KEY_Space: return false; // filter out space key because we don't want it to reset the camera
 			}
 		}
