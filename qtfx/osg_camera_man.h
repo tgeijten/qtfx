@@ -26,6 +26,8 @@ namespace vis
 		void dollyModel( float d ) { _distance += d; updateRotation(); }
 		void setFocusPoint( const vec3f& p );
 		const vec3f& getFocusPoint() const { return focus_point_; }
+		void setCameraPosition( const vec3f& p );
+		vec3f getCameraPosition();
 		void setOrbitAnimation( degree yps, degree pps, float dps );
 		void setTransitionDuration( double t ) { transitionDuration_ = t; }
 

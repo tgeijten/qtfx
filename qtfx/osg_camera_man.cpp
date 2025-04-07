@@ -69,6 +69,20 @@ namespace vis
 		setCenter( to_osg( focus_point_ ) + center_offset );
 	}
 
+	void osg_camera_man::setCameraPosition( const vec3f& p )
+	{
+		auto v = from_osg( _center ) - p;
+		_distance = xo::length( v );
+		orbit_yaw = degree( radianf( -std::atan2( v.x, -v.z ) ) );
+		orbit_pitch = degree( radianf( std::atan2( v.y, std::sqrt( v.x * v.x + v.z * v.z ) ) ) );
+		updateRotation();
+	}
+
+	vec3f osg_camera_man::getCameraPosition()
+	{
+		return from_osg( _center - _rotation * osg::Vec3d( 0.0, 0.0, -_distance ) );
+	}
+
 	void osg_camera_man::setOrbitAnimation( degree yps, degree pps, float dps )
 	{
 		yawAnimationVelocity = yps;

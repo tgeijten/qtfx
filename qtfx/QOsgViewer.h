@@ -38,6 +38,7 @@ public:
 	void setClearColor( const osg::Vec4& col );
 	void moveCamera( const osg::Vec3d& delta_pos );
 	void setFocusPoint( const osg::Vec3d& p );
+	void setTrackingPoint( const osg::Vec3d& p );
 	void setLightOffset( const xo::vec3f& l );
 	void startCapture( const std::string& filename );
 	void stopCapture();

@@ -286,6 +286,15 @@ void QOsgViewer::setFocusPoint( const osg::Vec3d& p )
 		camera_man_->setFocusPoint( vis::from_osg( p ) );
 }
 
+void QOsgViewer::setTrackingPoint( const osg::Vec3d& p )
+{
+	if ( !p.isNaN() ) {
+		auto cp = camera_man_->getCameraPosition();
+		camera_man_->setFocusPoint( vis::from_osg( p ) );
+		camera_man_->setCameraPosition( cp );
+	}
+}
+
 void QOsgViewer::setLightOffset( const xo::vec3f& l )
 {
 	scene_light_offset_ = l;
