@@ -283,7 +283,7 @@ void QOsgViewer::moveCamera( const osg::Vec3d& delta_pos )
 void QOsgViewer::setFocusPoint( const osg::Vec3d& p )
 {
 	if ( !p.isNaN() )
-		camera_man_->setFocusPoint( p );
+		camera_man_->setFocusPoint( vis::from_osg( p ) );
 }
 
 void QOsgViewer::setLightOffset( const xo::vec3f& l )

@@ -42,14 +42,14 @@ namespace vis
 	{
 		orbit_pitch = s.pitch;
 		orbit_yaw = s.yaw;
-		_center = focus_point_ + to_osg( s.center_offset );
+		_center = to_osg( focus_point_ + s.center_offset );
 		_distance = s.distance;
 		updateRotation();
 	}
 
 	camera_state osg_camera_man::getCameraState()
 	{
-		return camera_state{ orbit_pitch, orbit_yaw, from_osg( _center - focus_point_ ), float( _distance ) };
+		return camera_state{ orbit_pitch, orbit_yaw, from_osg( _center ) - focus_point_, float( _distance ) };
 	}
 
 	void osg_camera_man::setTransition( const camera_state& s )
@@ -62,11 +62,11 @@ namespace vis
 		else setCameraState( s );
 	}
 
-	void osg_camera_man::setFocusPoint( const osg::Vec3d& p )
+	void osg_camera_man::setFocusPoint( const vec3f& p )
 	{
-		auto center_offset = _center - focus_point_;
+		auto center_offset = _center - to_osg( focus_point_ );
 		focus_point_ = p;
-		setCenter( focus_point_ + center_offset );
+		setCenter( to_osg( focus_point_ ) + center_offset );
 	}
 
 	void osg_camera_man::setOrbitAnimation( degree yps, degree pps, float dps )
