@@ -169,8 +169,7 @@ void QCodeEditor::toggleComments()
 		if ( xo::str_begins_with( xo::trim_left_str( *first_line ), comment ) )
 		{
 			// remove comments
-			for ( auto& l : lines )
-			{
+			for ( auto& l : lines ) {
 				auto pos = l.find_first_not_of( "\t " );
 				if ( pos != std::string::npos && xo::str_begins_with( l, comment, pos ) )
 					s += xo::left_str( l, pos ) + xo::mid_str( l, pos + comment.size() ) + '\n';
@@ -178,11 +177,15 @@ void QCodeEditor::toggleComments()
 			}
 		}
 		else {
-			// add comments
+			// find line closest to start
+			auto block_pos = std::string::npos;
 			for ( const auto& l : lines )
-			{
+				block_pos = std::min( block_pos, l.find_first_not_of( "\t " ) );
+
+			// add comments
+			for ( const auto& l : lines ) {
 				if ( auto pos = l.find_first_not_of( "\t " ); pos != std::string::npos )
-					s += xo::left_str( l, pos ) + comment + xo::mid_str( l, pos ) + '\n';
+					s += xo::left_str( l, block_pos ) + comment + xo::mid_str( l, block_pos ) + '\n';
 				else s += l + '\n';
 			}
 		}
