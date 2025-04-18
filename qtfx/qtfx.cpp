@@ -29,7 +29,7 @@ QFont getMonospaceFont( int pointSize, int weight )
 #if defined(_MSC_VER)
 	return QFont( "Consolas", pointSize, weight );
 #elif defined(__APPLE__)
-	return QFont( "Menlo", 4 * pointSize / 3, weight );
+	return QFont( "Menlo", 3 * pointSize / 2, weight );
 #else
 	return QFont( "Consolas", pointSize, weight );
 #endif
