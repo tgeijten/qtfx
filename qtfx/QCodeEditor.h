@@ -45,6 +45,7 @@ public:
 	QString fileName;
 	QString findText;
 	QDateTime lastModified;
+	bool insertAutoBrackets;
 
 private:
 	class QCodeHighlighter* syntaxHighlighter;

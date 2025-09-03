@@ -20,7 +20,8 @@
 #include <sstream>
 
 QCodeEditor::QCodeEditor( QWidget* parent ) :
-	QPlainTextEdit( parent )
+	QPlainTextEdit( parent ),
+	insertAutoBrackets( false )
 {
 	QVBoxLayout* verticalLayout = new QVBoxLayout( this );
 	verticalLayout->setContentsMargins( 0, 0, 0, 0 );
@@ -328,13 +329,13 @@ void QCodeEditor::keyPressEvent( QKeyEvent* e )
 	QPlainTextEdit::keyPressEvent( e );
 
 	// insert closing bracket
-	for ( const auto& bp : autoBrackets )
-	{
-		if ( e->key() == bp.first )
-		{
-			textCursor().insertText( QString( bp.second ) );
-			moveCursor( QTextCursor::Left );
-			break;
+	if ( insertAutoBrackets ) {
+		for ( const auto& bp : autoBrackets ) {
+			if ( e->key() == bp.first ) {
+				textCursor().insertText( QString( bp.second ) );
+				moveCursor( QTextCursor::Left );
+				break;
+			}
 		}
 	}
 
