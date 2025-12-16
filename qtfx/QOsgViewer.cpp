@@ -88,7 +88,7 @@ osgQt::GLWidget* QOsgViewer::addViewWidget( osgQt::GraphicsWindowQt* gw )
 
 	cam->setClearColor( osg::Vec4( 0.55, 0.55, 0.55, 1.0 ) );
 	cam->setViewport( new osg::Viewport( 0, 0, traits->width, traits->height ) );
-	cam->setProjectionMatrixAsPerspective( 30.0f, static_cast<double>( traits->width ) / static_cast<double>( traits->height ), 1.0f, 10000.0f );
+	cam->setProjectionMatrixAsPerspective( 30.0, double( traits->width ) / double( traits->height ), 1.0, 10000.0 );
 
 	// add event handlers
 	view_->addEventHandler( new osgViewer::StatsHandler );
@@ -389,6 +389,23 @@ const osg::Node* QOsgViewer::getTopNamedIntersectionNode( const std::string& ski
 void QOsgViewer::enableObjectCache( bool enable )
 {
 	getOrCreateOptions()->setObjectCacheHint( enable ? osgDB::Options::CACHE_ALL : osgDB::Options::CACHE_ARCHIVES );
+}
+
+void QOsgViewer::setNearFarPlane( double nearPlane, double farPlane )
+{
+	osg::Camera* cam = view_->getCamera();
+	double fovy, aspectRatio, oldNear, oldFar;
+	cam->getProjectionMatrixAsPerspective( fovy, aspectRatio, oldNear, oldFar );
+
+	if ( nearPlane > 0 && farPlane > 0 ) {
+		cam->setComputeNearFarMode( osg::CullSettings::DO_NOT_COMPUTE_NEAR_FAR );
+		cam->setProjectionMatrixAsPerspective( fovy, aspectRatio, nearPlane, farPlane );
+	}
+	else if ( cam->getComputeNearFarMode() == osg::CullSettings::DO_NOT_COMPUTE_NEAR_FAR ) {
+		// reset to default automatic near/far plane
+		cam->setComputeNearFarMode( osg::CullSettings::COMPUTE_NEAR_FAR_USING_BOUNDING_VOLUMES );
+		cam->setProjectionMatrixAsPerspective( fovy, aspectRatio, 1.0, 10000.0 );
+	}
 }
 
 void QOsgViewer::startCapture( const std::string& filename )

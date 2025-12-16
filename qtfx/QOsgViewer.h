@@ -60,6 +60,7 @@ public:
 	void enableObjectCache( bool enable );
 	osgViewer::View& getMainView() { return *view_; }
 	xo::linef getMouseRay() const { return mouse_ray_; }
+	void setNearFarPlane( double nearPlane, double farPlane );
 
 signals:
 	void pressed();
