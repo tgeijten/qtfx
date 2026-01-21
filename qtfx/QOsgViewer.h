@@ -34,7 +34,7 @@ public:
 	virtual bool event( QEvent* event ) override;
 
 	void setScene( osg::Group* s );
-	void createHud( const xo::path& file );
+	void createHud( const xo::path& file, float w, float h, float x, float y );
 	void setClearColor( const osg::Vec4& col );
 	void moveCamera( const osg::Vec3d& delta_pos );
 	void setFocusPoint( const osg::Vec3d& p );
@@ -96,7 +96,7 @@ protected:
 	bool directional_scene_light_ = true;
 
 	osg::ref_ptr< osg::PositionAttitudeTransform > hud_node_;
-	float hud_size = 0.1f;
+	float hud_w, hud_h, hud_x, hud_y;
 
 	double current_frame_time_;
 	double last_drawn_frame_time_;

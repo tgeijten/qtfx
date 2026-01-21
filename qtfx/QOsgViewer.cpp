@@ -48,6 +48,8 @@ QOsgViewer::QOsgViewer( QWidget* parent /*= 0*/, Qt::WindowFlags f /*= 0*/, osgV
 	frame_count_( 0 ),
 	capture_handler_( nullptr ),
 	scene_light_offset_( -2, 8, 3 ),
+	hud_w(), hud_h(),
+	hud_x(), hud_y(),
 	current_frame_time_( -1 ),
 	mouse_drag_count_( 0 ),
 	mouse_hover_allowed_( false ),
@@ -186,14 +188,18 @@ void QOsgViewer::setScene( osg::Group* s )
 	scene_light_->setConstantAttenuation( 1.0f );
 }
 
-void QOsgViewer::createHud( const xo::path& file )
+void QOsgViewer::createHud( const xo::path& file, float w, float h, float x, float y )
 {
 	hud_node_ = new osg::PositionAttitudeTransform;
+	hud_w = w;
+	hud_h = h;
+	hud_x = x;
+	hud_y = y;
 
 	osg::ref_ptr<osg::Image> img = osgDB::readImageFile( file.str() );
 	xo_error_if( !img.valid(), "Could not open " + file.str() );
-	auto width = osg::Vec3f( hud_size, 0, 0 );
-	auto height = osg::Vec3f( 0, hud_size, 0 );
+	auto width = osg::Vec3f( hud_w, 0, 0 );
+	auto height = osg::Vec3f( 0, hud_h, 0 );
 
 	osg::ref_ptr<osg::Texture2D> texture = new osg::Texture2D;
 	texture->setImage( img );
@@ -226,10 +232,10 @@ void QOsgViewer::updateHudPos()
 		view_->getCamera()->getProjectionMatrixAsPerspective( fovy, aspect, nearplane, farplane );
 		auto hh = tan( xo::degreed( fovy / 2 ) );
 		auto hw = tan( atan( hh * aspect ) );
-		auto hp = hw - 0.55f * hud_size;
-		auto vp = hh - 0.55f * hud_size;
+		auto hp = hud_x * ( hw - 0.55f * hud_w );
+		auto vp = hud_y * ( hh - 0.55f * hud_h );
 		//xo::log::info( "Updating HUD position to ", hw - 0.55f * hud_size, ", ", -hh + 0.55f * hud_size, "; aspect ratio = ", aspect );
-		hud_node_->setPosition( osg::Vec3( hp, -vp, -1 ) );
+		hud_node_->setPosition( osg::Vec3( hp, vp, -1 ) );
 	}
 }
 
