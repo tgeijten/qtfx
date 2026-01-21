@@ -52,6 +52,14 @@ void QFileBrowser::setNumColumns( int num_columns )
 		header()->setSectionResizeMode( i, i == 0 ? QHeaderView::Stretch : QHeaderView::ResizeToContents );
 }
 
+QStringList QFileBrowser::selectedFiles()
+{
+	QStringList fileList;
+	for ( const auto& idx : selectionModel()->selectedRows() )
+		fileList.push_back( fileModel->fileInfo( idx ).filePath() );
+	return fileList;
+}
+
 void QFileBrowser::activateItem( const QModelIndex& idx )
 {
 	emit itemTriggered( fileModel->fileInfo( idx ).absoluteFilePath() );

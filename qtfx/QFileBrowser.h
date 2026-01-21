@@ -18,6 +18,8 @@ public:
 	virtual ~QFileBrowser() {}
 
 	QFileSystemModel* fileSystemModel() { return fileModel; }
+	QStringList selectedFiles();
+	size_t selectionSize() { return selectionModel()->selectedIndexes().count(); }
 
 signals:
 	void itemTriggered( QString filename );
