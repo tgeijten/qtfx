@@ -10,8 +10,7 @@
 QLogSink::QLogSink( QWidget* parent, xo::log::level level, xo::log::sink_mode mode ) :
 	QPlainTextEdit( parent ),
 	sink( level, {}, mode ),
-	enabled_( true ),
-	buffer_mutex_( QMutex::NonRecursive )
+	enabled_( true )
 {
 	setFont( getMonospaceFont( 9 ) );
 	creation_thread_id_ = QThread::currentThreadId();

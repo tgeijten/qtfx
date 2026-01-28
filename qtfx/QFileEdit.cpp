@@ -11,7 +11,7 @@ QFileEdit::QFileEdit( QWidget* parent, Mode m, const QString& f ) :
 {
 	auto* l = new QHBoxLayout( this );
 	l->setSpacing( 2 );
-	l->setMargin( 0 );
+	l->setContentsMargins( 0, 0, 0, 0 );
 	setLayout( l );
 
 	lineEdit = new QLineEdit( this );
@@ -57,7 +57,7 @@ void QFileEdit::browse()
 		result = QFileDialog::getSaveFileName( this, "Save File", startDir, filter, nullptr );
 		break;
 	case QFileEdit::Directory:
-		result = QFileDialog::getExistingDirectory( this, "Select Directory", startDir, nullptr );
+		result = QFileDialog::getExistingDirectory( this, "Select Directory", startDir );
 		break;
 	default:
 		break;

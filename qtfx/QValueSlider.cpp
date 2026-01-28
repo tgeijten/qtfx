@@ -8,7 +8,7 @@ QValueSlider::QValueSlider( QWidget* parent, double stepSize, int margin, int sp
 	stepSize_( stepSize )
 {
 	QHBoxLayout* l = new QHBoxLayout;
-	l->setMargin( margin );
+	l->setContentsMargins( margin, margin, margin, margin );
 	l->setSpacing( spacing );
 	setLayout( l );
 

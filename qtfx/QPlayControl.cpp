@@ -64,7 +64,7 @@ QPlayControl::QPlayControl( QWidget* parent ) :
 	connect( slomoBox, SIGNAL( currentIndexChanged( int ) ), this, SLOT( updateSlowMotion( int ) ) );
 
 	QBoxLayout* lo = new QHBoxLayout;
-	lo->setMargin( 0 );
+	lo->setContentsMargins( 0, 0, 0, 0 );
 	lo->setSpacing( 2 );
 	lo->addWidget( playButton );
 	lo->addWidget( resetButton );
