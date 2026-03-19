@@ -10,12 +10,13 @@
 QLogSink::QLogSink( QWidget* parent, xo::log::level level, xo::log::sink_mode mode ) :
 	QPlainTextEdit( parent ),
 	sink( level, {}, mode ),
-	enabled_( true )
+	enabled_( true ),
+	has_data_( false )
 {
 	setFont( getMonospaceFont( 9 ) );
 	creation_thread_id_ = QThread::currentThreadId();
 	connect( &update_timer_, &QTimer::timeout, this, &QLogSink::update );
-	update_timer_.setInterval( 1000 );
+	update_timer_.setInterval( 500 );
 	update_timer_.start();
 }
 
@@ -27,25 +28,31 @@ void QLogSink::hande_log_message( xo::log::level l, const xo::string& msg )
 		buffer_mutex_.lock();
 		buffer_data_.push_back( std::make_pair( l, msg ) );
 		buffer_mutex_.unlock();
-
 	}
-	else append_message( l, msg );
+	else {
+		//append_message( l, msg );
+		buffer_data_.push_back( std::make_pair( l, msg ) );
+	}
+	has_data_.store( true );
 }
 
 void QLogSink::update()
 {
 	xo_assert( QThread::currentThreadId() == creation_thread_id_ );
+	if ( !has_data_.exchange( false ) )
+		return; // return early if there is no data
 
+	moveCursor( QTextCursor::End ); // WARNING: calls QApplication::notify() and may cause stack overflow
 	buffer_mutex_.lock();
 	for ( auto& e : buffer_data_ )
 		append_message( e.first, e.second );
 	buffer_data_.clear();
 	buffer_mutex_.unlock();
+	verticalScrollBar()->setValue( verticalScrollBar()->maximum() ); // WARNING: calls QApplication::notify() and may cause stack overflow
 }
 
 void QLogSink::append_message( xo::log::level l, const xo::string& msg )
 {
-	moveCursor( QTextCursor::End );
 	QTextCursor cursor( textCursor() );
 	QTextCharFormat format;
 	format.setFontWeight( QFont::Normal );
@@ -75,5 +82,4 @@ void QLogSink::append_message( xo::log::level l, const xo::string& msg )
 
 	cursor.setCharFormat( format );
 	cursor.insertText( QString( xo::trim_right_str( msg ).c_str() ) + "\n" );
-	verticalScrollBar()->setValue( verticalScrollBar()->maximum() );
 }

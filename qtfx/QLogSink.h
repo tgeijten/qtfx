@@ -19,6 +19,8 @@ public:
 	/// set different log_level for non-ui threads
 	void set_thread_log_level( xo::log::level l ) { thread_log_level_ = l; }
 
+	void flush() override { update(); }
+
 public slots:
 	void update();
 
@@ -32,6 +34,7 @@ private:
 	xo::log::level thread_log_level_;
 
 	std::vector< std::pair< xo::log::level, std::string > > buffer_data_;
+	std::atomic_bool has_data_;
 	QMutex buffer_mutex_;
 	QTimer update_timer_;
 };
