@@ -60,6 +60,7 @@ public:
 	void enableObjectCache( bool enable );
 	osgViewer::View& getMainView() { return *view_; }
 	xo::linef getMouseRay() const { return mouse_ray_; }
+	int getMouseButton() const { return mouse_button_; }
 	void setNearFarPlane( double nearPlane, double farPlane );
 
 signals:
@@ -102,6 +103,7 @@ protected:
 	double last_drawn_frame_time_;
 
 	size_t mouse_drag_count_;
+	int mouse_button_;
 	bool mouse_hover_allowed_;
 	xo::timer mouse_hover_timer_;
 	xo::time mouse_hover_duration_;

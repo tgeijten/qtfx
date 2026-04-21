@@ -52,6 +52,7 @@ QOsgViewer::QOsgViewer( QWidget* parent /*= 0*/, Qt::WindowFlags f /*= 0*/, osgV
 	hud_x(), hud_y(),
 	current_frame_time_( -1 ),
 	mouse_drag_count_( 0 ),
+	mouse_button_(),
 	mouse_hover_allowed_( false ),
 	mouse_hover_duration_( xo::time_from_milliseconds( 100 ) )
 {
@@ -318,10 +319,9 @@ bool QOsgViewer::handle( const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapt
 		updateHudPos();
 		return true;
 	case osgGA::GUIEventAdapter::PUSH:
-		if ( ea.getButton() == osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON ) {
-			updateIntersections( ea );
-			emit pressed();
-		}
+		mouse_button_ = ea.getButton();
+		updateIntersections( ea );
+		emit pressed();
 		mouse_drag_count_ = 0;
 		mouse_hover_allowed_ = false;
 		break;
@@ -334,11 +334,11 @@ bool QOsgViewer::handle( const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapt
 		++mouse_drag_count_;
 		mouse_hover_allowed_ = false;
 		updateMouseRay( ea.getXnormalized(), ea.getYnormalized() );
-		if ( ea.getButtonMask() == osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON )
+		if ( ea.getButtonMask() == mouse_button_ )
 			emit dragged();
 		break;
 	case osgGA::GUIEventAdapter::RELEASE:
-		if ( ea.getButton() == osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON ) {
+		if ( ea.getButton() == mouse_button_ ) {
 			updateIntersections( ea );
 			emit released();
 			if ( mouse_drag_count_ <= 2 )
